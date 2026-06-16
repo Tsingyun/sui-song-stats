@@ -1,0 +1,8 @@
+__*.js
+__*.py
+__check*
+*.py
+*.csv
+*.xlsx
+template.html
+song_data_processed.json
