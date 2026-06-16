@@ -278,6 +278,20 @@
         }
         .lb-row:hover .lb-name { color: var(--accent); }
         
+        .lb-crown {
+            display: inline-block;
+            font-size: 0.75em;
+            color: var(--accent);
+            margin-left: 0.3em;
+            opacity: 0.9;
+            animation: crownGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes crownGlow {
+            0%, 100% { opacity: 0.85; text-shadow: 0 0 3px rgba(212, 175, 55, 0.3); }
+            50% { opacity: 1; text-shadow: 0 0 8px rgba(212, 175, 55, 0.6); }
+        }
+        
         .lb-count {
             font-size: 0.75rem;
             color: var(--muted-fg);
@@ -10333,10 +10347,11 @@
                 const name = item.audience || item.song || '';
                 const count = item.count;
                 const pct = total > 0 ? (count / total * 100).toFixed(1) : '0.0';
+                const isChampion = i === 0;
                 return '<div class="lb-row" onclick="showDetail(\'' + name.replace(/'/g, "\\'") + '\')">' +
                     '<div class="lb-rank">' + (i + 1) + '</div>' +
                     '<div class="lb-info">' +
-                        '<div class="lb-name">' + name + '</div>' +
+                        '<div class="lb-name">' + name + (isChampion ? ' <span class="lb-crown">👑</span>' : '') + '</div>' +
                         '<div class="lb-count">' + count + ' 次 · 点歌占比 ' + pct + '%</div>' +
                     '</div>' +
                     '<div class="lb-bar-container">' +
