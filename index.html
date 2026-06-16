@@ -80,12 +80,12 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            padding: 4rem 2rem 6rem;
+            padding: 4rem 0 6rem 38.197%;
             position: relative;
         }
 
         .hero-inner {
-            max-width: 620px; /* ~38.2% of 1620px viewport, golden ratio */
+            max-width: 520px;
         }
         
         .hero-title {
@@ -10229,7 +10229,6 @@
         
         // --- Quarterly ---
         function getQuarterTotal(q) {
-            // q = "2026-Q2" => sum trend_data for 04,05,06
             const y = q.split('-')[0];
             const qn = parseInt(q.split('Q')[1]);
             const monthsInQ = [];
@@ -10238,7 +10237,7 @@
             }
             return monthsInQ.reduce((sum, m) => sum + (appData.trend_data[m] || 0), 0);
         }
-        
+
         function renderQuarter() {
             if (quarters.length === 0) return;
             const q = quarters[currentQuarterIdx];
@@ -10271,7 +10270,7 @@
         function getYearTotal(y) {
             return Object.keys(appData.trend_data).filter(m => m.startsWith(y+'-')).reduce((sum, m) => sum + (appData.trend_data[m] || 0), 0);
         }
-        
+
         function renderYear() {
             if (years.length === 0) return;
             const y = years[currentYearIdx];
@@ -10304,7 +10303,7 @@
         function renderTotal() {
             renderLeaderboard('total-leaderboard', appData.total_leaderboard, '暂无数据', appData.metadata.total_records);
         }
-        
+
         // --- Songs ---
         function renderSongs() {
             renderLeaderboard('songs-leaderboard', appData.song_leaderboard, '暂无数据', appData.metadata.total_records);
