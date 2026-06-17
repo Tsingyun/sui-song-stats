@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>岁己 SUI · 点歌统计</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing: border-box; }
+        :root {
+            --bg: #F9F8F6;
+            --fg: #1A1A1A;
+            --muted-bg: #EBE5DE;
+            --muted-fg: #6C6863;
+            --accent: #D4AF37;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; }
+        
+        .noise-overlay { position: fixed; top:0; left:0; right:0; bottom:0; pointer-events: none; z-index:50; opacity:0.02; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E"); background-repeat: repeat; background-size: 256px 256px; }
+        .grid-line { position: fixed; top:0; bottom:0; width:1px; background: rgba(26,26,26,0.08); pointer-events: none; z-index:49; }
+        .grid-line-1 { left: 8%; }
+        .grid-line-2 { left: 36%; }
+        .grid-line-3 { left: 64%; }
+        .grid-line-4 { left: 92%; }
+        @media (max-width: 768px) { .grid-line { display: none; } }
+        
+        .font-serif { font-family: 'Playfair Display', serif; }
+        
+        .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; padding: 4rem 2rem 6rem; }
+        .hero-meta { display: flex; gap: 2rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.25em; color: var(--muted-fg); margin-bottom: 1rem; }
+        .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 8vw, 7rem); font-weight: 300; line-height: 0.95; letter-spacing: -0.02em; margin-bottom: 2rem; }
+        .hero-title em { font-style: italic; color: var(--accent); }
+        .hero-desc { font-size: 1.1rem; color: var(--muted-fg); max-width: 500px; line-height: 1.8; }
+        
+        .nav { position: fixed; top:0; left:0; right:0; z-index:100; background: rgba(249,248,246,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(26,26,26,0.1); }
+        .nav-inner { max-width: 1200px; margin:0 auto; display: flex; align-items: center; height: 4rem; padding:0 2rem; gap:2rem; }
+        .nav-brand { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 500; color: var(--fg); text-decoration: none; }
+        .nav-links { display: flex; gap:1.5rem; list-style: none; margin-left: auto; }
+        .nav-link { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--muted-fg); text-decoration: none; transition: color 0.5s; }
+        .nav-link:hover { color: var(--accent); }
+        
+        .section { padding: 6rem 2rem; }
+        .section-dark { background: var(--fg); color: var(--bg); padding: 6rem 2rem; }
+        .container { max-width: 1200px; margin:0 auto; }
+        
+        .section-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.3em; color: var(--muted-fg); margin-bottom: 1rem; display: block; }
+        .section-dark .section-label { color: rgba(249,248,246,0.5); }
+        .section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem,5vw,3.5rem); font-weight: 300; line-height: 1.1; margin-bottom: 3rem; }
+        
+        .time-picker { display: flex; align-items: center; justify-content: center; gap:1.5rem; margin-bottom: 3rem; flex-wrap: wrap; }
+        .time-picker-btn { background: none; border:1px solid rgba(26,26,26,0.2); color: var(--fg); width:2.5rem; height:2.5rem; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1rem; transition: all 0.5s; }
+        .time-picker-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .time-picker-label { font-family: 'Playfair Display', serif; font-size:1.6rem; font-weight:300; letter-spacing:0.05em; min-width:160px; text-align:center; cursor:pointer; transition: color 0.5s; }
+        .time-picker-label:hover { color: var(--accent); }
+        .time-picker-select { position:absolute; opacity:0; pointer-events:none; }
+        .section-dark .time-picker-btn { border-color: rgba(249,248,246,0.3); color: var(--bg); }
+        .section-dark .time-picker-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .section-dark .time-picker-label { color: var(--bg); }
+        .section-dark .time-picker-label:hover { color: var(--accent); }
+        
+        .leaderboard { margin-top: 2rem; }
+        .lb-row { display:flex; align-items:center; padding:1rem 0; border-top:1px solid rgba(26,26,26,0.1); transition: all 0.5s; cursor:pointer; }
+        .lb-row:hover { background: rgba(26,26,26,0.02); }
+        .lb-rank { font-family:'Playfair Display',serif; font-size:2rem; font-weight:300; color: var(--muted-fg); width:3rem; flex-shrink:0; }
+        .lb-info { flex:1; }
+        .lb-name { font-weight:500; font-size:1rem; transition: color 0.5s; }
+        .lb-row:hover .lb-name { color: var(--accent); }
+        .lb-count { font-size:0.75rem; color: var(--muted-fg); margin-top:0.2rem; }
+        .lb-bar-container { width:200px; height:4px; background: rgba(26,26,26,0.08); flex-shrink:0; }
+        .lb-bar { height:100%; background: var(--fg); transition: width 1s ease; }
+        .lb-row:hover .lb-bar { background: var(--accent); }
+        .section-dark .lb-row { border-top-color: rgba(249,248,246,0.1); }
+        .section-dark .lb-row:hover { background: rgba(249,248,246,0.03); }
+        .section-dark .lb-rank { color: rgba(249,248,246,0.5); }
+        .section-dark .lb-name { color: var(--bg); }
+        .section-dark .lb-count { color: rgba(249,248,246,0.5); }
+        .section-dark .lb-bar-container { background: rgba(249,248,246,0.1); }
+        .section-dark .lb-bar { background: var(--bg); }
+        .section-dark .lb-row:hover .lb-bar { background: var(--accent); }
+        
+        .detail-overlay { position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.5); z-index:200; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition: opacity 0.5s; }
+        .detail-overlay.active { opacity:1; pointer-events:all; }
+        .detail-panel { background:var(--bg); border:1px solid rgba(26,26,26,0.15); max-width:600px; width:90%; max-height:70vh; overflow-y:auto; padding:2.5rem; transform:translateY(20px); transition: transform 0.5s; }
+        .detail-overlay.active .detail-panel { transform:translateY(0); }
+        .detail-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2rem; padding-bottom:1rem; border-bottom:1px solid rgba(26,26,26,0.1); }
+        .detail-name { font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:400; }
+        .detail-count { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.2em; color:var(--muted-fg); margin-top:0.3rem; }
+        .detail-close { background:none; border:1px solid rgba(26,26,26,0.2); width:2rem; height:2rem; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1rem; color:var(--muted-fg); transition:all 0.5s; }
+        .detail-close:hover { border-color:var(--accent); color:var(--accent); }
+        .detail-song { display:flex; align-items:baseline; padding:0.6rem 0; border-bottom:1px solid rgba(26,26,26,0.05); }
+        .detail-song-name { flex:1; font-size:0.95rem; }
+        .detail-song-count { font-size:0.7rem; color:var(--accent); margin-left:0.8rem; flex-shrink:0; }
+        
+        .chart-container { margin-top:2rem; padding:2rem 0; }
+        .chart-bar-row { display:flex; align-items:center; margin-bottom:0.8rem; }
+        .chart-label { font-size:0.75rem; color:var(--muted-fg); width:80px; text-align:right; padding-right:1rem; flex-shrink:0; }
+        .chart-bar-bg { flex:1; height:24px; background:rgba(26,26,26,0.05); position:relative; overflow:hidden; }
+        .chart-bar-fill { height:100%; background:var(--fg); transition:width 1s ease; display:flex; align-items:center; padding-left:0.5rem; }
+        .chart-bar-value { font-size:0.7rem; color:var(--bg); font-weight:500; }
+        .section-dark .chart-label { color:rgba(249,248,246,0.5); }
+        .section-dark .chart-bar-bg { background:rgba(249,248,246,0.1); }
+        .section-dark .chart-bar-fill { background:var(--bg); }
+        .section-dark .chart-bar-value { color:var(--fg); }
+        
+        .pref-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.5rem; margin-top:2rem; }
+        .pref-card { border-top:1px solid rgba(26,26,26,0.1); padding-top:1.2rem; }
+        .pref-card-name { font-weight:500; margin-bottom:0.8rem; cursor:pointer; transition:color 0.5s; }
+        .pref-card-name:hover { color:var(--accent); }
+        .pref-card-songs { font-size:0.8rem; color:var(--muted-fg); line-height:1.8; }
+        .section-dark .pref-card { border-top-color:rgba(249,248,246,0.1); }
+        .section-dark .pref-card-name { color:var(--bg); }
+        
+        .footer { padding:4rem 2rem; border-top:1px solid rgba(26,26,26,0.1); text-align:center; }
+        .footer-text { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.25em; color:var(--muted-fg); }
+        
+        @media (max-width:768px) {
+            .section,.section-dark { padding:4rem 1.5rem; }
+            .hero { padding:3rem 1.5rem 4rem; }
+            .nav-inner { padding:0 1.5rem; }
+            .lb-bar-container { width:100px; }
+            .time-picker { gap:1rem; }
+            .time-picker-label { font-size:1.2rem; min-width:120px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="grid-line grid-line-1"></div>
+    <div class="grid-line grid-line-2"></div>
+    <div class="grid-line grid-line-3"></div>
+    <div class="grid-line grid-line-4"></div>
+    
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="#hero" class="nav-brand">SUI</a>
+            <ul class="nav-links">
+                <li><a href="#monthly" class="nav-link">月度</a></li>
+                <li><a href="#quarterly" class="nav-link">季度</a></li>
+                <li><a href="#yearly" class="nav-link">年度</a></li>
+                <li><a href="#total" class="nav-link">总榜</a></li>
+                <li><a href="#songs" class="nav-link">歌曲</a></li>
+                <li><a href="#audiences" class="nav-link">观众</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <section class="hero" id="hero">
+        <div class="hero-meta">
+            <span>2024.07 — 2026.06</span>
+            <span id="hero-stat-songs">— 首歌曲</span>
+            <span id="hero-stat-audiences">— 位观众</span>
+        </div>
+        <h1 class="hero-title">岁己 SUI<br><em>点歌统计</em></h1>
+        <p class="hero-desc">虚拟主播岁己SUI自2024年7月开播以来的全部点歌记录，包含月度、季度、年度排行榜，以及观众喜好分析。</p>
+    </section>
+    
+    <section class="section" id="monthly">
+        <div class="container">
+            <span class="section-label">Monthly Leaderboard</span>
+            <h2 class="section-title">月度点歌榜</h2>
+            <div class="time-picker" id="monthly-picker">
+                <button class="time-picker-btn" onclick="changeMonth(-1)">←</button>
+                <span class="time-picker-label" id="monthly-label" onclick="toggleMonthSelect()">2026-06</span>
+                <button class="time-picker-btn" onclick="changeMonth(1)">→</button>
+                <select class="time-picker-select" id="monthly-select" onchange="goToMonth(this.value)"></select>
+            </div>
+            <div class="leaderboard" id="monthly-leaderboard"></div>
+        </div>
+    </section>
+    
+    <section class="section-dark" id="quarterly">
+        <div class="container">
+            <span class="section-label">Quarterly Leaderboard</span>
+            <h2 class="section-title">季度点歌榜</h2>
+            <div class="time-picker" id="quarterly-picker">
+                <button class="time-picker-btn" onclick="changeQuarter(-1)">←</button>
+                <span class="time-picker-label" id="quarterly-label" onclick="toggleQuarterSelect()">2026-Q2</span>
+                <button class="time-picker-btn" onclick="changeQuarter(1)">→</button>
+                <select class="time-picker-select" id="quarterly-select" onchange="goToQuarter(this.value)"></select>
+            </div>
+            <div class="leaderboard" id="quarterly-leaderboard"></div>
+        </div>
+    </section>
+    
+    <section class="section" id="yearly">
+        <div class="container">
+            <span class="section-label">Yearly Leaderboard</span>
+            <h2 class="section-title">年度点歌榜</h2>
+            <div class="time-picker" id="yearly-picker">
+                <button class="time-picker-btn" onclick="changeYear(-1)">←</button>
+                <span class="time-picker-label" id="yearly-label" onclick="toggleYearSelect()">2026</span>
+                <button class="time-picker-btn" onclick="changeYear(1)">→</button>
+                <select class="time-picker-select" id="yearly-select" onchange="goToYear(this.value)"></select>
+            </div>
+            <div class="leaderboard" id="yearly-leaderboard"></div>
+        </div>
+    </section>
+    
+    <section class="section-dark" id="total">
+        <div class="container">
+            <span class="section-label">Total Leaderboard</span>
+            <h2 class="section-title">总点歌榜</h2>
+            <p class="section-label" style="margin-bottom:2rem;">所有时间的累计点歌次数</p>
+            <div class="leaderboard" id="total-leaderboard"></div>
+        </div>
+    </section>
+    
+    <section class="section" id="songs">
+        <div class="container">
+            <span class="section-label">Popular Songs</span>
+            <h2 class="section-title">热门歌曲榜</h2>
+            <div class="leaderboard" id="songs-leaderboard"></div>
+        </div>
+    </section>
+    
+    <section class="section-dark" id="audiences">
+        <div class="container">
+            <span class="section-label">Audience Preferences</span>
+            <h2 class="section-title">观众喜好</h2>
+            <p class="section-label" style="margin-bottom:2rem;">点击观众名字可查看详情</p>
+            <div class="pref-grid" id="pref-grid"></div>
+        </div>
+    </section>
+    
+    <section class="section" id="trend">
+        <div class="container">
+            <span class="section-label">Trend Chart</span>
+            <h2 class="section-title">点歌趋势</h2>
+            <div class="chart-container" id="trend-chart"></div>
+        </div>
+    </section>
+    
+    <footer class="footer">
+        <p class="footer-text">岁己 SUI · 点歌统计 · <span id="footer-date"></span></p>
+    </footer>
+    
+    <div class="detail-overlay" id="detail-overlay" onclick="closeDetail(event)">
+        <div class="detail-panel" id="detail-panel"></div>
+    </div>
+    
+    <script>
+        {{APPDATA}}
+        
+        let currentMonthIdx = 0;
+        let currentQuarterIdx = 0;
+        let currentYearIdx = 0;
+        let months = [];
+        let quarters = [];
+        let years = [];
+        
+        function initApp() {
+            console.log('initApp started');
+            months = Object.keys(appData.monthly_leaderboard).sort().reverse();
+            quarters = Object.keys(appData.quarterly_leaderboard).sort().reverse();
+            years = Object.keys(appData.yearly_leaderboard).sort().reverse();
+            console.log('Months:', months.length, 'Quarters:', quarters.length, 'Years:', years.length);
+            
+            currentMonthIdx = 0;
+            currentQuarterIdx = 0;
+            currentYearIdx = 0;
+            
+            const ms = document.getElementById('monthly-select');
+            months.forEach(m => { const o=document.createElement('option'); o.value=m; o.textContent=m; ms.appendChild(o); });
+            
+            const qs = document.getElementById('quarterly-select');
+            quarters.forEach(q => { const o=document.createElement('option'); o.value=q; o.textContent=q; qs.appendChild(o); });
+            
+            const ys = document.getElementById('yearly-select');
+            years.forEach(y => { const o=document.createElement('option'); o.value=y; o.textContent=y; ys.appendChild(o); });
+            
+            document.getElementById('hero-stat-songs').textContent = appData.metadata.unique_songs + ' 首歌曲';
+            document.getElementById('hero-stat-audiences').textContent = appData.metadata.unique_audiences + ' 位观众';
+            document.getElementById('footer-date').textContent = new Date().toLocaleDateString('zh-CN');
+            
+            renderMonth();
+            renderQuarter();
+            renderYear();
+            renderTotal();
+            renderSongs();
+            renderPreferences();
+            renderTrend();
+            console.log('initApp done');
+        }
+        
+        function renderMonth() {
+            if(months.length===0) return;
+            const m = months[currentMonthIdx];
+            document.getElementById('monthly-label').textContent = m;
+            document.getElementById('monthly-select').value = m;
+            const data = appData.monthly_leaderboard[m] || [];
+            renderLeaderboard('monthly-leaderboard', data);
+        }
+        
+        function changeMonth(delta) {
+            currentMonthIdx = Math.max(0, Math.min(months.length-1, currentMonthIdx+delta));
+            renderMonth();
+        }
+        
+        function goToMonth(val) { currentMonthIdx = months.indexOf(val); renderMonth(); }
+        function toggleMonthSelect() {
+            const sel = document.getElementById('monthly-select');
+            sel.style.opacity='1'; sel.style.pointerEvents='all'; sel.focus();
+            sel.onblur=()=>{ sel.style.opacity='0'; sel.style.pointerEvents='none'; };
+        }
+        
+        function renderQuarter() {
+            if(quarters.length===0) return;
+            const q = quarters[currentQuarterIdx];
+            document.getElementById('quarterly-label').textContent = q;
+            document.getElementById('quarterly-select').value = q;
+            const data = appData.quarterly_leaderboard[q] || [];
+            renderLeaderboard('quarterly-leaderboard', data);
+        }
+        
+        function changeQuarter(delta) {
+            currentQuarterIdx = Math.max(0, Math.min(quarters.length-1, currentQuarterIdx+delta));
+            renderQuarter();
+        }
+        
+        function goToQuarter(val) { currentQuarterIdx = quarters.indexOf(val); renderQuarter(); }
+        function toggleQuarterSelect() {
+            const sel = document.getElementById('quarterly-select');
+            sel.style.opacity='1'; sel.style.pointerEvents='all'; sel.focus();
+            sel.onblur=()=>{ sel.style.opacity='0'; sel.style.pointerEvents='none'; };
+        }
+        
+        function renderYear() {
+            if(years.length===0) return;
+            const y = years[currentYearIdx];
+            document.getElementById('yearly-label').textContent = y;
+            document.getElementById('yearly-select').value = y;
+            const data = appData.yearly_leaderboard[y] || [];
+            renderLeaderboard('yearly-leaderboard', data);
+        }
+        
+        function changeYear(delta) {
+            currentYearIdx = Math.max(0, Math.min(years.length-1, currentYearIdx+delta));
+            renderYear();
+        }
+        
+        function goToYear(val) { currentYearIdx = years.indexOf(val); renderYear(); }
+        function toggleYearSelect() {
+            const sel = document.getElementById('yearly-select');
+            sel.style.opacity='1'; sel.style.pointerEvents='all'; sel.focus();
+            sel.onblur=()=>{ sel.style.opacity='0'; sel.style.pointerEvents='none'; };
+        }
+        
+        function renderTotal() { renderLeaderboard('total-leaderboard', appData.total_leaderboard); }
+        function renderSongs() { renderLeaderboard('songs-leaderboard', appData.song_leaderboard); }
+        
+        function renderLeaderboard(containerId, data) {
+            const container = document.getElementById(containerId);
+            if(!data || data.length===0) { container.innerHTML='<p style="color:var(--muted-fg);font-size:0.85rem;">暂无数据</p>'; return; }
+            const maxCount = data[0].count;
+            container.innerHTML = data.slice(0,10).map((item,i)=>{
+                const name = item.audience || item.song || '';
+                const count = item.count;
+                const pct = maxCount>0 ? (count/maxCount*100).toFixed(1) : 0;
+                return '<div class="lb-row" onclick="showDetail(\''+name.replace(/'/g,'\\\'')+'\')">'+
+                    '<div class="lb-rank">'+(i+1)+'</div>'+
+                    '<div class="lb-info"><div class="lb-name">'+name+'</div><div class="lb-count">'+count+' 次</div></div>'+
+                    '<div class="lb-bar-container"><div class="lb-bar" style="width:'+pct+'%"></div></div>'+
+                '</div>';
+            }).join('');
+        }
+        
+        function renderPreferences() {
+            const grid = document.getElementById('pref-grid');
+            const prefs = appData.audience_preferences || {};
+            const topAudiences = appData.total_leaderboard.slice(0,12);
+            grid.innerHTML = topAudiences.map(a=>{
+                const name = a.audience;
+                const songs = prefs[name] || [];
+                if(songs.length===0) return '';
+                return '<div class="pref-card"><div class="pref-card-name" onclick="showDetail(\''+name.replace(/'/g,'\\\'')+'\')">'+name+'</div>'+
+                    '<div class="pref-card-songs">'+songs.slice(0,5).map(s=>s.song+' ('+s.count+')').join('、')+'</div></div>';
+            }).filter(Boolean).join('');
+        }
+        
+        function renderTrend() {
+            const container = document.getElementById('trend-chart');
+            const trends = appData.trends || {};
+            const monthsSorted = Object.keys(trends).sort();
+            const maxVal = Math.max(...monthsSorted.map(m=>trends[m]));
+            container.innerHTML = monthsSorted.map(m=>{
+                const v = trends[m];
+                const pct = maxVal>0 ? (v/maxVal*100).toFixed(1) : 0;
+                return '<div class="chart-bar-row"><div class="chart-label">'+m+'</div>'+
+                    '<div class="chart-bar-bg"><div class="chart-bar-fill" style="width:'+pct+'%"><span class="chart-bar-value">'+v+'</span></div></div></div>';
+            }).join('');
+        }
+        
+        function showDetail(name) {
+            const records = (appData.raw_data||[]).filter(r=>r.audience===name);
+            if(records.length===0) return;
+            const songCount = {};
+            records.forEach(r=>{ songCount[r.song] = (songCount[r.song]||0)+1; });
+            const songList = Object.entries(songCount).sort((a,b)=>b[1]-a[1]).slice(0,20);
+            const panel = document.getElementById('detail-panel');
+            panel.innerHTML = '<div class="detail-header"><div><div class="detail-name">'+name+'</div>'+
+                '<div class="detail-count">'+records.length+' 次点歌 · 点击空白关闭</div></div>'+
+                '<button class="detail-close" onclick="closeDetailDirect()">✕</button></div>'+
+                '<div>'+songList.map(([song,cnt])=>
+                    '<div class="detail-song"><span class="detail-song-name">'+song+'</span>'+
+                    '<span class="detail-song-count">'+cnt+'次</span></div>'
+                ).join('')+'</div>';
+            document.getElementById('detail-overlay').classList.add('active');
+        }
+        
+        function closeDetail(event) {
+            if(event.target===document.getElementById('detail-overlay'))
+                document.getElementById('detail-overlay').classList.remove('active');
+        }
+        function closeDetailDirect() { document.getElementById('detail-overlay').classList.remove('active'); }
+        
+        document.addEventListener('keydown', e=>{ if(e.key==='Escape') document.getElementById('detail-overlay').classList.remove('active'); });
+        
+        document.querySelectorAll('.nav-link').forEach(link=>{
+            link.addEventListener('click', e=>{
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                if(target) target.scrollIntoView({behavior:'smooth'});
+            });
+        });
+        
+        // DEBUG: check if DOM is ready
+        if(document.readyState==='loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+        console.log('Script loaded');
+    </script>
+</body>
+</html>

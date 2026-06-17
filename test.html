@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试 - 岁己点歌统计</title>
+    <style>
+        * { margin:0; padding:0; box-sizing: border-box; }
+        body { font-family: sans-serif; padding: 2rem; background: #f9f8f6; color: #1a1a1a; }
+        .section { margin: 3rem 0; padding: 2rem; border: 1px solid #ddd; }
+        .ok { color: green; }
+        .err { color: red; }
+    </style>
+</head>
+<body>
+    <h1>测试页面</h1>
+    <p>如果你能看到这行字，说明HTML和CSS是正常的。</p>
+    
+    <div class="section">
+        <h2>JS测试</h2>
+        <p id="js-test">JS未运行</p>
+    </div>
+    
+    <div class="section">
+        <h2>数据测试</h2>
+        <p id="data-test">数据未加载</p>
+    </div>
+    
+    <script>
+        // Test 1: Basic JS
+        document.getElementById('js-test').textContent = 'JS正常运行!';
+        document.getElementById('js-test').className = 'ok';
+        
+        // Test 2: Load data
+        try {
+            const appData = {"metadata":{"total_records":771,"unique_audiences":75,"unique_songs":491}};
+            document.getElementById('data-test').textContent = 
+                '数据加载成功！总记录:' + appData.metadata.total_records + 
+                ', 观众:' + appData.metadata.unique_audiences + 
+                ', 歌曲:' + appData.metadata.unique_songs;
+            document.getElementById('data-test').className = 'ok';
+        } catch(e) {
+            document.getElementById('data-test').textContent = '数据加载失败: ' + e.message;
+            document.getElementById('data-test').className = 'err';
+        }
+    </script>
+</body>
+</html>
