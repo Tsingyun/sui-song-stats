@@ -570,7 +570,7 @@
     <section class="hero" id="hero">
         <div class="hero-inner">
         <div class="hero-meta">
-            <span>2024.07 — 2026.06</span>
+            <span>2024.06 — 2026.06</span>
             <span id="hero-stat-songs">— 首歌曲</span>
             <span id="hero-stat-audiences">— 位观众</span>
         </div>
@@ -578,7 +578,7 @@
             岁己 SUI<br><em>点歌统计</em>
         </h1>
         <p class="hero-desc">
-            虚拟主播岁己SUI自2024年7月开播以来的全部点歌记录，
+            虚拟主播岁己SUI自2024年6月开播以来的全部点歌记录，
             包含月度、季度、年度排行榜，以及观众喜好分析。
         </p>
         </div>
@@ -10320,11 +10320,12 @@
 
         // --- Songs ---
         function renderSongs() {
-            renderLeaderboard('songs-leaderboard', appData.song_leaderboard, '暂无数据', appData.metadata.total_records);
+            renderLeaderboard('songs-leaderboard', appData.song_leaderboard, '暂无数据', appData.metadata.total_records, '首');
         }
         
         // --- Render leaderboard (with expand/collapse) ---
-        function renderLeaderboard(containerId, data, emptyMsg, totalCount) {
+        function renderLeaderboard(containerId, data, emptyMsg, totalCount, quantifier) {
+            quantifier = quantifier || '位';
             const container = document.getElementById(containerId);
             if (!data || data.length === 0) {
                 container.innerHTML = '<p style="color:var(--muted-fg);font-size:0.85rem;">' + emptyMsg + '</p>';
@@ -10338,6 +10339,7 @@
             // Calculate total: use totalCount if provided, otherwise sum all counts
             const total = (totalCount && totalCount > 0) ? totalCount : data.reduce((s, item) => s + item.count, 0);
             container._totalCount = total;
+            container._quantifier = quantifier;
 
             const showAll = container._isExpanded;
             const displayData = showAll ? data : data.slice(0, 10);
@@ -10360,7 +10362,7 @@
                 '</div>';
             }).join('') +
             (hasMore ? '<div class="lb-expand-btn" onclick="toggleExpand(\'' + containerId + '\')">' +
-                (showAll ? '收起 ▲' : '展开全部（共 ' + data.length + ' 位）▼') + '</div>' : '');
+                (showAll ? '收起 ▲' : '展开全部（共 ' + data.length + ' ' + quantifier + '）▼') + '</div>' : '');
 
             // Animate rows
             setTimeout(() => {
@@ -10374,7 +10376,7 @@
             if (!c) return;
             c._isExpanded = !c._isExpanded;
             // Re-render with stored data and totalCount
-            renderLeaderboard(containerId, c._fullData || [], '', c._totalCount || 0);
+            renderLeaderboard(containerId, c._fullData || [], '', c._totalCount || 0, c._quantifier || '位');
         }
         
         // --- Preferences ---
