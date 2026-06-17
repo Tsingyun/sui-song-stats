@@ -6,7 +6,7 @@
     <title>岁己 SUI · 点歌统计</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -119,6 +119,86 @@
             line-height: 1.8;
         }
         
+        /* Hero SUI Animation */
+        .hero-sui {
+            position: absolute;
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50%;
+            max-width: 580px;
+            pointer-events: none;
+            opacity: 0;
+            animation: suiContainerIn 1s ease-out 0.4s forwards;
+        }
+        .hero-sui svg {
+            width: 100%;
+            height: auto;
+        }
+        @keyframes suiContainerIn {
+            to { opacity: 1; }
+        }
+        
+        .sui-draw {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+        }
+        
+        .sui-draw-s {
+            animation: suiDraw 1.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+        }
+        .sui-draw-u {
+            animation: suiDraw 1.4s cubic-bezier(0.4, 0, 0.2, 1) 1.3s forwards;
+        }
+        .sui-draw-i {
+            animation: suiDraw 0.9s cubic-bezier(0.4, 0, 0.2, 1) 1.9s forwards;
+        }
+        
+        @keyframes suiDraw {
+            to { stroke-dashoffset: 0; }
+        }
+        
+        /* SUI decorative elements */
+        .sui-accent {
+            fill: none;
+            stroke: var(--accent);
+            stroke-linecap: round;
+            opacity: 0;
+        }
+        .sui-accent-line {
+            stroke-width: 1;
+            stroke-dasharray: 40;
+            stroke-dashoffset: 40;
+        }
+        .sui-accent-line-1 { animation: suiAccentIn 0.8s ease-out 0.2s forwards; }
+        .sui-accent-line-2 { animation: suiAccentIn 0.8s ease-out 2.2s forwards; }
+        .sui-accent-line-3 { animation: suiAccentIn 0.8s ease-out 1.0s forwards; }
+        .sui-accent-line-4 { animation: suiAccentIn 0.8s ease-out 2.6s forwards; }
+        
+        .sui-accent-dot {
+            fill: var(--accent);
+        }
+        .sui-accent-dot-1 { animation: suiDotIn 0.6s ease-out 1.6s forwards; opacity: 0; }
+        .sui-accent-dot-2 { animation: suiDotIn 0.6s ease-out 2.4s forwards; opacity: 0; }
+        .sui-accent-dot-3 { animation: suiDotIn 0.6s ease-out 3.0s forwards; opacity: 0; }
+        
+        @keyframes suiAccentIn {
+            to { stroke-dashoffset: 0; opacity: 0.35; }
+        }
+        @keyframes suiDotIn {
+            to { opacity: 0.5; }
+        }
+        
+        /* Responsive: hide SUI on mobile */
+        @media (max-width: 768px) {
+            .hero-sui { display: none; }
+        }
+
         /* Navigation */
         .nav {
             position: fixed;
@@ -694,6 +774,32 @@
             虚拟主播岁己SUI自2024年6月开播以来的全部点歌记录，
             包含月度、季度、年度排行榜，以及观众喜好分析。
         </p>
+        </div>
+        <div class="hero-sui">
+            <svg viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+                <!-- Decorative accent lines -->
+                <line x1="10" y1="45" x2="55" y2="45" class="sui-accent sui-accent-line sui-accent-line-1"/>
+                <line x1="10" y1="245" x2="55" y2="245" class="sui-accent sui-accent-line sui-accent-line-2"/>
+                <line x1="435" y1="155" x2="480" y2="155" class="sui-accent sui-accent-line sui-accent-line-3"/>
+                <line x1="435" y1="35" x2="480" y2="35" class="sui-accent sui-accent-line sui-accent-line-4"/>
+                
+                <!-- Decorative dots -->
+                <circle cx="490" cy="80" r="2.5" class="sui-accent sui-accent-dot sui-accent-dot-1"/>
+                <circle cx="20" cy="160" r="2.5" class="sui-accent sui-accent-dot sui-accent-dot-2"/>
+                <circle cx="490" cy="230" r="2.5" class="sui-accent sui-accent-dot sui-accent-dot-3"/>
+                
+                <!-- S -->
+                <path d="M140,50 C115,25 35,35 15,80 C-5,125 30,150 75,150 C130,150 150,175 140,215 C130,255 55,265 15,235"
+                      class="sui-draw sui-draw-s" pathLength="100"/>
+                
+                <!-- U -->
+                <path d="M195,50 L195,180 C195,240 230,250 260,250 C290,250 325,240 325,180 L325,50"
+                      class="sui-draw sui-draw-u" pathLength="100"/>
+                
+                <!-- I -->
+                <path d="M385,50 L385,250 M350,50 L420,50 M350,250 L420,250"
+                      class="sui-draw sui-draw-i" pathLength="100"/>
+            </svg>
         </div>
     </section>
     
