@@ -547,10 +547,10 @@
         /* Feature 14: Search */
         /* Feature 14: Nav Search */
         .nav-search { position: relative; margin-left: 0.5rem; }
-        .nav-search-btn { background: none; border: none; cursor: pointer; color: var(--muted-fg); padding: 0; display: inline-flex; align-items: center; justify-content: center; line-height: 0; transform: translateY(5px); transition: color var(--dur); }
+        .nav-search-btn { background: none; border: none; cursor: pointer; color: var(--muted-fg); padding: 0; display: inline-flex; align-items: center; justify-content: center; line-height: 0; transform: translateY(5px); transition: color var(--dur); position: relative; z-index: 2; }
         .nav-search-btn:hover { color: var(--accent); }
-        .nav-search-input { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 0; padding: 0; border: none; font-family: var(--font-body); font-size: 0.85rem; background: var(--bg); color: var(--text); outline: none; transition: width 0.4s, padding 0.4s, border 0.4s; border-radius: 0; border-bottom: 1px solid transparent; overflow: hidden; }
-        .nav-search-input.open { width: 200px; padding: 0.3rem 0.5rem; border-bottom-color: var(--accent-dim); }
+        .nav-search-input { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 0; padding: 0; border: none; font-family: var(--font-body); font-size: 0.85rem; background: transparent; color: var(--text); outline: none; transition: width 0.5s cubic-bezier(0.25,0.46,0.45,0.94), padding 0.5s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.5s; border-radius: 0; border-bottom: 1px solid transparent; overflow: hidden; opacity: 0; z-index: 1; }
+        .nav-search-input.open { width: 200px; padding: 0.3rem 0.5rem; border-bottom-color: var(--accent-dim); opacity: 1; }
         .nav-search-input:focus { border-bottom-color: var(--accent); }
         .search-results { position: absolute; right: 0; top: 100%; width: 320px; max-height: 360px; margin-top: 0.5rem; background: var(--bg); border: 1px solid var(--accent-dim); border-radius: 0; box-shadow: 0 8px 32px rgba(0,0,0,0.1); overflow-y: auto; z-index: 100; display: none; }
         .search-results.open { display: block; }
@@ -1128,19 +1128,36 @@
         }
 
         // ==== Feature 14: Global Search ====
-        function toggleNavSearch() {
+        function closeNavSearch() {
             var input = document.getElementById('search-input');
             var results = document.getElementById('search-results');
+            input.classList.remove('open');
+            results.classList.remove('open');
+            input.value = '';
+            results.innerHTML = '';
+        }
+        function toggleNavSearch(e) {
+            if (e) e.stopPropagation();
+            var input = document.getElementById('search-input');
             if (input.classList.contains('open')) {
-                input.classList.remove('open');
-                results.classList.remove('open');
-                input.value = '';
-                results.innerHTML = '';
+                closeNavSearch();
             } else {
                 input.classList.add('open');
-                setTimeout(function() { input.focus(); }, 400);
+                setTimeout(function() { input.focus(); }, 500);
             }
         }
+        // Click outside to close
+        document.addEventListener('click', function(e) {
+            var navSearch = document.querySelector('.nav-search');
+            var input = document.getElementById('search-input');
+            if (input.classList.contains('open') && !navSearch.contains(e.target)) {
+                closeNavSearch();
+            }
+        });
+        // Prevent search input click from immediately closing (bubbles to document)
+        document.getElementById('search-input').addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
         function doSearch() {
             var q = (document.getElementById('search-input').value || '').trim().toLowerCase();
             var container = document.getElementById('search-results');
