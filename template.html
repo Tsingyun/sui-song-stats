@@ -500,6 +500,30 @@
         }
         .confetti-piece { position: absolute; width: 10px; height: 10px; animation: confettiFall 3s ease-in forwards; }
         
+        /* Time Range Filter */
+        .time-filter-overlay { position: fixed; inset: 0; z-index: 150; background: rgba(26,26,26,0.5); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s; }
+        .time-filter-overlay.active { opacity: 1; pointer-events: all; }
+        .time-filter-panel { background: var(--bg); max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; scrollbar-width: none; padding: 2.5rem; border: 1px solid rgba(26,26,26,0.15); }
+        .time-filter-panel::-webkit-scrollbar { display: none; }
+        .time-filter-input { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid rgba(26,26,26,0.2); font-family: var(--font-body); font-size: 0.85rem; background: transparent; color: var(--fg); }
+        .time-filter-input:focus { outline: none; border-color: var(--accent); }
+        .time-filter-apply { padding: 0.5rem 1.5rem; background: var(--fg); color: var(--bg); border: none; cursor: pointer; font-size: 0.8rem; letter-spacing: 0.1em; }
+        .time-filter-apply:hover { background: var(--accent); }
+        .time-filter-reset { padding: 0.5rem 1rem; background: none; border: 1px solid rgba(26,26,26,0.2); color: var(--muted-fg); cursor: pointer; font-size: 0.8rem; }
+        .time-filter-reset:hover { border-color: var(--accent); color: var(--accent); }
+        .tf-result-section { margin-bottom: 2rem; }
+        .tf-result-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 0.8rem; }
+        .tf-result-row { display: flex; align-items: center; padding: 0.5rem 0; border-top: 1px solid rgba(26,26,26,0.08); font-size: 0.9rem;}
+        .tf-result-rank { width: 2rem; color: var(--muted-fg); }
+        .tf-result-name { flex: 1; }
+        .tf-result-count { color: var(--accent); }
+        .tf-result-empty { color: var(--muted-fg); font-style: italic; padding: 1rem 0; }
+        
+        /* Similarity info in detail panel */
+        .detail-similarity { font-size: 0.72rem; color: var(--muted-fg); padding: 0.3rem 0 0; letter-spacing: 0.03em; }
+        .detail-similarity a { color: var(--accent); text-decoration: none; transition: opacity 0.3s; }
+        .detail-similarity a:hover { opacity: 0.7; }
+        
         .detail-song {
             display: flex;
             align-items: baseline;
@@ -701,7 +725,8 @@
         .nav-search-dropdown.open { opacity: 1; transform: translateY(0); pointer-events: all; }
         .nav-search-input { width: 100%; padding: 0.5rem 0.75rem; border: none; border-bottom: 1px solid var(--accent-dim); font-family: var(--font-body); font-size: 0.85rem; background: transparent; color: var(--text); outline: none; }
         .nav-search-input:focus { border-bottom-color: var(--accent); }
-        .search-results { margin-top: 0.5rem; max-height: 300px; overflow-y: auto; display: none; }
+        .search-results { margin-top: 0.5rem; max-height: 300px; overflow-y: auto; scrollbar-width: none; display: none; }
+        .search-results::-webkit-scrollbar { display: none; }
         .search-results.open { display: block; }
         .search-result-item { padding: 0.65rem 1rem; border-bottom: 1px solid rgba(212,175,55,0.08); cursor: pointer; transition: background var(--dur); }
         .search-result-item:hover { background: rgba(212,175,55,0.06); }
@@ -798,7 +823,7 @@
             岁己 SUI<br><em>点歌统计</em>
         </h1>
         <p class="hero-desc">
-            虚拟主播岁己SUI自2024年6月开播以来的全部点歌记录，
+            虚拟主播岁己SUI自2024年6月以来的全部点歌记录，
             包含月度、季度、年度排行榜，以及观众喜好分析。
         </p>
         </div>
@@ -944,10 +969,43 @@
         </div>
     </section>
 
+    <!-- Champion Streaks -->
+    <section class="section-dark" id="champion-streaks">
+        <div class="container">
+            <span class="section-label">Champion Streaks</span>
+            <h2 class="section-title">跨月冠军</h2>
+            <div id="champion-streaks-container"></div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer">
-        <p class="footer-text">岁己 SUI · 点歌统计 · <span id="footer-date"></span> · <a href="https://github.com/tsingyun/sui-song-stats" target="_blank" style="color:var(--muted-fg);text-decoration:none;transition:color .3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted-fg)'">GitHub</a></p>
+        <p class="footer-text">岁己 SUI · 点歌统计 · <span id="footer-date"></span> · <a href="https://github.com/tsingyun/sui-song-stats" target="_blank" style="color:var(--muted-fg);text-decoration:none;transition:color .3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted-fg)'">GitHub</a> · <a href="changelog.html" target="_blank" style="color:var(--muted-fg);text-decoration:none;transition:color .3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted-fg)'">更新日志</a> · <span id="data-version" style="color:var(--muted-fg);font-size:0.65rem;letter-spacing:0.1em;"></span> · <a href="#" onclick="toggleTimeFilter(event)" style="color:var(--muted-fg);text-decoration:none;transition:color .3s;font-size:0.7rem;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted-fg)';" id="time-filter-link">时间筛选</a></p>
     </footer>
+
+    <!-- Time Range Filter Overlay -->
+    <div class="time-filter-overlay" id="time-filter-overlay" onclick="closeTimeFilter(event)">
+        <div class="time-filter-panel" onclick="event.stopPropagation()">
+            <div class="detail-header" style="margin-bottom:1.5rem;">
+                <div><div class="detail-name">时间范围筛选</div><div class="detail-count">选择起止日期查看范围内的统计</div></div>
+                <span class="detail-close" onclick="closeTimeFilterDirect()">✕</span>
+            </div>
+            <div style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;margin-bottom:1.5rem;">
+                <div style="flex:1;min-width:140px;">
+                    <label style="font-size:0.65rem;letter-spacing:0.2em;color:var(--muted-fg);display:block;margin-bottom:0.3rem;">起始日期</label>
+                    <input type="date" id="filter-date-start" class="time-filter-input">
+                </div>
+                <div style="flex:1;min-width:140px;">
+                    <label style="font-size:0.65rem;letter-spacing:0.2em;color:var(--muted-fg);display:block;margin-bottom:0.3rem;">结束日期</label>
+                    <input type="date" id="filter-date-end" class="time-filter-input">
+                </div>
+                <button class="time-filter-apply" onclick="applyTimeFilter()">筛选</button>
+                <button class="time-filter-reset" onclick="resetTimeFilter()">清除</button>
+            </div>
+            <div id="time-filter-results" style="max-height:50vh;overflow-y:auto;scrollbar-width:none;"></div>
+            <div id="time-filter-results::-webkit-scrollbar" style="display:none;"></div>
+        </div>
+    </div>
     
     <!-- Detail Panel -->
     <div class="detail-overlay" id="detail-overlay" onclick="closeDetail(event)">
@@ -1008,6 +1066,12 @@
             // Re-render heatmap after layout to ensure month labels show
             setTimeout(function() { heatmapPage = 0; renderHeatmap(); }, 100);
             renderAchievements();
+            renderChampionStreaks();
+            // Data version
+            if (appData.data_version) {
+                var dv = document.getElementById('data-version');
+                if (dv) dv.textContent = '数据更新于 ' + appData.data_version;
+            }
             
             // Number animation (Feature 3)
             setTimeout(function() {
@@ -1262,6 +1326,18 @@
                 const agoText = daysAgo === 0 ? '今天' : daysAgo === 1 ? '昨天' : daysAgo + ' 天前';
                 lastReqHtml = '<div class="detail-last-req">上一次点到歌：<span>' + lastDate + '</span>（' + agoText + '）</div>';
             }
+            // Similarity info
+            var simHtml = '';
+            var simList = (appData.similarity_matrix || []).filter(function(p) { return p.a1 === name || p.a2 === name; }).slice(0, 3);
+            if (simList.length) {
+                simHtml = '<div class="detail-similarity">品味相近：';
+                simList.forEach(function(p, i) {
+                    var other = p.a1 === name ? p.a2 : p.a1;
+                    simHtml += '<a href="#" onclick="event.stopPropagation();showDetail(\'' + other.replace(/'/g, "\\'") + '\')">' + other + '</a>(' + p.overlap + '首)';
+                    if (i < simList.length - 1) simHtml += ' · ';
+                });
+                simHtml += '</div>';
+            }
             // Determine B站 link: use UID if available
             const uid = appData.user_uids ? appData.user_uids[name] : null;
             const biliLabel = uid ? 'B站主页' : 'B站搜索';
@@ -1270,7 +1346,7 @@
                 '<div>' +
                     '<div class="detail-name">' + name + '</div>' +
                     '<div class="detail-count">' + records.length + ' 次点歌 · 点击空白关闭</div>' +
-                    lastReqHtml +
+                    lastReqHtml + simHtml +
                 '</div>' +
                 '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;">' +
                     '<a class="detail-bili" href="' + biliHref + '" target="_blank" id="detail-bili-link" title="在B站查看 ' + name + '">' + biliLabel + '</a>' +
@@ -1353,6 +1429,63 @@
                 if (target) target.scrollIntoView({ behavior: 'smooth' });
             });
         });
+        
+        // ==== Champion Streaks ====
+        function renderChampionStreaks() {
+            var streaks = appData.champion_streaks || [];
+            var c = document.getElementById('champion-streaks-container');
+            if (!streaks.length) { c.innerHTML = '<p style="color:var(--bg);opacity:0.5;font-style:italic;">暂无连续夺冠记录</p>'; return; }
+            var html = '';
+            streaks.forEach(function(s, i) {
+                html += '<div style="padding:1rem 0;border-top:1px solid rgba(249,248,246,0.1);display:flex;align-items:center;gap:1.5rem;">';
+                html += '<div style="font-family:\'Playfair Display\',serif;font-size:2rem;color:var(--accent);min-width:3rem;">' + (i+1) + '</div>';
+                html += '<div style="flex:1;"><div style="color:var(--bg);font-size:1rem;">' + s.audience + '</div>';
+                html += '<div style="color:rgba(249,248,246,0.5);font-size:0.7rem;letter-spacing:0.1em;">连续<span style="color:var(--accent);">' + s.count + '</span>个月夺冠 · ' + s.months[0] + ' — ' + s.months[s.months.length-1] + '</div></div>';
+                html += '</div>';
+            });
+            c.innerHTML = html;
+        }
+        
+        // ==== Time Range Filter ====
+        function toggleTimeFilter(e) { e.preventDefault(); document.getElementById('time-filter-overlay').classList.add('active'); }
+        function closeTimeFilter(e) { if (e.target === document.getElementById('time-filter-overlay')) document.getElementById('time-filter-overlay').classList.remove('active'); }
+        function closeTimeFilterDirect() { document.getElementById('time-filter-overlay').classList.remove('active'); }
+        
+        function applyTimeFilter() {
+            var ds = document.getElementById('filter-date-start').value;
+            var de = document.getElementById('filter-date-end').value;
+            var res = document.getElementById('time-filter-results');
+            if (!ds || !de) { res.innerHTML = '<p class="tf-result-empty">请选择起始和结束日期</p>'; return; }
+            if (ds > de) { res.innerHTML = '<p class="tf-result-empty">起始日期不能晚于结束日期</p>'; return; }
+            var filtered = (appData.raw_data || []).filter(function(r) { return r.date >= ds && r.date <= de; });
+            if (!filtered.length) { res.innerHTML = '<p class="tf-result-empty">该时间段内没有点歌记录</p>'; return; }
+            // Count audiences
+            var audCount = {};
+            filtered.forEach(function(r) { audCount[r.audience] = (audCount[r.audience]||0)+1; });
+            var audList = Object.entries(audCount).sort(function(a,b){return b[1]-a[1];}).slice(0,15);
+            // Count songs
+            var songCount = {};
+            filtered.forEach(function(r) { songCount[r.song] = (songCount[r.song]||0)+1; });
+            var songList = Object.entries(songCount).sort(function(a,b){return b[1]-a[1];}).slice(0,10);
+            var html = '<div class="tf-result-section"><div class="tf-result-title">观众排行</div>';
+            html += '<div style="font-size:0.7rem;color:var(--muted-fg);margin-bottom:0.5rem;">共 ' + filtered.length + ' 次点歌 · ' + Object.keys(audCount).length + ' 位观众 · ' + Object.keys(songCount).length + ' 首歌曲</div>';
+            audList.forEach(function(a,i){
+                html += '<div class="tf-result-row" onclick="closeTimeFilterDirect();showDetail(\'' + a[0].replace(/'/g, "\\'") + '\')" style="cursor:pointer">';
+                html += '<span class="tf-result-rank">' + (i+1) + '</span><span class="tf-result-name">' + a[0] + '</span><span class="tf-result-count">' + a[1] + '次</span></div>';
+            });
+            html += '</div><div class="tf-result-section"><div class="tf-result-title">热门歌曲</div>';
+            songList.forEach(function(s,i){
+                html += '<div class="tf-result-row"><span class="tf-result-rank">' + (i+1) + '</span><span class="tf-result-name">' + s[0] + '</span><span class="tf-result-count">' + s[1] + '次</span></div>';
+            });
+            html += '</div>';
+            res.innerHTML = html;
+        }
+        
+        function resetTimeFilter() {
+            document.getElementById('filter-date-start').value = '';
+            document.getElementById('filter-date-end').value = '';
+            document.getElementById('time-filter-results').innerHTML = '';
+        }
         
         // Init
         initApp();

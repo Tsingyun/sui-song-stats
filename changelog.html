@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>更新日志 | 岁己 SUI · 点歌统计</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root { --bg:#F9F8F6; --fg:#1A1A1A; --muted:#6C6863; --accent:#D4AF37; }
+        body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--fg); line-height:1.6; padding:4rem 2rem; max-width:720px; margin:0 auto; }
+        h1 { font-family:'Playfair Display',serif; font-size:2.5rem; font-weight:300; margin-bottom:0.5rem; }
+        .sub { color:var(--muted); font-size:0.8rem; letter-spacing:0.1em; margin-bottom:3rem; }
+        .entry { padding:1.5rem 0; border-top:1px solid rgba(26,26,26,0.08); }
+        .entry-date { font-size:0.65rem; letter-spacing:0.2em; color:var(--accent); text-transform:uppercase; margin-bottom:0.5rem; }
+        .entry-title { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:500; margin-bottom:0.8rem; }
+        .entry-body { font-size:0.85rem; color:var(--muted); }
+        .entry-body li { margin:0.2rem 0; list-style:none; }
+        .entry-body li::before { content:'— '; color:var(--accent); }
+        .back { display:inline-block; margin-top:3rem; font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color .3s; }
+        .back:hover { color:var(--accent); }
+    </style>
+</head>
+<body>
+    <h1>更新日志</h1>
+    <p class="sub">岁己 SUI · 点歌统计 · 变更记录</p>
+
+    <div class="entry">
+        <div class="entry-date">2026-06-17</div>
+        <div class="entry-title">功能扩展 &amp; 数据升级</div>
+        <div class="entry-body">
+            <ul>
+                <li>新增「上一次点到歌距今 X 天」——点击用户即可查看</li>
+                <li>新增歌曲搜索详情面板——搜索歌曲后点击可看谁点过、点了几次、哪一天点的</li>
+                <li>新增 B站用户主页直跳——通过 B站 API 获取 UID，35 位用户可一键跳转空间主页</li>
+                <li>新增观众详情页歌曲悬停渐显日期动画</li>
+                <li>新增 Hero 区域 SUI 渐显线条动画</li>
+                <li>新增观众相似度——在观众详情中展示品味最相近的人</li>
+                <li>新增跨月冠军追踪、观众相似度</li>
+                <li>新增时间范围筛选器——自定义起止日期查看区间内统计</li>
+                <li>新增更新日志页（本页）</li>
+                <li>数据版本号显示于页脚</li>
+                <li>UI 细节优化：关闭图标去边框、移除热力图图例、隐藏滚动条</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="entry">
+        <div class="entry-date">2026-06-16</div>
+        <div class="entry-title">网站正式上线</div>
+        <div class="entry-body">
+            <ul>
+                <li>月度 / 季度 / 年度 / 总点歌榜</li>
+                <li>热门歌曲榜</li>
+                <li>日历热图（GitHub 贡献图风格）</li>
+                <li>点歌趋势柱状图</li>
+                <li>观众喜好分析</li>
+                <li>成就殿堂、观众等级系统</li>
+                <li>全局搜索、导出功能</li>
+                <li>Luxury / Editorial 美学设计</li>
+            </ul>
+        </div>
+    </div>
+
+    <a class="back" href="index.html">&larr; 返回首页</a>
+</body>
+</html>
