@@ -1,5 +1,5 @@
 import json, sys
-from collections import defaultdict
+from collections import defaultdict, Counter
 from datetime import datetime
 
 with open('song_data_processed.json', 'r', encoding='utf-8') as f:
@@ -7,6 +7,44 @@ with open('song_data_processed.json', 'r', encoding='utf-8') as f:
 
 rw = data['raw_data']
 mt = data['metadata']
+
+# --- Rebuild all leaderboards from raw_data ---
+# Total leaderboard
+total = Counter()
+for e in rw:
+    total[e['audience']] += 1
+data['total_leaderboard'] = [{'audience': aud, 'count': cnt} for aud, cnt in total.most_common()]
+data['song_leaderboard'] = [{'song': aud, 'count': cnt} for aud, cnt in Counter(e['song'] for e in rw).most_common()]
+
+# Monthly leaderboard
+monthly = defaultdict(Counter)
+for e in rw:
+    monthly[e['date'][:7]][e['audience']] += 1
+data['monthly_leaderboard'] = {
+    m: [{'audience': aud, 'count': cnt} for aud, cnt in counter.most_common()]
+    for m, counter in sorted(monthly.items())
+}
+
+# Quarterly leaderboard
+quarterly = defaultdict(Counter)
+for e in rw:
+    y, m = e['date'][:4], e['date'][5:7]
+    q = f'{y}-Q{(int(m)-1)//3+1}'
+    quarterly[q][e['audience']] += 1
+data['quarterly_leaderboard'] = {
+    q: [{'audience': aud, 'count': cnt} for aud, cnt in counter.most_common()]
+    for q, counter in sorted(quarterly.items())
+}
+
+# Yearly leaderboard
+yearly = defaultdict(Counter)
+for e in rw:
+    yearly[e['date'][:4]][e['audience']] += 1
+data['yearly_leaderboard'] = {
+    y: [{'audience': aud, 'count': cnt} for aud, cnt in counter.most_common()]
+    for y, counter in sorted(yearly.items())
+}
+
 tl = data['total_leaderboard']
 
 # --- Feature 1: Heatmap daily counts ---
@@ -98,6 +136,6 @@ data['search_index'] = {
 }
 
 with open('song_data_processed.json', 'w', encoding='utf-8') as f:
-    json.dump(data, f, ensure_ascii=False, indent=2)
+    json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
 
 print(f'OK: heatmap={len(data["heatmap_data"])}d, nodes={len(data["song_network"]["nodes"])}, edges={len(data["song_network"]["edges"])}, ach={len(ach)}, lvls={len(data["audience_levels"])}, idx_songs={len(data["search_index"]["songs"])}')
