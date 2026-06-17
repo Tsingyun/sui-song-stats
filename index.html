@@ -519,6 +519,17 @@
             flex-shrink: 0;
         }
         
+        /* Audience detail: date hidden, glides in on hover */
+        .detail-audience-songs .detail-song-date {
+            opacity: 0;
+            transform: translateX(12px);
+            transition: opacity 0.3s cubic-bezier(0.4,0,0.2,1), transform 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        .detail-audience-songs .detail-song:hover .detail-song-date {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
         .detail-song-count {
             font-size: 0.7rem;
             color: var(--accent);
@@ -13847,9 +13858,13 @@
             const records = (appData.raw_data || []).filter(r => r.audience === name);
             if (records.length === 0) return;
             
-            // Count songs
+            // Count songs and track last date per song
             const songCount = {};
-            records.forEach(r => { songCount[r.song] = (songCount[r.song] || 0) + 1; });
+            const songDates = {};
+            records.forEach(r => {
+                songCount[r.song] = (songCount[r.song] || 0) + 1;
+                if (!songDates[r.song] || r.date > songDates[r.song]) songDates[r.song] = r.date;
+            });
             const songList = Object.entries(songCount).sort((a, b) => b[1] - a[1]).slice(0, 20);
             
             const panel = document.getElementById('detail-panel');
@@ -13875,9 +13890,10 @@
                     '<span class="detail-close" onclick="closeDetailDirect()">✕</span>' +
                 '</div>' +
             '</div>' +
-            '<div>' + songList.map(([song, cnt]) => 
+            '<div class="detail-audience-songs">' + songList.map(([song, cnt]) => 
                 '<div class="detail-song">' +
                     '<span class="detail-song-name">' + song + '</span>' +
+                    '<span class="detail-song-date">' + (songDates[song] || '') + '</span>' +
                     '<span class="detail-song-count">' + cnt + '次</span>' +
                 '</div>'
             ).join('') + '</div>';
