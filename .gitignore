@@ -5,3 +5,4 @@ __check*
 *.xlsx
 song_data_raw.json
 song_data_processed.json
+.workbuddy/
