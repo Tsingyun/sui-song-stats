@@ -1,25 +1,116 @@
 # 岁己 SUI · 点歌统计
 
-虚拟主播**岁己SUI**的点歌数据可视化网站。
+虚拟主播**岁己SUI**的点歌数据可视化网站，以 Luxury / Editorial 美学风格展示自 2024 年 6 月以来的全部点歌记录。
 
-## 网页入口
+## 访问地址
 
-直接打开 `index.html` 即可在本地浏览完整数据统计。
+在线版：[https://tsingyun.github.io/sui-song-stats/](https://tsingyun.github.io/sui-song-stats/)
 
-或访问在线版本：[https://tsingyun.github.io/sui-song-stats/](https://tsingyun.github.io/sui-song-stats/)
+本地使用：双击 `index.html` 即可在浏览器中打开。
 
-## 功能一览
-
-- 月度 / 季度 / 年度点歌排行榜
-- 总榜 & 歌曲热度榜
-- 观众喜好分析
-- 点歌趋势图表
-- 榜单支持展开查看全部数据
-
-## 数据来源
+## 数据概览
 
 基于岁己SUI自 **2024年6月** 至今的全部点歌记录，共 773 条记录、75 位观众、491 首歌曲。
 
+## 功能一览
+
+### 排行榜
+- **月度点歌榜** — 25 个月份可切换，左右箭头 + 下拉菜单
+- **季度点歌榜** — 按季度统计，左右箭头 + 下拉菜单
+- **年度点歌榜** — 按年度统计，2024 / 2025 / 2026
+- **总点歌榜** — 所有时间累计排行
+- **热门歌曲榜** — 被点次数最多的歌曲排行
+
+### 数据可视化
+- **日历热图** — GitHub 贡献图风格，每日点歌次数可视化，← → 翻页 + 每 3 个月标注
+- **点歌趋势** — 柱状图展示每月点歌活跃度
+- **观众喜好分析** — TOP 9 观众的偏好歌曲
+
+### 创意功能
+- **数字动画** — 进入页面时统计数字从 0 滚动到真实数值
+- **观众等级系统** — Lv.1 ~ Lv.5 五级徽章，显示在榜单名字旁边
+- **成就殿堂** — 点歌之王成就卡片
+- **全局搜索** — 导航栏放大镜图标，支持搜索歌曲 / 观众 / 日期
+- **B站跳转** — 点击观众名字弹出详情面板，可一键跳转 B站搜索该用户
+- **导出功能** — 每个榜单支持导出 PNG 高清截图（前 10 / 完整）、XLSX、CSV、JSON
+
+### 交互细节
+- 榜单默认显示前 10 名，点击「展开全部」查看完整排名
+- 点击观众名字弹出详情面板，查看该观众点过的所有歌曲
+- 金色皇冠标识每个榜单的冠军
+- 深色 / 浅色板块交替布局
+- 所有过渡动画采用 Luxury 缓动曲线
+
+## 设计系统
+
+网站采用 **Luxury / Editorial** 美学风格：
+
+| 元素 | 规格 |
+|------|------|
+| 标题字体 | Playfair Display（高对比度衬线体） |
+| 正文字体 | Inter（人文主义无衬线体） |
+| 背景色 | `#F9F8F6` 暖白 / `#1A1A1A` 深炭，交替使用 |
+| 强调色 | `#D4AF37` 金属金，克制使用 |
+| 次要文字 | `#6C6863` 暖灰 |
+| 动画时长 | 300ms ~ 2000ms，缓慢克制 |
+| 圆角 | 0px，全部直角 |
+
+设计 token（颜色 / 间距 / 阴影 / 过渡）定义在 `:root` 和 `[data-theme="dark"]` CSS 变量中。
+
+## 观众等级系统
+
+| 等级 | 条件 | 徽章样式 |
+|------|------|---------|
+| Lv.1 | 1 - 10 次 | 灰色 |
+| Lv.2 | 11 - 30 次 | 绿色 |
+| Lv.3 | 31 - 60 次 | 蓝色 |
+| Lv.4 | 61 - 100 次 | 紫色 |
+| Lv.5 | 100+ 次 | 金色渐变 |
+
 ## 技术栈
 
-纯静态 HTML + CSS + JavaScript，无依赖，双击即可运行。
+- 纯静态 HTML + CSS + JavaScript，无构建工具
+- 数据以 JSON 格式内嵌到 HTML 中，双击即可运行
+- 数据处理使用 Python（openpyxl 读取 Excel）
+- 截图导出依赖 html2canvas（CDN）
+- 数据导出依赖 SheetJS（CDN）
+- 部署于 GitHub Pages
+
+## 项目结构
+
+```
+.
+├── index.html                 # 主网站（自包含，双击运行）
+├── template.html              # HTML 模板（含 {{APPDATA}} 占位符）
+├── build_html.py              # 构建脚本：模板 + JSON → index.html
+├── process_features.py        # 数据处理：计算热图 / 等级 / 成就 / 搜索索引
+├── song_data_processed.json   # 处理后完整数据
+├── rename_user.py             # 用户更名工具
+├── fix_*.py                   # 各类修复 / 迭代脚本
+└── README.md
+```
+
+## 本地开发
+
+```bash
+# 修改 template.html 后重建
+python build_html.py
+
+# 启动本地服务器测试
+python -m http.server 8765
+# 访问 http://localhost:8765/index.html
+
+# 提交到 GitHub
+git add template.html index.html
+git commit -m "..."
+git push
+```
+
+## 数据维护
+
+数据更新流程：
+1. 获取新的点歌记录
+2. 追加到 `song_data_processed.json` 的 `raw_data` 数组中
+3. 运行 `process_features.py` 重新计算所有榜单和衍生数据
+4. 运行 `build_html.py` 重建 `index.html`
+5. 提交并推送到 GitHub
