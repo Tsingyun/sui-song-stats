@@ -560,13 +560,14 @@
         .export-menu-divider { padding: 0.3rem 1rem; font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); border-top: 1px solid var(--accent-dim); }
 
         /* Feature 14: Nav Search */
-        .nav-search { position: relative; margin-left: 0.5rem; }
-        .nav-search-btn { background: none; border: none; cursor: pointer; color: var(--muted-fg); padding: 0; display: inline-flex; align-items: center; justify-content: center; line-height: 0; transform: translateY(5px); transition: color var(--dur); position: relative; z-index: 2; }
+        .nav-search { position: relative; margin-left: 0.5rem; z-index: 10; }
+        .nav-search-btn { background: none; border: none; cursor: pointer; color: var(--muted-fg); padding: 0; display: inline-flex; align-items: center; justify-content: center; line-height: 0; transform: translateY(5px); transition: color var(--dur); position: relative; z-index: 3; }
         .nav-search-btn:hover { color: var(--accent); }
-        .nav-search-input { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 0; padding: 0; border: none; font-family: var(--font-body); font-size: 0.85rem; background: transparent; color: var(--text); outline: none; transition: width 0.5s cubic-bezier(0.25,0.46,0.45,0.94), padding 0.5s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.5s; border-radius: 0; border-bottom: 1px solid transparent; overflow: hidden; opacity: 0; z-index: 1; }
-        .nav-search-input.open { width: 200px; padding: 0.3rem 0.5rem; border-bottom-color: var(--accent-dim); opacity: 1; }
+        .nav-search-dropdown { position: absolute; right: -1rem; top: 100%; margin-top: 0.75rem; width: 400px; max-width: calc(100vw - 2rem); background: var(--bg); border: 1px solid var(--accent-dim); box-shadow: 0 8px 32px rgba(0,0,0,0.08); padding: 0.75rem 1rem; opacity: 0; transform: translateY(-8px); pointer-events: none; transition: opacity 0.35s cubic-bezier(0.25,0.46,0.45,0.94), transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94); }
+        .nav-search-dropdown.open { opacity: 1; transform: translateY(0); pointer-events: all; }
+        .nav-search-input { width: 100%; padding: 0.5rem 0.75rem; border: none; border-bottom: 1px solid var(--accent-dim); font-family: var(--font-body); font-size: 0.85rem; background: transparent; color: var(--text); outline: none; }
         .nav-search-input:focus { border-bottom-color: var(--accent); }
-        .search-results { position: absolute; right: 0; top: 100%; width: 320px; max-height: 360px; margin-top: 0.5rem; background: var(--bg); border: 1px solid var(--accent-dim); border-radius: 0; box-shadow: 0 8px 32px rgba(0,0,0,0.1); overflow-y: auto; z-index: 100; display: none; }
+        .search-results { margin-top: 0.5rem; max-height: 300px; overflow-y: auto; display: none; }
         .search-results.open { display: block; }
         .search-result-item { padding: 0.65rem 1rem; border-bottom: 1px solid rgba(212,175,55,0.08); cursor: pointer; transition: background var(--dur); }
         .search-result-item:hover { background: rgba(212,175,55,0.06); }
@@ -645,9 +646,11 @@
                 <li><a href="#achievements" class="nav-link">成就</a></li>
             </ul>
             <div class="nav-search">
-                <button class="nav-search-btn" id="nav-search-btn" onclick="toggleNavSearch()" title="搜索"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg></button>
-                <input type="text" class="nav-search-input" id="search-input" placeholder="搜索..." oninput="doSearch()">
-                <div class="search-results" id="search-results"></div>
+                <button class="nav-search-btn" id="nav-search-btn" onclick="toggleNavSearch(event)" title="搜索"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg></button>
+                <div class="nav-search-dropdown" id="nav-search-dropdown">
+                    <input type="text" class="nav-search-input" id="search-input" placeholder="搜索歌曲、观众或日期..." oninput="doSearch()">
+                    <div class="search-results" id="search-results"></div>
+                </div>
             </div>
         </div>
     </nav>
@@ -1146,33 +1149,34 @@
 
         // ==== Feature 14: Global Search ====
         function closeNavSearch() {
+            var dropdown = document.getElementById('nav-search-dropdown');
             var input = document.getElementById('search-input');
             var results = document.getElementById('search-results');
-            input.classList.remove('open');
-            results.classList.remove('open');
+            dropdown.classList.remove('open');
             input.value = '';
+            results.classList.remove('open');
             results.innerHTML = '';
         }
         function toggleNavSearch(e) {
             if (e) e.stopPropagation();
-            var input = document.getElementById('search-input');
-            if (input.classList.contains('open')) {
+            var dropdown = document.getElementById('nav-search-dropdown');
+            if (dropdown.classList.contains('open')) {
                 closeNavSearch();
             } else {
-                input.classList.add('open');
-                setTimeout(function() { input.focus(); }, 500);
+                dropdown.classList.add('open');
+                setTimeout(function() { document.getElementById('search-input').focus(); }, 350);
             }
         }
         // Click outside to close
         document.addEventListener('click', function(e) {
             var navSearch = document.querySelector('.nav-search');
-            var input = document.getElementById('search-input');
-            if (input.classList.contains('open') && !navSearch.contains(e.target)) {
+            var dropdown = document.getElementById('nav-search-dropdown');
+            if (dropdown && dropdown.classList.contains('open') && !navSearch.contains(e.target)) {
                 closeNavSearch();
             }
         });
-        // Prevent search input click from immediately closing (bubbles to document)
-        document.getElementById('search-input').addEventListener('click', function(e) {
+        // Stop propagation on dropdown click
+        document.getElementById('nav-search-dropdown').addEventListener('click', function(e) {
             e.stopPropagation();
         });
         function doSearch() {
