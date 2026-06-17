@@ -566,7 +566,7 @@
         .heatmap-grid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 14px); gap: 3px; flex-shrink: 0; }
         .heatmap-cell { width: 14px; height: 14px; border-radius: 2px; background: var(--bg); cursor: pointer; transition: transform 0.15s; position: relative; }
         .heatmap-cell:hover { transform: scale(1.5); z-index: 2; }
-        .heatmap-cell.l0 { background: var(--bg); border: 1px solid var(--accent-dim); }
+        .heatmap-cell.l0 { background: rgba(249,248,246,0.08); border: 1px solid rgba(212,175,55,0.15); }
         .heatmap-cell.l1 { background: #d4c5a0; }
         .heatmap-cell.l2 { background: #c4a96a; }
         .heatmap-cell.l3 { background: var(--accent); }
@@ -576,15 +576,12 @@
         .heatmap-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
         .heatmap-nav-btn:disabled { opacity: 0.3; cursor: default; }
         .heatmap-nav-btn:disabled:hover { border-color: var(--accent-dim); color: var(--muted-fg); }
-        .heatmap-months { display: flex; margin: 0 0.25rem 0.5rem; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-fg); overflow: hidden; white-space: nowrap; }
+        .heatmap-months { display: flex; margin: 0 0.25rem 0.5rem; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bg); opacity: 0.6; overflow: hidden; white-space: nowrap; }
         .heatmap-months span { flex-shrink: 0; }
-        .heatmap-legend { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-fg); }
+        .heatmap-legend { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bg); opacity: 0.7; }
         .heatmap-legend .hl-cell { width: 12px; height: 12px; border-radius: 2px; }
 
-        /* Feature 2: Song Network */
-        .network-container { position: relative; width: 100%; height: 450px; background: var(--bg); border-radius: var(--radius); overflow: hidden; }
-        .network-container canvas { display: block; }
-        .network-legend { text-align: center; margin-top: 0.5rem; font-size: 0.7rem; color: var(--muted-fg); letter-spacing: 0.1em; text-transform: uppercase; }
+
 
         /* Feature 5: Achievement Cards */
         .achievements-container { display: flex; justify-content: center; margin-top: 1rem; }
@@ -634,7 +631,6 @@
                 <li><a href="#songs" class="nav-link">歌曲</a></li>
                 <li><a href="#audiences" class="nav-link">观众</a></li>
                 <li><a href="#heatmap" class="nav-link">热图</a></li>
-                <li><a href="#network" class="nav-link">网络</a></li>
                 <li><a href="#achievements" class="nav-link">成就</a></li>
             </ul>
         </div>
@@ -749,7 +745,7 @@
     
 
     <!-- Feature 1: Calendar Heatmap -->
-    <section class="section" id="heatmap">
+    <section class="section-dark" id="heatmap">
         <div class="container">
             <span class="section-label">Heatmap</span>
             <h2 class="section-title">日历热图</h2>
@@ -762,18 +758,6 @@
             <div class="heatmap-legend">
                 <span>少</span><span class="hl-cell l0"></span><span class="hl-cell l1"></span><span class="hl-cell l2"></span><span class="hl-cell l3"></span><span class="hl-cell l4"></span><span>多</span>
             </div>
-        </div>
-    </section>
-
-    <!-- Feature 2: Song Relationship Network -->
-    <section class="section" id="network">
-        <div class="container">
-            <span class="section-label">Network</span>
-            <h2 class="section-title">歌曲关系网络</h2>
-            <div class="network-container" id="network-container">
-                <canvas id="network-canvas"></canvas>
-            </div>
-            <div class="network-legend">节点大小 = 点歌次数 · 连线 = 被同一位观众点过</div>
         </div>
     </section>
 
@@ -13382,7 +13366,6 @@
             renderTrend();
             renderHeatmap();
             renderAchievements();
-            setTimeout(function() { renderNetwork(); }, 500);
             
             // Number animation (Feature 3)
             setTimeout(function() {
@@ -13795,65 +13778,6 @@
             var next = document.getElementById('heatmap-next');
             if (prev) prev.disabled = heatmapPage <= 0;
             if (next) next.disabled = heatmapPage >= heatmapTotalPages - 1;
-        }
-
-        // ==== Feature 2: Song Network ====
-        function renderNetwork() {
-            var network = appData.song_network;
-            if (!network || !network.nodes || !network.edges) return;
-            var canvas = document.getElementById('network-canvas');
-            var container = document.getElementById('network-container');
-            canvas.width = container.offsetWidth;
-            canvas.height = container.offsetHeight;
-            var ctx = canvas.getContext('2d');
-            var nodes = network.nodes;
-            var edges = network.edges;
-            var W = canvas.width, H = canvas.height;
-            var cx = W / 2, cy = H / 2;
-            var rx = W * 0.42, ry = H * 0.4;
-            // Position nodes in a spiral/ring
-            var nodePos = {};
-            var maxCount = nodes[0] ? nodes[0].count : 1;
-            for (var i = 0; i < nodes.length; i++) {
-                var angle = (i / nodes.length) * Math.PI * 2;
-                var rad = 0.4 + (Math.random() * 0.2);
-                var x = cx + Math.cos(angle) * rx * rad;
-                var y = cy + Math.sin(angle) * ry * rad;
-                nodePos[nodes[i].id] = {x: x, y: y, count: nodes[i].count};
-            }
-            // Draw edges
-            for (var i = 0; i < edges.length; i++) {
-                var e = edges[i];
-                var s = nodePos[e.source], t = nodePos[e.target];
-                if (!s || !t) continue;
-                var alpha = Math.min(0.6, e.weight / 8 * 0.6);
-                ctx.beginPath();
-                ctx.moveTo(s.x, s.y);
-                ctx.lineTo(t.x, t.y);
-                ctx.strokeStyle = 'rgba(212,175,55,' + alpha + ')';
-                ctx.lineWidth = Math.max(0.5, e.weight / 4);
-                ctx.stroke();
-            }
-            // Draw nodes
-            for (var i = 0; i < nodes.length; i++) {
-                var n = nodes[i];
-                var p = nodePos[n.id];
-                if (!p) continue;
-                var r = 4 + (n.count / maxCount) * 14;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(212,175,55,0.85)';
-                ctx.fill();
-                ctx.strokeStyle = '#F9F8F6';
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
-                // Label (only for top nodes)
-                if (i < 15) {
-                    ctx.fillStyle = '#1A1A1A';
-                    ctx.font = '11px Inter, system-ui, sans-serif';
-                    ctx.fillText(n.id.length > 8 ? n.id.slice(0,7)+'...' : n.id, p.x + r + 3, p.y + 4);
-                }
-            }
         }
 
         // ==== Feature 5: Achievements ====
