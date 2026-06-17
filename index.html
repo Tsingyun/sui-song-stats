@@ -378,6 +378,13 @@
         
         .detail-count {
             font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted-fg);
+            margin-top: 0.25rem;
+        }
+        .detail-bili { display: inline-block; padding: 0.3rem 0.75rem; border: 1px solid var(--accent-dim); font-family: var(--font-body); font-size: 0.6rem; letter-spacing: 0.1em; color: var(--muted-fg); text-decoration: none; transition: all var(--dur); white-space: nowrap; }
+        .detail-bili:hover { border-color: var(--accent); color: var(--accent); }
             text-transform: uppercase;
             letter-spacing: 0.2em;
             color: var(--muted-fg);
@@ -13633,7 +13640,10 @@
                     '<div class="detail-name">' + name + '</div>' +
                     '<div class="detail-count">' + records.length + ' 次点歌 · 点击空白关闭</div>' +
                 '</div>' +
-                '<button class="detail-close" onclick="closeDetailDirect()">✕</button>' +
+                '<div style="display:flex;align-items:center;gap:0.5rem;">' +
+                    '<a class="detail-bili" href="#" target="_blank" id="detail-bili-link" title="在B站搜索 ' + name + '">B站主页</a>' +
+                    '<button class="detail-close" onclick="closeDetailDirect()">✕</button>' +
+                '</div>' +
             '</div>' +
             '<div>' + songList.map(([song, cnt]) => 
                 '<div class="detail-song">' +
@@ -13643,6 +13653,8 @@
             ).join('') + '</div>';
             
             document.getElementById('detail-overlay').classList.add('active');
+            // Set B站 search link
+            document.getElementById('detail-bili-link').href = 'https://search.bilibili.com/all?keyword=' + encodeURIComponent(name);
         }
         
         function closeDetail(event) {
