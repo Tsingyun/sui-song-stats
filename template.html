@@ -860,17 +860,17 @@
                 return;
             }
 
-            // Store full data and totalCount for expand/collapse
+            // Store full data for expand/collapse
             container._fullData = data;
-            container._totalCount = total;
             container._isExpanded = !!container._isExpanded;
+
+            // Calculate total: use totalCount if provided, otherwise sum all counts
+            const total = (totalCount && totalCount > 0) ? totalCount : data.reduce((s, item) => s + item.count, 0);
+            container._totalCount = total;
 
             const showAll = container._isExpanded;
             const displayData = showAll ? data : data.slice(0, 10);
             const hasMore = data.length > 10;
-
-            // Calculate total: use totalCount if provided, otherwise sum all counts
-            const total = (totalCount && totalCount > 0) ? totalCount : data.reduce((s, item) => s + item.count, 0);
 
             container.innerHTML = displayData.map((item, i) => {
                 const name = item.audience || item.song || '';
