@@ -13866,13 +13866,13 @@
                 var wrap = btn.parentElement;
                 var sectionId = wrap.closest('section').id;
                 var sid = sectionId;
-                menu.innerHTML = '<div class="export-menu-divider">截图</div>' +
-                    '<button class="export-menu-item" data-act="ss10">截图 · 前10名</button>' +
-                    '<button class="export-menu-item" data-act="ss0">截图 · 完整榜单</button>' +
-                    '<div class="export-menu-divider">数据文件</div>' +
-                    '<button class="export-menu-item" data-act="xlsx">导出 XLSX</button>' +
-                    '<button class="export-menu-item" data-act="csv">导出 CSV</button>' +
-                    '<button class="export-menu-item" data-act="json">导出 JSON</button>';
+                menu.innerHTML = '<div class="export-menu-divider">截图导出</div>' +
+                    '<button class="export-menu-item" data-act="ss10">PNG 截图 · 前10名</button>' +
+                    '<button class="export-menu-item" data-act="ss0">PNG 截图 · 完整榜单</button>' +
+                    '<div class="export-menu-divider">数据导出</div>' +
+                    '<button class="export-menu-item" data-act="xlsx">Excel 表格 (.xlsx)</button>' +
+                    '<button class="export-menu-item" data-act="csv">CSV 文件 (.csv)</button>' +
+                    '<button class="export-menu-item" data-act="json">JSON 数据 (.json)</button>';
                 var items = menu.querySelectorAll('.export-menu-item');
                 items[0].addEventListener('click', function() { doExportScreenshot(sid, 10); });
                 items[1].addEventListener('click', function() { doExportScreenshot(sid, 0); });
