@@ -83,11 +83,12 @@
 ├── index.html                 # 主网站（自包含，双击运行）
 ├── template.html              # HTML 模板（含 {{APPDATA}} 占位符）
 ├── build_html.py              # 构建脚本：模板 + JSON → index.html
-├── process_features.py        # 数据处理：计算热图 / 等级 / 成就 / 搜索索引
-├── song_data_processed.json   # 处理后完整数据
-├── rename_user.py             # 用户更名工具
-├── fix_*.py                   # 各类修复 / 迭代脚本
-└── README.md
+├── README.md                  # 项目说明
+├── tools/
+│   ├── process_features.py    # 数据处理主脚本
+│   └── rename_user.py         # 用户更名工具
+├── archive/                   # 历史开发脚本（一次性使用）
+└── .gitignore
 ```
 
 ## 本地开发
