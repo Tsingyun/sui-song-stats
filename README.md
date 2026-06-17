@@ -2,6 +2,8 @@
 
 虚拟主播**岁己SUI**的点歌数据可视化网站，以 Luxury / Editorial 美学风格展示自 2024 年 6 月以来的全部点歌记录。
 
+![网站截图](screenshot.png)
+
 ## 访问地址
 
 在线版：[https://tsingyun.github.io/sui-song-stats/](https://tsingyun.github.io/sui-song-stats/)
