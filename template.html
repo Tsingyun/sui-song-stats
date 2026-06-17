@@ -1325,13 +1325,20 @@
                 // Build menu items
                 var wrap = btn.parentElement;
                 var sectionId = wrap.closest('section').id;
+                var sid = sectionId;
                 menu.innerHTML = '<div class="export-menu-divider">截图</div>' +
-                    '<button class="export-menu-item" onclick="doExportScreenshot('' + sectionId + '', 10)">截图 · 前10名</button>' +
-                    '<button class="export-menu-item" onclick="doExportScreenshot('' + sectionId + '', 0)">截图 · 完整榜单</button>' +
+                    '<button class="export-menu-item" data-act="ss10">截图 · 前10名</button>' +
+                    '<button class="export-menu-item" data-act="ss0">截图 · 完整榜单</button>' +
                     '<div class="export-menu-divider">数据文件</div>' +
-                    '<button class="export-menu-item" onclick="doExportData('' + sectionId + '', 'xlsx')">导出 XLSX</button>' +
-                    '<button class="export-menu-item" onclick="doExportData('' + sectionId + '', 'csv')">导出 CSV</button>' +
-                    '<button class="export-menu-item" onclick="doExportData('' + sectionId + '', 'json')">导出 JSON</button>';
+                    '<button class="export-menu-item" data-act="xlsx">导出 XLSX</button>' +
+                    '<button class="export-menu-item" data-act="csv">导出 CSV</button>' +
+                    '<button class="export-menu-item" data-act="json">导出 JSON</button>';
+                var items = menu.querySelectorAll('.export-menu-item');
+                items[0].addEventListener('click', function() { doExportScreenshot(sid, 10); });
+                items[1].addEventListener('click', function() { doExportScreenshot(sid, 0); });
+                items[2].addEventListener('click', function() { doExportData(sid, 'xlsx'); });
+                items[3].addEventListener('click', function() { doExportData(sid, 'csv'); });
+                items[4].addEventListener('click', function() { doExportData(sid, 'json'); });
                 menu.classList.add('open');
             }
         }
