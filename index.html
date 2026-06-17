@@ -604,7 +604,7 @@
         .heatmap-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
         .heatmap-nav-btn:disabled { opacity: 0.3; cursor: default; }
         .heatmap-nav-btn:disabled:hover { border-color: var(--accent-dim); color: var(--muted-fg); }
-        .heatmap-months { display: flex; margin: 0.5rem 0 0; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bg); opacity: 0.7; overflow: hidden; white-space: nowrap; justify-content: flex-start; }
+        .heatmap-months { margin: 0.5rem 0 0; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: #F9F8F6; opacity: 0.7; }
         .heatmap-months span { flex-shrink: 0; }
         .heatmap-legend { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bg); opacity: 0.7; }
         .heatmap-legend .hl-cell { width: 12px; height: 12px; border-radius: 2px; }
@@ -13823,12 +13823,12 @@
             var totalWidth = container.parentElement.offsetWidth - 32;
             var cellW = 14 + 3; // cell width + gap
             var colsShown = Math.min(heatmapColsPerPage, totalCols - displayedCol);
-            var mlHtml = '<div style="display:flex;width:' + totalWidth + 'px;margin:0 auto;position:relative;">';
+            var mlHtml = '<div style="width:' + totalWidth + 'px;margin:0 auto;position:relative;height:1rem;">';
             for (var i = 0; i < monthLabels.length; i++) {
                 var ml = monthLabels[i];
                 if (ml.col >= displayedCol && ml.col < displayedCol + colsShown) {
                     var leftPx = (ml.col - displayedCol) * cellW;
-                    mlHtml += '<span style="position:absolute;left:' + leftPx + 'px;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;">' + ml.label + '</span>';
+                    mlHtml += '<span style="position:absolute;left:' + leftPx + 'px;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:#F9F8F6;opacity:0.7;">' + ml.label + '</span>';
                 }
             }
             mlHtml += '</div>';
