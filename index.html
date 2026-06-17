@@ -677,7 +677,7 @@
     <section class="section" id="monthly">
         <div class="container">
             <span class="section-label">Monthly Leaderboard</span>
-            <h2 class="section-title">月度点歌榜<span class="export-wrap"><button class="export-btn" onclick="event.stopPropagation();toggleExportMenu(this)" title="导出">EXPORT ▾</button><div class="export-menu"></div></span></h2>
+            <h2 class="section-title">月度点歌榜<span class="export-wrap"><button class="export-btn" onclick="event.stopPropagation();toggleExportMenu(this)" title="导出">导出 ▾</button><div class="export-menu"></div></span></h2>
             
             <div class="time-picker" id="monthly-picker">
                 <button class="time-picker-btn" onclick="changeMonth(-1)">←</button>
@@ -694,7 +694,7 @@
     <section class="section-dark" id="quarterly">
         <div class="container">
             <span class="section-label">Quarterly Leaderboard</span>
-            <h2 class="section-title">季度点歌榜<span class="export-wrap"><button class="export-btn" onclick="event.stopPropagation();toggleExportMenu(this)" title="导出">EXPORT ▾</button><div class="export-menu"></div></span></h2>
+            <h2 class="section-title">季度点歌榜<span class="export-wrap"><button class="export-btn" onclick="event.stopPropagation();toggleExportMenu(this)" title="导出">导出 ▾</button><div class="export-menu"></div></span></h2>
             
             <div class="time-picker" id="quarterly-picker">
                 <button class="time-picker-btn" onclick="changeQuarter(-1)">←</button>
@@ -711,7 +711,7 @@
     <section class="section" id="yearly">
         <div class="container">
             <span class="section-label">Yearly Leaderboard</span>
-            <h2 class="section-title">年度点歌榜<span class="export-wrap"><button class="export-btn" onclick="event.stopPropagation();toggleExportMenu(this)" title="导出">EXPORT ▾</button><div class="export-menu"></div></span></h2>
+            <h2 class="section-title">年度点歌榜<span class="export-wrap"><button class="export-btn" onclick="event.stopPropagation();toggleExportMenu(this)" title="导出">导出 ▾</button><div class="export-menu"></div></span></h2>
             
             <div class="time-picker" id="yearly-picker">
                 <button class="time-picker-btn" onclick="changeYear(-1)">←</button>
@@ -728,7 +728,7 @@
     <section class="section-dark" id="total">
         <div class="container">
             <span class="section-label">Total Leaderboard</span>
-            <h2 class="section-title">总点歌榜<span class="export-wrap"><button class="export-btn" onclick="event.stopPropagation();toggleExportMenu(this)" title="导出">EXPORT ▾</button><div class="export-menu"></div></span></h2>
+            <h2 class="section-title">总点歌榜<span class="export-wrap"><button class="export-btn" onclick="event.stopPropagation();toggleExportMenu(this)" title="导出">导出 ▾</button><div class="export-menu"></div></span></h2>
             <p class="section-label" style="margin-bottom:2rem;">所有时间的累计点歌次数</p>
             <div class="leaderboard" id="total-leaderboard"></div>
         </div>
@@ -738,7 +738,7 @@
     <section class="section" id="songs">
         <div class="container">
             <span class="section-label">Popular Songs</span>
-            <h2 class="section-title">热门歌曲榜<span class="export-wrap"><button class="export-btn" onclick="event.stopPropagation();toggleExportMenu(this)" title="导出">EXPORT ▾</button><div class="export-menu"></div></span></h2>
+            <h2 class="section-title">热门歌曲榜<span class="export-wrap"><button class="export-btn" onclick="event.stopPropagation();toggleExportMenu(this)" title="导出">导出 ▾</button><div class="export-menu"></div></span></h2>
             <div class="leaderboard" id="songs-leaderboard"></div>
         </div>
     </section>
@@ -13916,40 +13916,47 @@
             else if (sectionId === 'total') container = document.getElementById('total-leaderboard');
             else if (sectionId === 'songs') container = document.getElementById('songs-leaderboard');
             if (!container) return;
-            // Temporarily expand if needed
             var wasExpanded = container._isExpanded;
             if (limit === 0) { container._isExpanded = true; }
-            // Determine data
             var sd = getSectionData(sectionId);
             var displayData = limit > 0 ? sd.data.slice(0, limit) : sd.data;
-            // Re-render temporarily
+            var fieldLabel = sd.fields[0] === 'song' ? '歌曲' : '观众';
             var tmpContainer = document.createElement('div');
-            tmpContainer.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;background:#F9F8F6;padding:2rem;font-family:Inter,sans-serif;z-index:99999;';
-            tmpContainer.innerHTML = '<h2 style="font-family:Playfair Display,serif;font-size:1.8rem;margin-bottom:0.25rem;color:#1A1A1A;">' + sd.title + '</h2>' +
-                '<p style="font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:#6C6863;margin-bottom:1.5rem;">岁己 SUI 点歌统计</p>' +
-                '<table style="width:100%;border-collapse:collapse;"><thead><tr style="border-bottom:2px solid #D4AF37;">' +
-                '<th style="padding:0.5rem;text-align:left;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:#6C6863;">#</th>' +
-                '<th style="padding:0.5rem;text-align:left;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:#6C6863;">' + (sd.fields[0] === 'song' ? '歌曲' : '观众') + '</th>' +
-                '<th style="padding:0.5rem;text-align:right;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:#6C6863;">次数</th>' +
+            tmpContainer.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;background:#F9F8F6;padding:3rem 3.5rem;z-index:99999;';
+            tmpContainer.innerHTML =
+                '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">' +
+                '<div style="font-family:Inter,sans-serif;font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:#6C6863;margin-bottom:0.5rem;">岁己 SUI · 点歌统计</div>' +
+                '<h2 style="font-family:\'Playfair Display\',serif;font-size:2.4rem;font-weight:500;color:#1A1A1A;line-height:1.1;margin:0 0 0.5rem;">' + sd.title + '</h2>' +
+                '<div style="width:4rem;height:1px;background:#D4AF37;margin-bottom:2rem;"></div>' +
+                '<table style="width:100%;border-collapse:collapse;">' +
+                '<thead><tr style="border-bottom:2px solid #D4AF37;">' +
+                '<th style="padding:0.6rem 0.5rem;text-align:left;font-family:Inter,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#6C6863;font-weight:500;">#</th>' +
+                '<th style="padding:0.6rem 0.5rem;text-align:left;font-family:Inter,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#6C6863;font-weight:500;">' + fieldLabel + '</th>' +
+                '<th style="padding:0.6rem 0.5rem;text-align:right;font-family:Inter,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#6C6863;font-weight:500;">点歌次数</th>' +
                 '</tr></thead><tbody>' +
                 displayData.map(function(item, i) {
-                    return '<tr style="border-bottom:1px solid rgba(0,0,0,0.06);"><td style="padding:0.4rem 0.5rem;font-size:0.8rem;color:#6C6863;">' + (i+1) + '</td><td style="padding:0.4rem 0.5rem;font-size:0.9rem;color:#1A1A1A;">' + (item.audience || item.song || '') + '</td><td style="padding:0.4rem 0.5rem;text-align:right;font-size:0.85rem;color:#1A1A1A;">' + item.count + '</td></tr>';
+                    var isGold = i === 0;
+                    return '<tr style="border-bottom:1px solid rgba(26,26,26,0.08);' + (isGold ? 'background:rgba(212,175,55,0.04);' : '') + '">' +
+                        '<td style="padding:0.55rem 0.5rem;font-family:Inter,sans-serif;font-size:0.75rem;color:#6C6863;' + (isGold ? 'font-weight:500;color:#D4AF37;' : '') + '">' + (i+1) + '</td>' +
+                        '<td style="padding:0.55rem 0.5rem;font-family:\'Playfair Display\',serif;font-size:1rem;color:#1A1A1A;' + (isGold ? 'font-weight:500;' : '') + '">' + (item.audience || item.song || '') + (isGold ? ' <span style="font-size:0.7rem;">👑</span>' : '') + '</td>' +
+                        '<td style="padding:0.55rem 0.5rem;text-align:right;font-family:Inter,sans-serif;font-size:0.9rem;color:#1A1A1A;' + (isGold ? 'font-weight:500;' : '') + '">' + item.count + ' 次</td>' +
+                        '</tr>';
                 }).join('') +
-                '</tbody></table>';
+                '</tbody></table>' +
+                '<div style="margin-top:2.5rem;font-family:Inter,sans-serif;font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:#6C6863;text-align:right;">岁己 SUI · 点歌统计 · ' + new Date().toISOString().slice(0,10) + '</div>';
             document.body.appendChild(tmpContainer);
-            html2canvas(tmpContainer, {scale: 2, backgroundColor: '#F9F8F6'}).then(function(canvas) {
-                document.body.removeChild(tmpContainer);
-                // Restore state
-                container._isExpanded = wasExpanded;
-                // Download
-                var link = document.createElement('a');
-                link.download = (sd.title + (limit > 0 ? '_Top' + limit : '_Full') + '.png').replace(/\s/g, '_');
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                // Re-render to restore original view
-                if (limit === 0) { renderCurrentSection(sectionId); }
-            });
-            // Close menu
+            // Wait a tick for fonts to load
+            setTimeout(function() {
+                html2canvas(tmpContainer, {scale: 2, backgroundColor: '#F9F8F6', useCORS: true, logging: false}).then(function(canvas) {
+                    document.body.removeChild(tmpContainer);
+                    container._isExpanded = wasExpanded;
+                    var link = document.createElement('a');
+                    link.download = (sd.title + (limit > 0 ? '_Top' + limit : '_Full') + '.png').replace(/\s/g, '_');
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    if (limit === 0) { renderCurrentSection(sectionId); }
+                });
+            }, 300);
             document.querySelectorAll('.export-menu.open').forEach(function(m) { m.classList.remove('open'); });
         }
 
