@@ -435,19 +435,19 @@
             width: 90%;
             max-height: 70vh;
             overflow-y: auto;
+            scrollbar-width: none;
             padding: 2.5rem;
             transform: translateY(20px);
             transition: transform 0.5s;
         }
+        .detail-panel::-webkit-scrollbar { display: none; }
         .detail-overlay.active .detail-panel { transform: translateY(0); }
         
         .detail-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(26,26,26,0.1);
+            margin-bottom: 1.5rem;
         }
         
         .detail-name {
@@ -473,18 +473,18 @@
         
         .detail-close {
             background: none;
-            border: 1px solid rgba(26,26,26,0.2);
-            width: 2rem;
-            height: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border: none;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.2rem;
             color: var(--muted-fg);
-            transition: all 0.5s;
+            padding: 0;
+            line-height: 1;
+            transition: color 0.5s;
+            outline: none;
+            user-select: none;
         }
-        .detail-close:hover { border-color: var(--accent); color: var(--accent); }
+        .detail-close:hover { color: var(--accent); }
+        .detail-close:focus { outline: none; }
         
         /* Celebration overlay */
         .celebration-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(26,26,26,0.92); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.6s; }
@@ -524,6 +524,24 @@
             color: var(--accent);
             margin-left: 0.8rem;
             flex-shrink: 0;
+        }
+        
+        .detail-song-date {
+            font-size: 0.65rem;
+            color: var(--muted-fg);
+            margin-left: 0.6rem;
+            letter-spacing: 0.03em;
+        }
+        
+        .detail-last-req {
+            font-size: 0.72rem;
+            color: var(--muted-fg);
+            padding: 0.3rem 0 0;
+            letter-spacing: 0.05em;
+        }
+        .detail-last-req span {
+            color: var(--fg);
+            font-weight: 500;
         }
         
         /* Chart */
@@ -699,8 +717,6 @@
         .heatmap-nav-btn:disabled { opacity: 0.3; cursor: default; }
         .heatmap-nav-btn:disabled:hover { border-color: var(--accent-dim); color: var(--muted-fg); }
         .heatmap-months { margin: 0.5rem 0 0; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bg); opacity: 0.7; }
-        .heatmap-legend { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bg); opacity: 0.7; }
-        .heatmap-legend .hl-cell { width: 12px; height: 12px; border-radius: 2px; }
 
 
 
@@ -904,9 +920,6 @@
             <div class="heatmap-nav">
                 <button class="heatmap-nav-btn" id="heatmap-prev" onclick="heatmapScroll(-1)" disabled>&larr;</button>
                 <button class="heatmap-nav-btn" id="heatmap-next" onclick="heatmapScroll(1)">&rarr;</button>
-            </div>
-            <div class="heatmap-legend">
-                <span>少</span><span class="hl-cell l0"></span><span class="hl-cell l1"></span><span class="hl-cell l2"></span><span class="hl-cell l3"></span><span class="hl-cell l4"></span><span>多</span>
             </div>
         </div>
     </section>
@@ -13476,6 +13489,83 @@
       "2024-06-08",
       "2026-02-08"
     ]
+  },
+  "last_request_dates": {
+    "带鱼": "2025-08-18",
+    "大笨酱": "2026-06-16",
+    "Vaserkia": "2026-06-07",
+    "啪叽P": "2026-03-26",
+    "云起终殆": "2024-06-08",
+    "椎名megumin": "2024-06-09",
+    "suikure": "2024-08-30",
+    "仙布着急唱灭歌": "2026-06-05",
+    "睡雀": "2024-06-15",
+    "岁己家的陈醋": "2026-04-08",
+    "无响应失败小熊": "2026-06-16",
+    "伊露露1lulu": "2024-08-16",
+    "Eternalの零": "2025-03-29",
+    "-昕宝yoake-": "2026-05-14",
+    "真的才八点": "2025-06-09",
+    "俺寻思这洋芋也没人要": "2025-08-21",
+    "L1f3n0w0v3R710w_": "2026-06-07",
+    "岁己家的朱拉鲁敏": "2026-04-13",
+    "岁己家的维斯": "2026-06-14",
+    "misuj": "2026-03-31",
+    "KorokkeSUI": "2026-04-07",
+    "岁己家的纯粮饼小干": "2024-08-06",
+    "Akananae": "2026-06-08",
+    "蜜柑教信徒": "2024-08-21",
+    "心眼子嫩小的可表OvO": "2024-08-18",
+    "人活着是为了02": "2026-06-07",
+    "秉秉": "2024-08-29",
+    "北辰Ghost": "2024-08-30",
+    "岁己家的雨中月": "2026-05-09",
+    "弟弟干嘛呢丶": "2024-10-08",
+    "la-plata": "2024-10-11",
+    "岁己家的1702": "2025-11-23",
+    "在白日梦蓝": "2026-06-14",
+    "yaji0614": "2024-11-05",
+    "岁己家出卖世界蛇": "2026-06-14",
+    "谜拟饼": "2024-11-03",
+    "电电_kaminari": "2024-11-11",
+    "不支持SC点歌": "2024-11-12",
+    "麦麦脆汁鸡Ro5": "2024-11-30",
+    "小裸_": "2024-11-30",
+    "过期的经验": "2025-10-06",
+    "随风旅鸟与未知之风": "2025-12-08",
+    "出包西": "2025-04-20",
+    "黄桃罐头冰": "2026-02-24",
+    "米歇尔-_san": "2025-04-19",
+    "星宇恒qwq": "2025-05-06",
+    "灰獺": "2026-06-14",
+    "听时光惊鸿": "2025-05-20",
+    "--名字---": "2025-07-29",
+    "哈氣小学生": "2025-06-22",
+    "古明地梦": "2025-11-21",
+    "紫色心情": "2025-07-08",
+    "星见幻夜": "2025-08-03",
+    "芒硝": "2025-08-15",
+    "阿肾阿肾": "2025-08-24",
+    "大春袋饼子": "2025-09-30",
+    "KOU_KEI": "2026-01-25",
+    "匣中三尺水丶": "2026-03-16",
+    "薄荷糖8辣": "2025-11-10",
+    "We1le5s": "2025-11-22",
+    "黑铁watcher": "2026-04-05",
+    "加库伯": "2025-12-04",
+    "请让我好好入睡": "2026-06-14",
+    "-かげぼうし-": "2025-12-06",
+    "风霜已尽惊蛰至": "2026-02-10",
+    "又折": "2026-02-20",
+    "JackvM": "2026-03-07",
+    "CHR_OFFICIAL": "2026-03-16",
+    "不愉快でっす": "2026-04-12",
+    "阿梓从小就很憨色": "2026-04-14",
+    "合唱回": "2026-04-26",
+    "RengeRenge": "2026-05-02",
+    "一般男性冲浪大蛇": "2026-05-17",
+    "目云雪": "2026-05-21",
+    "Iro4s": "2026-06-07"
   }
 };
         
@@ -13763,14 +13853,26 @@
             const songList = Object.entries(songCount).sort((a, b) => b[1] - a[1]).slice(0, 20);
             
             const panel = document.getElementById('detail-panel');
+            // Calculate days since last request
+            const lastDate = appData.last_request_dates ? appData.last_request_dates[name] : null;
+            let lastReqHtml = '';
+            if (lastDate) {
+                const lastDateObj = new Date(lastDate + 'T00:00:00+08:00');
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                const daysAgo = Math.floor((today - lastDateObj) / 86400000);
+                const agoText = daysAgo === 0 ? '今天' : daysAgo === 1 ? '昨天' : daysAgo + ' 天前';
+                lastReqHtml = '<div class="detail-last-req">上一次点到歌：<span>' + lastDate + '</span>（' + agoText + '）</div>';
+            }
             panel.innerHTML = '<div class="detail-header">' +
                 '<div>' +
                     '<div class="detail-name">' + name + '</div>' +
                     '<div class="detail-count">' + records.length + ' 次点歌 · 点击空白关闭</div>' +
+                    lastReqHtml +
                 '</div>' +
-                '<div style="display:flex;align-items:center;gap:0.5rem;">' +
+                '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;">' +
                     '<a class="detail-bili" href="#" target="_blank" id="detail-bili-link" title="在B站搜索 ' + name + '">B站主页</a>' +
-                    '<button class="detail-close" onclick="closeDetailDirect()">✕</button>' +
+                    '<span class="detail-close" onclick="closeDetailDirect()">✕</span>' +
                 '</div>' +
             '</div>' +
             '<div>' + songList.map(([song, cnt]) => 
@@ -13783,6 +13885,46 @@
             document.getElementById('detail-overlay').classList.add('active');
             // Set B站 search link
             document.getElementById('detail-bili-link').href = 'https://search.bilibili.com/all?keyword=' + encodeURIComponent(name);
+        }
+        
+        // --- Song detail panel ---
+        function showSongDetail(songName) {
+            const records = (appData.raw_data || []).filter(r => r.song === songName);
+            if (records.length === 0) return;
+            
+            // Count audiences and track last date per audience
+            const audienceInfo = {};
+            records.forEach(r => {
+                if (!audienceInfo[r.audience]) audienceInfo[r.audience] = {count: 0, lastDate: ''};
+                audienceInfo[r.audience].count++;
+                if (r.date > audienceInfo[r.audience].lastDate) audienceInfo[r.audience].lastDate = r.date;
+            });
+            const audienceList = Object.entries(audienceInfo).sort((a, b) => b[1].count - a[1].count).slice(0, 20);
+            
+            const panel = document.getElementById('detail-panel');
+            panel.innerHTML = '<div class="detail-header">' +
+                '<div>' +
+                    '<div class="detail-name">' + songName + '</div>' +
+                    '<div class="detail-count">' + records.length + ' 次被点歌 · ' + audienceList.length + ' 位观众点过</div>' +
+                '</div>' +
+                '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;">' +
+                    '<a class="detail-bili" href="#" target="_blank" id="detail-bili-link" title="在B站搜索 ' + songName + '">B站搜索</a>' +
+                    '<span class="detail-close" onclick="closeDetailDirect()">✕</span>' +
+                '</div>' +
+            '</div>' +
+            '<div>' + audienceList.map(function(item, i) {
+                var name = item[0], info = item[1];
+                return '<div class="detail-song" onclick="showDetail(\'' + name.replace(/'/g, "\\'") + '\')">' +
+                    '<div style="flex:1">' +
+                        '<span class="detail-song-name">' + (i+1) + '. ' + name + '</span>' +
+                        '<span class="detail-song-date">' + info.lastDate + '</span>' +
+                    '</div>' +
+                    '<span class="detail-song-count">' + info.count + '次</span>' +
+                '</div>';
+            }).join('') + '</div>';
+            
+            document.getElementById('detail-overlay').classList.add('active');
+            document.getElementById('detail-bili-link').href = 'https://search.bilibili.com/all?keyword=' + encodeURIComponent(songName);
         }
         
         function closeDetail(event) {
@@ -13887,7 +14029,18 @@
                 var a = idx.audiences[i];
                 if (a.toLowerCase().indexOf(q) >= 0) {
                     var lv = appData.audience_levels[a];
-                    results.push({type: '观众', name: a, meta: (lv ? 'Lv.' + lv.level + ' · ' + lv.count + ' 次点歌' : '')});
+                    var metaParts = [];
+                    if (lv) metaParts.push('Lv.' + lv.level + ' · ' + lv.count + ' 次点歌');
+                    // Add last request days ago
+                    var lastD = appData.last_request_dates ? appData.last_request_dates[a] : null;
+                    if (lastD) {
+                        var ldObj = new Date(lastD + 'T00:00:00+08:00');
+                        var now = new Date(); now.setHours(0,0,0,0);
+                        var da = Math.floor((now - ldObj) / 86400000);
+                        var daText = da === 0 ? '今天点过歌' : da === 1 ? '昨天点过歌' : da + ' 天前点歌';
+                        metaParts.push(daText);
+                    }
+                    results.push({type: '观众', name: a, meta: metaParts.join(' · ')});
                 }
             }
             // Search dates
@@ -13906,8 +14059,27 @@
                 container.innerHTML = '<p class="search-empty">没有找到匹配的结果</p>';
             } else {
                 container.innerHTML = results.map(function(r) {
-                    return '<div class="search-result-item"><div class="sr-type">' + r.type + '</div><div class="sr-name">' + r.name + '</div>' + (r.meta ? '<div class="sr-meta">' + r.meta + '</div>' : '') + '</div>';
+                    var cls = 'search-result-item';
+                    if (r.type === '观众') cls += ' sr-audience';
+                    else if (r.type === '歌曲') cls += ' sr-song';
+                    return '<div class="' + cls + '" data-type="' + r.type + '" data-name="' + r.name.replace(/"/g, '&quot;') + '"><div class="sr-type">' + r.type + '</div><div class="sr-name">' + r.name + '</div>' + (r.meta ? '<div class="sr-meta">' + r.meta + '</div>' : '') + '</div>';
                 }).join('');
+                // Delegate click on search results
+                container.onclick = function(e) {
+                    var item = e.target.closest('.search-result-item');
+                    if (!item) return;
+                    var type = item.getAttribute('data-type');
+                    var name = item.getAttribute('data-name');
+                    closeNavSearch();
+                    if (type === '观众') {
+                        showDetail(name);
+                    } else if (type === '歌曲') {
+                        showSongDetail(name);
+                    } else if (type === '日期') {
+                        var el = document.getElementById('heatmap');
+                        if (el) el.scrollIntoView({behavior:'smooth'});
+                    }
+                };
             }
         }
 
