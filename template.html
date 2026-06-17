@@ -1262,6 +1262,10 @@
                 const agoText = daysAgo === 0 ? '今天' : daysAgo === 1 ? '昨天' : daysAgo + ' 天前';
                 lastReqHtml = '<div class="detail-last-req">上一次点到歌：<span>' + lastDate + '</span>（' + agoText + '）</div>';
             }
+            // Determine B站 link: use UID if available
+            const uid = appData.user_uids ? appData.user_uids[name] : null;
+            const biliLabel = uid ? 'B站主页' : 'B站搜索';
+            const biliHref = uid ? 'https://space.bilibili.com/' + uid : 'https://search.bilibili.com/upuser?keyword=' + encodeURIComponent(name);
             panel.innerHTML = '<div class="detail-header">' +
                 '<div>' +
                     '<div class="detail-name">' + name + '</div>' +
@@ -1269,7 +1273,7 @@
                     lastReqHtml +
                 '</div>' +
                 '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;">' +
-                    '<a class="detail-bili" href="#" target="_blank" id="detail-bili-link" title="在B站搜索 ' + name + '">B站主页</a>' +
+                    '<a class="detail-bili" href="' + biliHref + '" target="_blank" id="detail-bili-link" title="在B站查看 ' + name + '">' + biliLabel + '</a>' +
                     '<span class="detail-close" onclick="closeDetailDirect()">✕</span>' +
                 '</div>' +
             '</div>' +
@@ -1282,8 +1286,6 @@
             ).join('') + '</div>';
             
             document.getElementById('detail-overlay').classList.add('active');
-            // Set B站 search link
-            document.getElementById('detail-bili-link').href = 'https://search.bilibili.com/all?keyword=' + encodeURIComponent(name);
         }
         
         // --- Song detail panel ---
