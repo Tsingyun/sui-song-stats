@@ -13415,6 +13415,8 @@
             renderPreferences();
             renderTrend();
             renderHeatmap();
+            // Re-render heatmap after layout to ensure month labels show
+            setTimeout(function() { heatmapPage = 0; renderHeatmap(); }, 100);
             renderAchievements();
             
             // Number animation (Feature 3)
