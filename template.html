@@ -552,12 +552,16 @@
         .export-btn:hover { border-color: var(--accent); color: var(--accent); }
         .section-dark .export-btn { color: var(--bg); border-color: rgba(249,248,246,0.3); }
         .section-dark .export-btn:hover { border-color: var(--accent); color: var(--accent); }
-        .export-menu { position: absolute; left: 0; top: 100%; margin-top: 0.3rem; background: var(--bg); border: 1px solid var(--accent-dim); box-shadow: 0 4px 20px rgba(0,0,0,0.08); z-index: 50; min-width: 140px; display: none; }
+        .export-menu { position: absolute; left: 0; top: 100%; margin-top: 0.3rem; background: var(--bg); border: 1px solid var(--accent-dim); box-shadow: 0 4px 20px rgba(0,0,0,0.08); z-index: 50; min-width: 160px; display: none; }
+        .section-dark .export-menu { background: #262626; border-color: rgba(249,248,246,0.12); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
         .export-menu.open { display: block; }
         .export-menu-item { display: block; width: 100%; padding: 0.5rem 1rem; background: none; border: none; text-align: left; font-family: var(--font-body); font-size: 0.7rem; letter-spacing: 0.05em; color: var(--text); cursor: pointer; transition: background var(--dur); }
         .export-menu-item:hover { background: rgba(212,175,55,0.08); color: var(--accent); }
         .export-menu-item + .export-menu-item { border-top: 1px solid rgba(0,0,0,0.04); }
+        .section-dark .export-menu-item { color: #F9F8F6; }
+        .section-dark .export-menu-item + .export-menu-item { border-top-color: rgba(249,248,246,0.08); }
         .export-menu-divider { padding: 0.3rem 1rem; font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); border-top: 1px solid var(--accent-dim); }
+        .section-dark .export-menu-divider { border-top-color: rgba(249,248,246,0.12); }
 
         /* Feature 14: Nav Search */
         .nav-search { position: relative; margin-left: 0.5rem; z-index: 10; }
