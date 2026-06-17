@@ -545,20 +545,22 @@
         .stat-num.animating { color: var(--accent); }
 
         /* Feature 14: Search */
-        /* Feature 14: Search bar (top) */
-        .search-bar-top { padding: 2rem 0 0.5rem; text-align: center; }
-        .search-bar { width: 100%; max-width: 480px; padding: 0.65rem 1.25rem; font-family: var(--font-body); font-size: 0.9rem; border: 1px solid var(--accent-dim); border-radius: 999px; background: rgba(255,255,255,0.6); color: var(--text); outline: none; transition: all var(--dur); backdrop-filter: blur(10px); }
-        .search-bar:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212,175,55,0.12); }
-        .search-results { position: absolute; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; margin-top: 0.35rem; background: var(--bg); border: 1px solid var(--accent-dim); border-radius: 0.75rem; box-shadow: 0 8px 32px rgba(0,0,0,0.08); overflow: hidden; z-index: 100; display: none; }
-        .search-results:not(:empty) { display: block; }
+        /* Feature 14: Nav Search */
+        .nav-search { position: relative; margin-left: 0.5rem; }
+        .nav-search-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; color: var(--muted-fg); padding: 0.25rem; transition: color var(--dur); }
+        .nav-search-btn:hover { color: var(--accent); }
+        .nav-search-input { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 0; padding: 0; border: none; font-family: var(--font-body); font-size: 0.85rem; background: var(--bg); color: var(--text); outline: none; transition: width 0.4s, padding 0.4s, border 0.4s; border-radius: 0; border-bottom: 1px solid transparent; overflow: hidden; }
+        .nav-search-input.open { width: 200px; padding: 0.3rem 0.5rem; border-bottom-color: var(--accent-dim); }
+        .nav-search-input:focus { border-bottom-color: var(--accent); }
+        .search-results { position: absolute; right: 0; top: 100%; width: 320px; max-height: 360px; margin-top: 0.5rem; background: var(--bg); border: 1px solid var(--accent-dim); border-radius: 0; box-shadow: 0 8px 32px rgba(0,0,0,0.1); overflow-y: auto; z-index: 100; display: none; }
+        .search-results.open { display: block; }
         .search-result-item { padding: 0.65rem 1rem; border-bottom: 1px solid rgba(212,175,55,0.08); cursor: pointer; transition: background var(--dur); }
         .search-result-item:hover { background: rgba(212,175,55,0.06); }
         .search-result-item:last-child { border-bottom: none; }
-        .search-result-item .sr-type { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.1rem; }
-        .search-result-item .sr-name { font-family: var(--font-display); font-size: 1rem; }
-        .search-result-item .sr-meta { font-size: 0.75rem; color: var(--muted-fg); margin-top: 0.1rem; }
-        .search-empty { text-align: center; color: var(--muted-fg); padding: 1.5rem; font-style: italic; font-size: 0.85rem; }
-        .search-highlight { background: rgba(212,175,55,0.2); padding: 0.05em 0.15em; border-radius: 2px; }
+        .search-result-item .sr-type { font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.1rem; }
+        .search-result-item .sr-name { font-family: var(--font-display); font-size: 0.95rem; color: var(--text); }
+        .search-result-item .sr-meta { font-size: 0.7rem; color: var(--muted-fg); margin-top: 0.1rem; }
+        .search-empty { text-align: center; color: var(--muted-fg); padding: 1.5rem; font-style: italic; font-size: 0.8rem; }
 
         /* Feature 1: Calendar Heatmap */
         .heatmap-wrap { overflow: hidden; position: relative; }
@@ -576,7 +578,7 @@
         .heatmap-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
         .heatmap-nav-btn:disabled { opacity: 0.3; cursor: default; }
         .heatmap-nav-btn:disabled:hover { border-color: var(--accent-dim); color: var(--muted-fg); }
-        .heatmap-months { display: flex; margin: 0 0.25rem 0.5rem; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bg); opacity: 0.6; overflow: hidden; white-space: nowrap; }
+        .heatmap-months { display: flex; margin: 0.5rem 0 0; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bg); opacity: 0.7; overflow: hidden; white-space: nowrap; justify-content: flex-start; }
         .heatmap-months span { flex-shrink: 0; }
         .heatmap-legend { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bg); opacity: 0.7; }
         .heatmap-legend .hl-cell { width: 12px; height: 12px; border-radius: 2px; }
@@ -611,14 +613,6 @@
     <div class="grid-line grid-line-3"></div>
     <div class="grid-line grid-line-4"></div>
     
-    <!-- Global Search Bar -->
-    <div class="search-bar-top" id="search">
-        <div class="container" style="position:relative;">
-            <input type="text" class="search-bar" id="search-input" placeholder="搜索歌曲、观众或日期..." oninput="doSearch()">
-            <div class="search-results" id="search-results"></div>
-        </div>
-    </div>
-
     <!-- Navigation -->
     <nav class="nav">
         <div class="nav-inner">
@@ -633,6 +627,11 @@
                 <li><a href="#heatmap" class="nav-link">热图</a></li>
                 <li><a href="#achievements" class="nav-link">成就</a></li>
             </ul>
+            <div class="nav-search">
+                <button class="nav-search-btn" id="nav-search-btn" onclick="toggleNavSearch()" title="搜索">🔍</button>
+                <input type="text" class="nav-search-input" id="search-input" placeholder="搜索..." oninput="doSearch()">
+                <div class="search-results" id="search-results"></div>
+            </div>
         </div>
     </nav>
     
@@ -749,8 +748,8 @@
         <div class="container">
             <span class="section-label">Heatmap</span>
             <h2 class="section-title">日历热图</h2>
-            <div class="heatmap-months" id="heatmap-months"></div>
             <div class="heatmap-wrap" id="heatmap-container"></div>
+            <div class="heatmap-months" id="heatmap-months"></div>
             <div class="heatmap-nav">
                 <button class="heatmap-nav-btn" id="heatmap-prev" onclick="heatmapScroll(-1)" disabled>&larr;</button>
                 <button class="heatmap-nav-btn" id="heatmap-next" onclick="heatmapScroll(1)">&rarr;</button>
@@ -1129,10 +1128,24 @@
         }
 
         // ==== Feature 14: Global Search ====
+        function toggleNavSearch() {
+            var input = document.getElementById('search-input');
+            var results = document.getElementById('search-results');
+            if (input.classList.contains('open')) {
+                input.classList.remove('open');
+                results.classList.remove('open');
+                input.value = '';
+                results.innerHTML = '';
+            } else {
+                input.classList.add('open');
+                setTimeout(function() { input.focus(); }, 400);
+            }
+        }
         function doSearch() {
             var q = (document.getElementById('search-input').value || '').trim().toLowerCase();
             var container = document.getElementById('search-results');
-            if (!q || q.length < 1) { container.innerHTML = ''; return; }
+            if (!q || q.length < 1) { container.classList.remove('open'); container.innerHTML = ''; return; }
+            container.classList.add('open');
             var results = [];
             var idx = appData.search_index;
             // Search songs
@@ -1211,13 +1224,17 @@
             heatmapColsPerPage = Math.max(15, Math.floor(container.parentElement.offsetWidth / 20));
             heatmapTotalPages = Math.ceil(totalCols / heatmapColsPerPage);
             heatmapPage = Math.min(heatmapPage, heatmapTotalPages - 1);
-            // Render Month labels
-            var mlHtml = '<div style="display:flex;gap:0;">';
+            // Render Month labels at bottom
             var displayedCol = heatmapPage * heatmapColsPerPage;
+            var totalWidth = container.parentElement.offsetWidth - 32;
+            var cellW = 14 + 3; // cell width + gap
+            var colsShown = Math.min(heatmapColsPerPage, totalCols - displayedCol);
+            var mlHtml = '<div style="display:flex;width:' + totalWidth + 'px;margin:0 auto;position:relative;">';
             for (var i = 0; i < monthLabels.length; i++) {
                 var ml = monthLabels[i];
-                if (ml.col >= displayedCol && ml.col < displayedCol + heatmapColsPerPage) {
-                    mlHtml += '<span style="flex:1;text-align:left;min-width:0;">' + ml.label + '</span>';
+                if (ml.col >= displayedCol && ml.col < displayedCol + colsShown) {
+                    var leftPx = (ml.col - displayedCol) * cellW;
+                    mlHtml += '<span style="position:absolute;left:' + leftPx + 'px;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;">' + ml.label + '</span>';
                 }
             }
             mlHtml += '</div>';
