@@ -406,6 +406,20 @@
         }
         .detail-close:hover { border-color: var(--accent); color: var(--accent); }
         
+        /* Celebration overlay */
+        .celebration-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(26,26,26,0.92); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.6s; }
+        .celebration-overlay.active { opacity: 1; pointer-events: all; }
+        .celebration-content { text-align: center; z-index: 10; }
+        .celebration-title { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 8vw, 6rem); color: #F9F8F6; font-weight: 500; letter-spacing: 0.02em; }
+        .celebration-name { font-family: 'Playfair Display', serif; font-size: clamp(4rem, 12vw, 9rem); color: #D4AF37; font-weight: 700; margin: 0.5rem 0; line-height: 1; }
+        .celebration-sub { font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(249,248,246,0.5); margin-top: 1rem; }
+        .celebration-hint { font-size: 0.7rem; color: rgba(249,248,246,0.3); margin-top: 2rem; }
+        @keyframes confettiFall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+        .confetti-piece { position: absolute; width: 10px; height: 10px; animation: confettiFall 3s ease-in forwards; }
+        
         .detail-song {
             display: flex;
             align-items: baseline;
@@ -810,6 +824,12 @@
         <div class="detail-panel" id="detail-panel"></div>
     </div>
     
+    <!-- Celebration Overlay -->
+    <div class="celebration-overlay" id="celebration-overlay" onclick="closeCelebration()">
+        <div class="celebration-confetti" id="celebration-confetti"></div>
+        <div class="celebration-content" id="celebration-content"></div>
+    </div>
+    
     <script>
         {{APPDATA}}
         
@@ -1196,9 +1216,16 @@
             e.stopPropagation();
         });
         function doSearch() {
-            var q = (document.getElementById('search-input').value || '').trim().toLowerCase();
+            var q = (document.getElementById('search-input').value || '').trim();
             var container = document.getElementById('search-results');
             if (!q || q.length < 1) { container.classList.remove('open'); container.innerHTML = ''; return; }
+            // Easter egg: "谁是点歌大王？"
+            if (q === '谁是点歌大王？' || q === '谁是点歌大王' || q === '谁是点歌大王?') {
+                closeNavSearch();
+                showCelebration();
+                return;
+            }
+            q = q.toLowerCase();
             container.classList.add('open');
             var results = [];
             var idx = appData.search_index;
@@ -1474,6 +1501,34 @@
             link.download = filename;
             link.click();
             URL.revokeObjectURL(link.href);
+        }
+
+        // ==== Easter Egg: Celebration ====
+        function showCelebration() {
+            var top = appData.total_leaderboard[0];
+            var overlay = document.getElementById('celebration-overlay');
+            var content = document.getElementById('celebration-content');
+            var confettiContainer = document.getElementById('celebration-confetti');
+            content.innerHTML = '<div class="celebration-title">点歌大王</div><div class="celebration-name">' + top.audience + '</div><div class="celebration-sub">共计 ' + top.count + ' 次点歌 · 荣登榜首</div><div class="celebration-hint">点击任意处关闭</div>';
+            // Generate confetti
+            var colors = ['#D4AF37','#F5D76E','#F9F8F6','#E8C547','#C4A96A','#FFF8DC'];
+            confettiContainer.innerHTML = '';
+            for (var i = 0; i < 80; i++) {
+                var piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.animationDelay = Math.random() * 2 + 's';
+                piece.style.animationDuration = (2.5 + Math.random() * 2) + 's';
+                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.width = (6 + Math.random() * 10) + 'px';
+                piece.style.height = (6 + Math.random() * 10) + 'px';
+                confettiContainer.appendChild(piece);
+            }
+            overlay.classList.add('active');
+        }
+        function closeCelebration() {
+            document.getElementById('celebration-overlay').classList.remove('active');
+            document.getElementById('celebration-confetti').innerHTML = '';
         }
 
     </script>
