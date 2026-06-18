@@ -15215,7 +15215,7 @@
                 songCount[r.song] = (songCount[r.song] || 0) + 1;
                 if (!songDates[r.song] || r.date > songDates[r.song]) songDates[r.song] = r.date;
             });
-            const songList = Object.entries(songCount).sort((a, b) => b[1] - a[1]).slice(0, 20);
+            const songList = Object.entries(songCount).sort((a, b) => b[1] - a[1]);
             
             const panel = document.getElementById('detail-panel');
             // Calculate days since last request
