@@ -627,6 +627,20 @@
             color: var(--muted-fg);
             padding: 0.3rem 0 0;
             letter-spacing: 0.05em;
+            line-height: 1.7;
+        }
+        
+        .streak-summary {
+            user-select: none;
+            transition: opacity 0.3s;
+        }
+        .streak-summary:hover {
+            opacity: 0.7;
+        }
+        .streak-detail div {
+            font-size: 0.75rem;
+            color: var(--fg);
+            letter-spacing: 0.03em;
         }
         .detail-last-req span {
             color: var(--fg);
@@ -1347,8 +1361,12 @@
             rows.forEach(function(row) {
                 var nameEl = row.querySelector('.lb-name');
                 if (!nameEl) return;
-                var text = nameEl.textContent || '';
-                var aud = text.split(' ')[0];
+                // Extract audience name from first text node
+                var aud = '';
+                for (var j = 0; j < nameEl.childNodes.length; j++) {
+                    if (nameEl.childNodes[j].nodeType === 3) { aud = nameEl.childNodes[j].textContent.trim(); break; }
+                }
+                if (!aud) return;
                 var s = streakByAud[aud];
                 if (!s) return;
                 var badge = document.createElement('span');
@@ -1447,6 +1465,26 @@
                 });
                 simHtml += '</div>';
             }
+            // Consecutive streak info for current month
+            var streakHtml = '';
+            var now = new Date();
+            var thisMonth = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+            var monthStreaks = (appData.consecutive_streaks || {})[thisMonth] || [];
+            for (var k = 0; k < monthStreaks.length; k++) {
+                if (monthStreaks[k].audience === name) {
+                    var s = monthStreaks[k];
+                    streakHtml = '<div class="detail-last-req" style="color:var(--accent);margin-top:0.4rem;">' +
+                        '<div class="streak-summary" onclick="toggleStreakDetail(this)" style="cursor:pointer;">' +
+                        '🔥 连续两天点歌 <span style="color:var(--muted-fg);font-size:0.65rem;">(点击展开)</span>' +
+                        '</div>' +
+                        '<div class="streak-detail" style="display:none;margin-top:0.4rem;padding-left:0.8rem;line-height:1.8;">' +
+                        '<div>' + s.date1 + ' <span style="color:var(--accent);">→</span> ' + s.songs1.join('、') + '</div>' +
+                        '<div>' + s.date2 + ' <span style="color:var(--accent);">→</span> ' + s.songs2.join('、') + '</div>' +
+                        '</div>' +
+                        '</div>';
+                    break;
+                }
+            }
             // Determine B站 link: use UID if available
             const uid = appData.user_uids ? appData.user_uids[name] : null;
             const biliLabel = uid ? 'B站主页' : 'B站搜索';
@@ -1455,7 +1493,7 @@
                 '<div>' +
                     '<div class="detail-name">' + name + '</div>' +
                     '<div class="detail-count">' + records.length + ' 次点歌 · 点击空白关闭</div>' +
-                    lastReqHtml + simHtml +
+                    lastReqHtml + simHtml + streakHtml +
                 '</div>' +
                 '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;flex-shrink:0;white-space:nowrap;">' +
                     '<a class="detail-bili" href="' + biliHref + '" target="_blank" id="detail-bili-link" title="在B站查看 ' + name + '">' + biliLabel + '</a>' +
@@ -1517,6 +1555,18 @@
         function closeDetail(event) {
             if (event.target === document.getElementById('detail-overlay')) {
                 document.getElementById('detail-overlay').classList.remove('active');
+            }
+        }
+        
+        function toggleStreakDetail(summaryEl) {
+            var detail = summaryEl.nextElementSibling;
+            var hint = summaryEl.querySelector('span');
+            if (detail.style.display === 'none' || !detail.style.display) {
+                detail.style.display = 'block';
+                if (hint) hint.textContent = '(点击收起)';
+            } else {
+                detail.style.display = 'none';
+                if (hint) hint.textContent = '(点击展开)';
             }
         }
         
