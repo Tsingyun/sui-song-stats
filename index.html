@@ -486,6 +486,33 @@
         .detail-close:hover { color: var(--accent); }
         .detail-close:focus { outline: none; }
         
+        .detail-copy-btn {
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            color: var(--muted-fg);
+            cursor: pointer;
+            transition: color 0.3s;
+            user-select: none;
+        }
+        .detail-copy-btn:hover { color: var(--accent); }
+        
+        .copy-toast {
+            position: fixed;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(-12px);
+            background: var(--fg);
+            color: var(--bg);
+            font-size: 0.75rem;
+            padding: 0.6rem 1.5rem;
+            letter-spacing: 0.1em;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 999;
+        }
+        .copy-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        
         /* Celebration overlay */
         .celebration-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(26,26,26,0.92); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.6s; }
         .celebration-overlay.active { opacity: 1; pointer-events: all; }
@@ -14431,7 +14458,10 @@
                 const count = item.count;
                 const pct = total > 0 ? (count / total * 100).toFixed(1) : '0.0';
                 const isChampion = i === 0;
-                return '<div class="lb-row" onclick="showDetail(\'' + name.replace(/'/g, "\\'") + '\')">' +
+                const onClick = item.song ? 
+                    'showSongDetail(\'' + name.replace(/'/g, "\\'") + '\')' :
+                    'showDetail(\'' + name.replace(/'/g, "\\'") + '\')';
+                return '<div class="lb-row" onclick="' + onClick + '">' +
                     '<div class="lb-rank">' + (i + 1) + '</div>' +
                     '<div class="lb-info">' +
                         '<div class="lb-name">' + name + getLevelBadge(name) + (isChampion ? ' <span class="lb-crown">👑</span>' : '') + '</div>' +
@@ -14548,6 +14578,7 @@
                 '</div>' +
                 '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;">' +
                     '<a class="detail-bili" href="' + biliHref + '" target="_blank" id="detail-bili-link" title="在B站查看 ' + name + '">' + biliLabel + '</a>' +
+                    '<span class="detail-copy-btn" onclick="copyUserInfo(event, \'' + name.replace(/'/g, "\\'") + '\')" title="复制用户信息">复制</span>' +
                     '<span class="detail-close" onclick="closeDetailDirect()">✕</span>' +
                 '</div>' +
             '</div>' +
@@ -14606,6 +14637,35 @@
             if (event.target === document.getElementById('detail-overlay')) {
                 document.getElementById('detail-overlay').classList.remove('active');
             }
+        }
+        
+        function copyUserInfo(event, name) {
+            event.stopPropagation();
+            const records = (appData.raw_data || []).filter(r => r.audience === name);
+            const lastDate = appData.last_request_dates ? appData.last_request_dates[name] : '';
+            const now = new Date();
+            const thisMonth = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+            const monthCount = records.filter(r => r.date.startsWith(thisMonth)).length;
+            const text = '用户名：' + name + ' 上一次点歌：' + lastDate + ' 本月共点歌：' + monthCount + '次';
+            navigator.clipboard.writeText(text).then(function() {
+                showToast();
+            }).catch(function() {
+                alert('复制失败，请手动复制：\n' + text);
+            });
+        }
+        
+        function showToast() {
+            var t = document.getElementById('copy-toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = 'copy-toast';
+                t.className = 'copy-toast';
+                t.textContent = '已复制';
+                document.body.appendChild(t);
+            }
+            t.classList.add('show');
+            clearTimeout(t._timer);
+            t._timer = setTimeout(function() { t.classList.remove('show'); }, 1800);
         }
         
         function closeDetailDirect() {
