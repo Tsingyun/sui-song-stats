@@ -487,14 +487,41 @@
         .detail-close:focus { outline: none; }
         
         .detail-copy-btn {
-            font-size: 0.65rem;
-            letter-spacing: 0.2em;
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
             color: var(--muted-fg);
             cursor: pointer;
             transition: color 0.3s;
             user-select: none;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .detail-copy-btn:hover { color: var(--accent); }
+        
+        .lb-streak { 
+            font-size: 0.7rem; 
+            margin-left: 0.3rem; 
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+        .lb-streak:hover { transform: scale(1.2); }
+        
+        .streak-tooltip {
+            position: fixed;
+            z-index: 300;
+            background: var(--fg);
+            color: var(--bg);
+            font-size: 0.72rem;
+            padding: 0.6rem 1rem;
+            letter-spacing: 0.05em;
+            line-height: 1.6;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+        .streak-tooltip.show { opacity: 1; }
         
         .copy-toast {
             position: fixed;
@@ -14243,6 +14270,584 @@
     "date_start": "2024-06-03",
     "date_end": "2026-06-16",
     "updated": "2026-06-17"
+  },
+  "consecutive_streaks": {
+    "2024-11": [
+      {
+        "audience": "无响应失败小熊",
+        "date1": "2024-11-06",
+        "songs1": [
+          "天使"
+        ],
+        "date2": "2024-11-07",
+        "songs2": [
+          "园游会"
+        ]
+      }
+    ],
+    "2024-12": [
+      {
+        "audience": "真的才八点",
+        "date1": "2024-12-06",
+        "songs1": [
+          "一样的月光"
+        ],
+        "date2": "2024-12-07",
+        "songs2": [
+          "Remember me"
+        ]
+      },
+      {
+        "audience": "真的才八点",
+        "date1": "2024-12-07",
+        "songs1": [
+          "Remember me"
+        ],
+        "date2": "2024-12-08",
+        "songs2": [
+          "嘉宾"
+        ]
+      }
+    ],
+    "2025-01": [
+      {
+        "audience": "Vaserkia",
+        "date1": "2025-01-04",
+        "songs1": [
+          "海に行く"
+        ],
+        "date2": "2025-01-05",
+        "songs2": [
+          "致姗姗来迟的你"
+        ]
+      },
+      {
+        "audience": "Vaserkia",
+        "date1": "2025-01-19",
+        "songs1": [
+          "言って。"
+        ],
+        "date2": "2025-01-20",
+        "songs2": [
+          "真夏の通り雨"
+        ]
+      },
+      {
+        "audience": "Vaserkia",
+        "date1": "2025-01-20",
+        "songs1": [
+          "真夏の通り雨"
+        ],
+        "date2": "2025-01-21",
+        "songs2": [
+          "Rain Stops,Goodbye"
+        ]
+      }
+    ],
+    "2025-02": [
+      {
+        "audience": "真的才八点",
+        "date1": "2025-02-22",
+        "songs1": [
+          "Rainbow Girl"
+        ],
+        "date2": "2025-02-23",
+        "songs2": [
+          "No title"
+        ]
+      },
+      {
+        "audience": "真的才八点",
+        "date1": "2025-02-23",
+        "songs1": [
+          "No title"
+        ],
+        "date2": "2025-02-24",
+        "songs2": [
+          "热气球"
+        ]
+      },
+      {
+        "audience": "俺寻思这洋芋也没人要",
+        "date1": "2025-02-08",
+        "songs1": [
+          "达尔文"
+        ],
+        "date2": "2025-02-09",
+        "songs2": [
+          "生日祝福歌"
+        ]
+      },
+      {
+        "audience": "L1f3n0w0v3R710w_",
+        "date1": "2025-02-23",
+        "songs1": [
+          "半梦"
+        ],
+        "date2": "2025-02-24",
+        "songs2": [
+          "All Alone With You"
+        ]
+      }
+    ],
+    "2025-03": [
+      {
+        "audience": "Vaserkia",
+        "date1": "2025-03-26",
+        "songs1": [
+          "莹梦"
+        ],
+        "date2": "2025-03-27",
+        "songs2": [
+          "最高の片想い"
+        ]
+      },
+      {
+        "audience": "真的才八点",
+        "date1": "2025-03-01",
+        "songs1": [
+          "神仙说他也不懂"
+        ],
+        "date2": "2025-03-02",
+        "songs2": [
+          "昨日青空"
+        ]
+      },
+      {
+        "audience": "L1f3n0w0v3R710w_",
+        "date1": "2025-03-26",
+        "songs1": [
+          "糸"
+        ],
+        "date2": "2025-03-27",
+        "songs2": [
+          "月"
+        ]
+      }
+    ],
+    "2025-05": [
+      {
+        "audience": "岁己家出卖世界蛇",
+        "date1": "2025-05-17",
+        "songs1": [
+          "最长的电影"
+        ],
+        "date2": "2025-05-18",
+        "songs2": [
+          "白色风车"
+        ]
+      }
+    ],
+    "2025-06": [
+      {
+        "audience": "无响应失败小熊",
+        "date1": "2025-06-07",
+        "songs1": [
+          "万一对了呢"
+        ],
+        "date2": "2025-06-08",
+        "songs2": [
+          "才二十三"
+        ]
+      }
+    ],
+    "2025-07": [
+      {
+        "audience": "仙布着急唱灭歌",
+        "date1": "2025-07-17",
+        "songs1": [
+          "深海少女"
+        ],
+        "date2": "2025-07-18",
+        "songs2": [
+          "陪你度过漫长岁月"
+        ]
+      }
+    ],
+    "2025-09": [
+      {
+        "audience": "Vaserkia",
+        "date1": "2025-09-26",
+        "songs1": [
+          "変わらないもの"
+        ],
+        "date2": "2025-09-27",
+        "songs2": [
+          "爱笑的眼睛"
+        ]
+      }
+    ],
+    "2025-10": [
+      {
+        "audience": "Vaserkia",
+        "date1": "2025-10-20",
+        "songs1": [
+          "rain stops, good‑bye"
+        ],
+        "date2": "2025-10-21",
+        "songs2": [
+          "我怀念的"
+        ]
+      },
+      {
+        "audience": "仙布着急唱灭歌",
+        "date1": "2025-10-28",
+        "songs1": [
+          "さようなら、花泥棒さん"
+        ],
+        "date2": "2025-10-29",
+        "songs2": [
+          "嘘月"
+        ]
+      },
+      {
+        "audience": "岁己家的陈醋",
+        "date1": "2025-10-27",
+        "songs1": [
+          "一个像夏天一个像秋天"
+        ],
+        "date2": "2025-10-28",
+        "songs2": [
+          "情非得已"
+        ]
+      },
+      {
+        "audience": "无响应失败小熊",
+        "date1": "2025-10-25",
+        "songs1": [
+          "さよならミッドナイト"
+        ],
+        "date2": "2025-10-26",
+        "songs2": [
+          "Melody"
+        ]
+      },
+      {
+        "audience": "无响应失败小熊",
+        "date1": "2025-10-28",
+        "songs1": [
+          "表态"
+        ],
+        "date2": "2025-10-29",
+        "songs2": [
+          "外婆桥"
+        ]
+      },
+      {
+        "audience": "L1f3n0w0v3R710w_",
+        "date1": "2025-10-09",
+        "songs1": [
+          "失恋ソング沢山聴いて 泣いてばかりの私はもう。"
+        ],
+        "date2": "2025-10-10",
+        "songs2": [
+          "小步舞曲"
+        ]
+      },
+      {
+        "audience": "L1f3n0w0v3R710w_",
+        "date1": "2025-10-10",
+        "songs1": [
+          "小步舞曲"
+        ],
+        "date2": "2025-10-11",
+        "songs2": [
+          "双人船"
+        ]
+      },
+      {
+        "audience": "L1f3n0w0v3R710w_",
+        "date1": "2025-10-26",
+        "songs1": [
+          "蝴蝶"
+        ],
+        "date2": "2025-10-27",
+        "songs2": [
+          "百年孤寂"
+        ]
+      },
+      {
+        "audience": "L1f3n0w0v3R710w_",
+        "date1": "2025-10-27",
+        "songs1": [
+          "百年孤寂"
+        ],
+        "date2": "2025-10-28",
+        "songs2": [
+          "半醒"
+        ]
+      }
+    ],
+    "2025-11": [
+      {
+        "audience": "Vaserkia",
+        "date1": "2025-11-20",
+        "songs1": [
+          "小夜子"
+        ],
+        "date2": "2025-11-21",
+        "songs2": [
+          "月灯りふんわり落ちてくる夜",
+          "Planetes"
+        ]
+      },
+      {
+        "audience": "Vaserkia",
+        "date1": "2025-11-23",
+        "songs1": [
+          "私じゃなかったんだね"
+        ],
+        "date2": "2025-11-24",
+        "songs2": [
+          "ハッピーシンセサイザ"
+        ]
+      },
+      {
+        "audience": "岁己家的陈醋",
+        "date1": "2025-11-03",
+        "songs1": [
+          "秒針を噛む"
+        ],
+        "date2": "2025-11-04",
+        "songs2": [
+          "第一天"
+        ]
+      },
+      {
+        "audience": "无响应失败小熊",
+        "date1": "2025-11-01",
+        "songs1": [
+          "轨迹"
+        ],
+        "date2": "2025-11-02",
+        "songs2": [
+          "好久不见"
+        ]
+      },
+      {
+        "audience": "L1f3n0w0v3R710w_",
+        "date1": "2025-11-21",
+        "songs1": [
+          "世界は恋に落ちている"
+        ],
+        "date2": "2025-11-22",
+        "songs2": [
+          "地球最後の告白を"
+        ]
+      },
+      {
+        "audience": "L1f3n0w0v3R710w_",
+        "date1": "2025-11-24",
+        "songs1": [
+          "少女レイ"
+        ],
+        "date2": "2025-11-25",
+        "songs2": [
+          "踊り子"
+        ]
+      },
+      {
+        "audience": "Akananae",
+        "date1": "2025-11-20",
+        "songs1": [
+          "CHO-DARI-"
+        ],
+        "date2": "2025-11-21",
+        "songs2": [
+          "サリシノハラ"
+        ]
+      },
+      {
+        "audience": "岁己家的雨中月",
+        "date1": "2025-11-01",
+        "songs1": [
+          "名前のない怪物"
+        ],
+        "date2": "2025-11-02",
+        "songs2": [
+          "メルト"
+        ]
+      },
+      {
+        "audience": "岁己家出卖世界蛇",
+        "date1": "2025-11-13",
+        "songs1": [
+          "迷宫"
+        ],
+        "date2": "2025-11-14",
+        "songs2": [
+          "社畜少女"
+        ]
+      }
+    ],
+    "2025-12": [
+      {
+        "audience": "Vaserkia",
+        "date1": "2025-12-21",
+        "songs1": [
+          "me me she"
+        ],
+        "date2": "2025-12-22",
+        "songs2": [
+          "Mela!"
+        ]
+      }
+    ],
+    "2026-01": [
+      {
+        "audience": "L1f3n0w0v3R710w_",
+        "date1": "2026-01-10",
+        "songs1": [
+          "小步舞曲"
+        ],
+        "date2": "2026-01-11",
+        "songs2": [
+          "hacking to the gate"
+        ]
+      },
+      {
+        "audience": "岁己家的雨中月",
+        "date1": "2026-01-22",
+        "songs1": [
+          "难过233秒"
+        ],
+        "date2": "2026-01-23",
+        "songs2": [
+          "下个，路口，见"
+        ]
+      },
+      {
+        "audience": "请让我好好入睡",
+        "date1": "2026-01-30",
+        "songs1": [
+          "心拍数#0822"
+        ],
+        "date2": "2026-01-31",
+        "songs2": [
+          "万一对了呢"
+        ]
+      }
+    ],
+    "2026-02": [
+      {
+        "audience": "仙布着急唱灭歌",
+        "date1": "2026-02-22",
+        "songs1": [
+          "童话"
+        ],
+        "date2": "2026-02-23",
+        "songs2": [
+          "退后"
+        ]
+      }
+    ],
+    "2026-03": [
+      {
+        "audience": "Vaserkia",
+        "date1": "2026-03-17",
+        "songs1": [
+          "星座になれたら"
+        ],
+        "date2": "2026-03-18",
+        "songs2": [
+          "MILABO"
+        ]
+      },
+      {
+        "audience": "Akananae",
+        "date1": "2026-03-07",
+        "songs1": [
+          "棠梨煎雪"
+        ],
+        "date2": "2026-03-08",
+        "songs2": [
+          "あなたがいた森"
+        ]
+      },
+      {
+        "audience": "在白日梦蓝",
+        "date1": "2026-03-01",
+        "songs1": [
+          "霜雪千年"
+        ],
+        "date2": "2026-03-02",
+        "songs2": [
+          "爱就一个字"
+        ]
+      }
+    ],
+    "2026-04": [
+      {
+        "audience": "L1f3n0w0v3R710w_",
+        "date1": "2026-04-06",
+        "songs1": [
+          "From The Start"
+        ],
+        "date2": "2026-04-07",
+        "songs2": [
+          "All Alone With You"
+        ]
+      }
+    ],
+    "2026-05": [
+      {
+        "audience": "仙布着急唱灭歌",
+        "date1": "2026-05-02",
+        "songs1": [
+          "心愿便利贴"
+        ],
+        "date2": "2026-05-03",
+        "songs2": [
+          "爱情讯息"
+        ]
+      },
+      {
+        "audience": "岁己家出卖世界蛇",
+        "date1": "2026-05-06",
+        "songs1": [
+          "告白"
+        ],
+        "date2": "2026-05-07",
+        "songs2": [
+          "ラブ・ストーリーは突然に"
+        ]
+      },
+      {
+        "audience": "岁己家出卖世界蛇",
+        "date1": "2026-05-20",
+        "songs1": [
+          "恶作剧"
+        ],
+        "date2": "2026-05-21",
+        "songs2": [
+          "Pretender"
+        ]
+      }
+    ],
+    "2026-06": [
+      {
+        "audience": "仙布着急唱灭歌",
+        "date1": "2026-06-17",
+        "songs1": [
+          "サリシノハラ"
+        ],
+        "date2": "2026-06-18",
+        "songs2": [
+          "秒針を噛む"
+        ]
+      },
+      {
+        "audience": "岁己家的维斯",
+        "date1": "2026-06-13",
+        "songs1": [
+          "愛言葉IV"
+        ],
+        "date2": "2026-06-14",
+        "songs2": [
+          "人质"
+        ]
+      }
+    ]
   }
 };
         
@@ -14329,6 +14934,8 @@
             const data = appData.monthly_leaderboard[m] || [];
             const total = appData.trend_data[m] || 0;
             renderLeaderboard('monthly-leaderboard', data, m + ' 暂无点歌记录', total);
+            // Add streak badges after rendering
+            addStreakBadges('monthly-leaderboard', m);
         }
         
         function changeMonth(delta) {
@@ -14482,6 +15089,56 @@
             }, 50);
         }
 
+        
+        function showStreakTooltip(event, name, d1, s1, d2, s2) {
+            event.stopPropagation();
+            showStreakTooltipInner(event, d1, s1, d2, s2);
+        }
+        
+        function showStreakTooltipInner(e, d1, s1, d2, s2) {
+            var t = document.getElementById('streak-tooltip');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = 'streak-tooltip';
+                t.className = 'streak-tooltip';
+                document.body.appendChild(t);
+            }
+            t.innerHTML = d1 + ' <span style=\"color:var(--accent);\">' + s1 + '</span><br>' + d2 + ' <span style=\"color:var(--accent);\">' + s2 + '</span>';
+            t.style.left = e.clientX + 12 + 'px';
+            t.style.top = e.clientY - 8 + 'px';
+            t.classList.add('show');
+            clearTimeout(t._timer);
+            t._timer = setTimeout(function() { t.classList.remove('show'); }, 2500);
+            document.addEventListener('click', function hide() { t.classList.remove('show'); document.removeEventListener('click', hide); }, {once: true});
+        }
+        
+        function addStreakBadges(containerId, monthKey) {
+            var streaks = (appData.consecutive_streaks || {})[monthKey] || [];
+            if (!streaks.length) return;
+            var streakByAud = {};
+            streaks.forEach(function(s) { streakByAud[s.audience] = s; });
+            var container = document.getElementById(containerId);
+            if (!container) return;
+            var rows = container.querySelectorAll('.lb-row');
+            rows.forEach(function(row) {
+                var nameEl = row.querySelector('.lb-name');
+                if (!nameEl) return;
+                var text = nameEl.textContent || '';
+                var aud = text.split(' ')[0];
+                var s = streakByAud[aud];
+                if (!s) return;
+                var badge = document.createElement('span');
+                badge.className = 'lb-streak';
+                badge.textContent = '🔥';
+                badge.title = '连续两天点歌';
+                badge.onclick = function(e) {
+                    e.stopPropagation();
+                    showStreakTooltipInner(e, s.date1, s.songs1.join('、'), s.date2, s.songs2.join('、'));
+                };
+                nameEl.appendChild(badge);
+            });
+        }
+        
         function toggleExpand(containerId) {
             const c = document.getElementById(containerId);
             if (!c) return;
@@ -14576,7 +15233,7 @@
                     '<div class="detail-count">' + records.length + ' 次点歌 · 点击空白关闭</div>' +
                     lastReqHtml + simHtml +
                 '</div>' +
-                '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;">' +
+                '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;flex-shrink:0;white-space:nowrap;">' +
                     '<a class="detail-bili" href="' + biliHref + '" target="_blank" id="detail-bili-link" title="在B站查看 ' + name + '">' + biliLabel + '</a>' +
                     '<span class="detail-copy-btn" onclick="copyUserInfo(event, \'' + name.replace(/'/g, "\\'") + '\')" title="复制用户信息">复制</span>' +
                     '<span class="detail-close" onclick="closeDetailDirect()">✕</span>' +
@@ -14613,7 +15270,7 @@
                     '<div class="detail-name">' + songName + '</div>' +
                     '<div class="detail-count">' + records.length + ' 次被点歌 · ' + audienceList.length + ' 位观众点过</div>' +
                 '</div>' +
-                '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;">' +
+                '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;flex-shrink:0;white-space:nowrap;">' +
                     '<a class="detail-bili" href="#" target="_blank" id="detail-bili-link" title="在B站搜索 ' + songName + '">B站搜索</a>' +
                     '<span class="detail-close" onclick="closeDetailDirect()">✕</span>' +
                 '</div>' +

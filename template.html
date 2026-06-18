@@ -487,14 +487,41 @@
         .detail-close:focus { outline: none; }
         
         .detail-copy-btn {
-            font-size: 0.65rem;
-            letter-spacing: 0.2em;
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
             color: var(--muted-fg);
             cursor: pointer;
             transition: color 0.3s;
             user-select: none;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .detail-copy-btn:hover { color: var(--accent); }
+        
+        .lb-streak { 
+            font-size: 0.7rem; 
+            margin-left: 0.3rem; 
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+        .lb-streak:hover { transform: scale(1.2); }
+        
+        .streak-tooltip {
+            position: fixed;
+            z-index: 300;
+            background: var(--fg);
+            color: var(--bg);
+            font-size: 0.72rem;
+            padding: 0.6rem 1rem;
+            letter-spacing: 0.05em;
+            line-height: 1.6;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+        .streak-tooltip.show { opacity: 1; }
         
         .copy-toast {
             position: fixed;
@@ -1131,6 +1158,8 @@
             const data = appData.monthly_leaderboard[m] || [];
             const total = appData.trend_data[m] || 0;
             renderLeaderboard('monthly-leaderboard', data, m + ' 暂无点歌记录', total);
+            // Add streak badges after rendering
+            addStreakBadges('monthly-leaderboard', m);
         }
         
         function changeMonth(delta) {
@@ -1284,6 +1313,56 @@
             }, 50);
         }
 
+        
+        function showStreakTooltip(event, name, d1, s1, d2, s2) {
+            event.stopPropagation();
+            showStreakTooltipInner(event, d1, s1, d2, s2);
+        }
+        
+        function showStreakTooltipInner(e, d1, s1, d2, s2) {
+            var t = document.getElementById('streak-tooltip');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = 'streak-tooltip';
+                t.className = 'streak-tooltip';
+                document.body.appendChild(t);
+            }
+            t.innerHTML = d1 + ' <span style=\"color:var(--accent);\">' + s1 + '</span><br>' + d2 + ' <span style=\"color:var(--accent);\">' + s2 + '</span>';
+            t.style.left = e.clientX + 12 + 'px';
+            t.style.top = e.clientY - 8 + 'px';
+            t.classList.add('show');
+            clearTimeout(t._timer);
+            t._timer = setTimeout(function() { t.classList.remove('show'); }, 2500);
+            document.addEventListener('click', function hide() { t.classList.remove('show'); document.removeEventListener('click', hide); }, {once: true});
+        }
+        
+        function addStreakBadges(containerId, monthKey) {
+            var streaks = (appData.consecutive_streaks || {})[monthKey] || [];
+            if (!streaks.length) return;
+            var streakByAud = {};
+            streaks.forEach(function(s) { streakByAud[s.audience] = s; });
+            var container = document.getElementById(containerId);
+            if (!container) return;
+            var rows = container.querySelectorAll('.lb-row');
+            rows.forEach(function(row) {
+                var nameEl = row.querySelector('.lb-name');
+                if (!nameEl) return;
+                var text = nameEl.textContent || '';
+                var aud = text.split(' ')[0];
+                var s = streakByAud[aud];
+                if (!s) return;
+                var badge = document.createElement('span');
+                badge.className = 'lb-streak';
+                badge.textContent = '🔥';
+                badge.title = '连续两天点歌';
+                badge.onclick = function(e) {
+                    e.stopPropagation();
+                    showStreakTooltipInner(e, s.date1, s.songs1.join('、'), s.date2, s.songs2.join('、'));
+                };
+                nameEl.appendChild(badge);
+            });
+        }
+        
         function toggleExpand(containerId) {
             const c = document.getElementById(containerId);
             if (!c) return;
@@ -1378,7 +1457,7 @@
                     '<div class="detail-count">' + records.length + ' 次点歌 · 点击空白关闭</div>' +
                     lastReqHtml + simHtml +
                 '</div>' +
-                '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;">' +
+                '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;flex-shrink:0;white-space:nowrap;">' +
                     '<a class="detail-bili" href="' + biliHref + '" target="_blank" id="detail-bili-link" title="在B站查看 ' + name + '">' + biliLabel + '</a>' +
                     '<span class="detail-copy-btn" onclick="copyUserInfo(event, \'' + name.replace(/'/g, "\\'") + '\')" title="复制用户信息">复制</span>' +
                     '<span class="detail-close" onclick="closeDetailDirect()">✕</span>' +
@@ -1415,7 +1494,7 @@
                     '<div class="detail-name">' + songName + '</div>' +
                     '<div class="detail-count">' + records.length + ' 次被点歌 · ' + audienceList.length + ' 位观众点过</div>' +
                 '</div>' +
-                '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;">' +
+                '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;flex-shrink:0;white-space:nowrap;">' +
                     '<a class="detail-bili" href="#" target="_blank" id="detail-bili-link" title="在B站搜索 ' + songName + '">B站搜索</a>' +
                     '<span class="detail-close" onclick="closeDetailDirect()">✕</span>' +
                 '</div>' +
