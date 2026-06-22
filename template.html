@@ -1298,25 +1298,43 @@
             const displayData = showAll ? data : data.slice(0, 10);
             const hasMore = data.length > 10;
 
-            container.innerHTML = displayData.map((item, i) => {
-                const name = item.audience || item.song || '';
-                const count = item.count;
-                const pct = total > 0 ? (count / total * 100).toFixed(1) : '0.0';
-                const isChampion = i === 0;
-                const onClick = item.song ? 
-                    'showSongDetail(\'' + name.replace(/'/g, "\\'") + '\')' :
-                    'showDetail(\'' + name.replace(/'/g, "\\'") + '\')';
-                return '<div class="lb-row" onclick="' + onClick + '">' +
-                    '<div class="lb-rank">' + (i + 1) + '</div>' +
-                    '<div class="lb-info">' +
-                        '<div class="lb-name">' + name + getLevelBadge(name) + (isChampion ? ' <span class="lb-crown">👑</span>' : '') + '</div>' +
-                        '<div class="lb-count">' + count + ' 次 · 点歌占比 ' + pct + '%</div>' +
-                    '</div>' +
-                    '<div class="lb-bar-container">' +
-                        '<div class="lb-bar" style="width:' + pct + '%"></div>' +
-                    '</div>' +
-                '</div>';
-            }).join('') +
+            container.innerHTML = (function() {
+                // Calculate percentages ensuring sum = 100%
+                var pcts = displayData.map(function(item) {
+                    return total > 0 ? item.count / total * 100 : 0;
+                });
+                // Round all but last, adjust last to make sum = 100
+                var sumRounded = 0;
+                var displayPcts = pcts.map(function(v, i) {
+                    var r = Math.round(v * 10) / 10; // round to 1 decimal
+                    if (i === displayData.length - 1 && displayData.length > 0) {
+                        // Last item gets the remainder
+                        r = +(100 - sumRounded).toFixed(1);
+                    }
+                    sumRounded += r;
+                    return r.toFixed(1);
+                });
+                
+                return displayData.map(function(item, i) {
+                    var name = item.audience || item.song || '';
+                    var count = item.count;
+                    var pct = displayPcts[i];
+                    var isChampion = i === 0;
+                    var onClick = item.song ? 
+                        'showSongDetail(\'' + name.replace(/'/g, "\\'") + '\')' :
+                        'showDetail(\'' + name.replace(/'/g, "\\'") + '\')';
+                    return '<div class="lb-row" onclick="' + onClick + '">' +
+                        '<div class="lb-rank">' + (i + 1) + '</div>' +
+                        '<div class="lb-info">' +
+                            '<div class="lb-name">' + name + getLevelBadge(name) + (isChampion ? ' <span class="lb-crown">👑</span>' : '') + '</div>' +
+                            '<div class="lb-count">' + count + ' 次 · 点歌占比 ' + pct + '%</div>' +
+                        '</div>' +
+                        '<div class="lb-bar-container">' +
+                            '<div class="lb-bar" style="width:' + pct + '%"></div>' +
+                        '</div>' +
+                    '</div>';
+                }).join('');
+            })() +
             (hasMore ? '<div class="lb-expand-btn" onclick="toggleExpand(\'' + containerId + '\')">' +
                 (showAll ? '收起 ▲' : '展开全部（共 ' + data.length + ' ' + quantifier + '）▼') + '</div>' : '');
 
