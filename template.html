@@ -1333,7 +1333,7 @@
             showStreakTooltipInner(event, d1, s1, d2, s2);
         }
         
-        function showStreakTooltipInner(e, d1, s1, d2, s2) {
+        function showStreakTooltipInner(e, s) {
             var t = document.getElementById('streak-tooltip');
             if (!t) {
                 t = document.createElement('div');
@@ -1341,12 +1341,17 @@
                 t.className = 'streak-tooltip';
                 document.body.appendChild(t);
             }
-            t.innerHTML = d1 + ' <span style=\"color:var(--accent);\">' + s1 + '</span><br>' + d2 + ' <span style=\"color:var(--accent);\">' + s2 + '</span>';
+            var html = '';
+            for (var i = 0; i < s.chain.length; i++) {
+                if (i > 0) html += '<br>';
+                html += s.chain[i] + ' <span style=\"color:var(--accent);\">' + (s.songs[i] || []).join('、') + '</span>';
+            }
+            t.innerHTML = html;
             t.style.left = e.clientX + 12 + 'px';
             t.style.top = e.clientY - 8 + 'px';
             t.classList.add('show');
             clearTimeout(t._timer);
-            t._timer = setTimeout(function() { t.classList.remove('show'); }, 2500);
+            t._timer = setTimeout(function() { t.classList.remove('show'); }, 3000);
             document.addEventListener('click', function hide() { t.classList.remove('show'); document.removeEventListener('click', hide); }, {once: true});
         }
         
@@ -1371,11 +1376,12 @@
                 if (!s) return;
                 var badge = document.createElement('span');
                 badge.className = 'lb-streak';
-                badge.textContent = '🔥';
-                badge.title = '连续两天点歌';
+                var n = s.length - 1;
+                badge.textContent = n > 1 ? '🔥'.repeat(n) : '🔥';
+                badge.title = '连续' + s.length + '场点歌';
                 badge.onclick = function(e) {
                     e.stopPropagation();
-                    showStreakTooltipInner(e, s.date1, s.songs1.join('、'), s.date2, s.songs2.join('、'));
+                    showStreakTooltipInner(e, s);
                 };
                 nameEl.appendChild(badge);
             });
@@ -1473,13 +1479,18 @@
             for (var k = 0; k < monthStreaks.length; k++) {
                 if (monthStreaks[k].audience === name) {
                     var s = monthStreaks[k];
-                    streakHtml = '<div class="detail-last-req" style="color:var(--accent);margin-top:0.4rem;">' +
-                        '<div class="streak-summary" onclick="toggleStreakDetail(this)" style="cursor:pointer;">' +
-                        '🔥 连续两天点歌 <span style="color:var(--muted-fg);font-size:0.65rem;">(点击展开)</span>' +
+                    var fireCount = Math.max(1, s.length - 1);
+                    var fireEmoji = fireCount > 1 ? '🔥'.repeat(fireCount) : '🔥';
+                    var detailHtml = '';
+                    for (var ci = 0; ci < s.chain.length; ci++) {
+                        detailHtml += '<div>' + s.chain[ci] + ' <span style=\"color:var(--accent);\">→</span> ' + (s.songs[ci] || []).join('、') + '</div>';
+                    }
+                    streakHtml = '<div class=\"detail-last-req\" style=\"color:var(--accent);margin-top:0.4rem;\">' +
+                        '<div class=\"streak-summary\" onclick=\"toggleStreakDetail(this)\" style=\"cursor:pointer;\">' +
+                        fireEmoji + ' 连续' + s.length + '场点歌 <span style=\"color:var(--muted-fg);font-size:0.65rem;\">(点击展开)</span>' +
                         '</div>' +
-                        '<div class="streak-detail" style="display:none;margin-top:0.4rem;padding-left:0.8rem;line-height:1.8;">' +
-                        '<div>' + s.date1 + ' <span style="color:var(--accent);">→</span> ' + s.songs1.join('、') + '</div>' +
-                        '<div>' + s.date2 + ' <span style="color:var(--accent);">→</span> ' + s.songs2.join('、') + '</div>' +
+                        '<div class=\"streak-detail\" style=\"display:none;margin-top:0.4rem;padding-left:0.8rem;line-height:1.8;\">' +
+                        detailHtml +
                         '</div>' +
                         '</div>';
                     break;
