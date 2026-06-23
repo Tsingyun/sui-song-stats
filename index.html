@@ -15679,20 +15679,23 @@
 
             container.innerHTML = (function() {
                 // Calculate percentages ensuring sum = 100%
-                var pcts = displayData.map(function(item) {
+                var raw = displayData.map(function(item) {
                     return total > 0 ? item.count / total * 100 : 0;
                 });
-                // Round all but last, adjust last to make sum = 100
-                var sumRounded = 0;
-                var displayPcts = pcts.map(function(v, i) {
-                    var r = Math.round(v * 10) / 10; // round to 1 decimal
-                    if (i === displayData.length - 1 && displayData.length > 0) {
-                        // Last item gets the remainder
-                        r = +(100 - sumRounded).toFixed(1);
+                // Floor all values to 1 decimal, last item gets remainder
+                var sumFloor = 0;
+                var displayPcts = [];
+                for (var i = 0; i < raw.length; i++) {
+                    if (i === raw.length - 1) {
+                        // Last item: use remainder to guarantee sum = 100
+                        var rem = +(100 - sumFloor).toFixed(1);
+                        displayPcts.push(rem >= 0 ? rem.toFixed(1) : '0.0');
+                    } else {
+                        var f = +(Math.floor(raw[i] * 10) / 10).toFixed(1);
+                        sumFloor += f;
+                        displayPcts.push(f.toFixed(1));
                     }
-                    sumRounded += r;
-                    return r.toFixed(1);
-                });
+                }
                 
                 return displayData.map(function(item, i) {
                     var name = item.audience || item.song || '';
