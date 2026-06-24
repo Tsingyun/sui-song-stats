@@ -16132,13 +16132,13 @@
         function renderChampionStreaks() {
             var streaks = appData.champion_streaks || [];
             var c = document.getElementById('champion-streaks-container');
-            if (!streaks.length) { c.innerHTML = '<p style="color:var(--bg);opacity:0.5;font-style:italic;">暂无连续夺冠记录</p>'; return; }
+            if (!streaks.length) { c.innerHTML = '<p style="color:var(--muted-fg);font-style:italic;">暂无连续夺冠记录</p>'; return; }
             var html = '';
             streaks.forEach(function(s, i) {
-                html += '<div style="padding:1rem 0;border-top:1px solid rgba(249,248,246,0.1);display:flex;align-items:center;gap:1.5rem;">';
+                html += '<div style="padding:1rem 0;border-top:1px solid rgba(26,26,26,0.08);display:flex;align-items:center;gap:1.5rem;">';
                 html += '<div style="font-family:\'Playfair Display\',serif;font-size:2rem;color:var(--accent);min-width:3rem;">' + (i+1) + '</div>';
-                html += '<div style="flex:1;"><div style="color:var(--bg);font-size:1rem;">' + s.audience + '</div>';
-                html += '<div style="color:rgba(249,248,246,0.5);font-size:0.7rem;letter-spacing:0.1em;">连续<span style="color:var(--accent);">' + s.count + '</span>个月夺冠 · ' + s.months[0] + ' — ' + s.months[s.months.length-1] + '</div></div>';
+                html += '<div style="flex:1;"><div style="color:var(--fg);font-size:1rem;">' + s.audience + '</div>';
+                html += '<div style="color:var(--muted-fg);font-size:0.7rem;letter-spacing:0.1em;">连续<span style="color:var(--accent);">' + s.count + '</span>个月夺冠 · ' + s.months[0] + ' — ' + s.months[s.months.length-1] + '</div></div>';
                 html += '</div>';
             });
             c.innerHTML = html;
