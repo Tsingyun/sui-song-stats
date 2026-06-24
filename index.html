@@ -642,6 +642,17 @@
             color: var(--fg);
             letter-spacing: 0.03em;
         }
+        
+        .detail-period-label {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--accent);
+            padding: 0.5rem 0 0.3rem;
+            letter-spacing: 0.08em;
+            border-bottom: 1px solid rgba(212,175,55,0.2);
+            margin-bottom: 0.3rem;
+        }
         .detail-last-req span {
             color: var(--fg);
             font-weight: 500;
@@ -15589,6 +15600,7 @@
         function renderMonth() {
             if (months.length === 0) return;
             const m = months[currentMonthIdx];
+            window._currentPeriod = { type: 'month', key: m };
             document.getElementById('monthly-label').textContent = m;
             document.getElementById('monthly-select').value = m;
             const data = appData.monthly_leaderboard[m] || [];
@@ -15630,6 +15642,7 @@
         function renderQuarter() {
             if (quarters.length === 0) return;
             const q = quarters[currentQuarterIdx];
+            window._currentPeriod = { type: 'quarter', key: q };
             document.getElementById('quarterly-label').textContent = q;
             document.getElementById('quarterly-select').value = q;
             const data = appData.quarterly_leaderboard[q] || [];
@@ -15662,6 +15675,7 @@
 
         function renderYear() {
             if (years.length === 0) return;
+            window._currentPeriod = null;
             const y = years[currentYearIdx];
             document.getElementById('yearly-label').textContent = y;
             document.getElementById('yearly-select').value = y;
@@ -15690,11 +15704,13 @@
         
         // --- Total ---
         function renderTotal() {
+            window._currentPeriod = null;
             renderLeaderboard('total-leaderboard', appData.total_leaderboard, '暂无数据', appData.metadata.total_records);
         }
 
         // --- Songs ---
         function renderSongs() {
+            window._currentPeriod = null;
             renderLeaderboard('songs-leaderboard', appData.song_leaderboard, '暂无数据', appData.metadata.total_records, '首');
         }
         
@@ -15890,6 +15906,43 @@
             });
             const songList = Object.entries(songCount).sort((a, b) => b[1] - a[1]);
             
+            // If opened from monthly/quarterly view, split songs into current period vs others
+            var periodSongs = [];  // songs from current month/quarter
+            var otherSongs = [];  // other songs
+            var periodLabel = '';
+            if (window._currentPeriod) {
+                var cp = window._currentPeriod;
+                periodLabel = cp.type === 'month' ? cp.key : cp.key;
+                // Build a set of dates that belong to this period
+                var periodDateSet = {};
+                if (cp.type === 'month') {
+                    records.forEach(function(r) { if (r.date.startsWith(cp.key)) periodDateSet[r.song] = true; });
+                } else {
+                    // quarter: e.g. "2026-Q2" -> months 2026-04, 2026-05, 2026-06
+                    var parts = cp.key.split('-Q');
+                    var qy = parts[0], qn = parseInt(parts[1]);
+                    var qMonths = [];
+                    for (var qm = (qn-1)*3+1; qm <= qn*3; qm++) {
+                        qMonths.push(qy + '-' + String(qm).padStart(2,'0'));
+                    }
+                    records.forEach(function(r) {
+                        var rm = r.date.substring(0, 7);
+                        if (qMonths.indexOf(rm) >= 0) periodDateSet[r.song] = true;
+                    });
+                }
+                // Split the song list
+                songList.forEach(function(entry) {
+                    if (periodDateSet[entry[0]]) {
+                        periodSongs.push(entry);
+                    } else {
+                        otherSongs.push(entry);
+                    }
+                });
+                // Keep period songs sorted by count
+                periodSongs.sort(function(a, b) { return b[1] - a[1]; });
+                otherSongs.sort(function(a, b) { return b[1] - a[1]; });
+            }
+            
             const panel = document.getElementById('detail-panel');
             // Calculate days since last request
             const lastDate = appData.last_request_dates ? appData.last_request_dates[name] : null;
@@ -15955,13 +16008,28 @@
                     '<span class="detail-close" onclick="closeDetailDirect()">✕</span>' +
                 '</div>' +
             '</div>' +
-            '<div class="detail-audience-songs">' + songList.map(([song, cnt]) => 
-                '<div class="detail-song">' +
-                    '<span class="detail-song-name">' + song + '</span>' +
-                    '<span class="detail-song-date">' + (songDates[song] || '') + '</span>' +
-                    '<span class="detail-song-count">' + cnt + '次</span>' +
-                '</div>'
-            ).join('') + '</div>';
+            // Build song list HTML with optional period split
+            (function() {
+                var renderSongRow = function(song, cnt) {
+                    return '<div class="detail-song">' +
+                        '<span class="detail-song-name">' + song + '</span>' +
+                        '<span class="detail-song-date">' + (songDates[song] || '') + '</span>' +
+                        '<span class="detail-song-count">' + cnt + '次</span>' +
+                    '</div>';
+                };
+                var html = '';
+                if (periodSongs.length > 0) {
+                    html += '<div class="detail-period-label">' + periodLabel + '</div>';
+                    html += periodSongs.map(function(e) { return renderSongRow(e[0], e[1]); }).join('');
+                    if (otherSongs.length > 0) {
+                        html += '<div class="detail-period-label" style="margin-top:1rem;">过往歌曲</div>';
+                        html += otherSongs.map(function(e) { return renderSongRow(e[0], e[1]); }).join('');
+                    }
+                } else {
+                    html = songList.map(function(e) { return renderSongRow(e[0], e[1]); }).join('');
+                }
+                return html;
+            })() + '</div>';
             
             document.getElementById('detail-overlay').classList.add('active');
         }
