@@ -6,7 +6,7 @@
 
 ## 访问地址
 
-在线版：[https://tsingyun.github.io/sui-song-stats/](https://tsingyun.github.io/sui-song-stats/)
+在线版：[https://stats.suijisui.uk](https://stats.suijisui.uk)
 
 本地使用：双击 `index.html` 即可在浏览器中打开。
 
