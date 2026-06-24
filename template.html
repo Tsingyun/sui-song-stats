@@ -1547,8 +1547,9 @@
                 });
                 simHtml += '</div>';
             }
-            // Consecutive streak info for current month
+            // Consecutive streak info — only for monthly view or no period context
             var streakHtml = '';
+            if (!window._currentPeriod || window._currentPeriod.type === 'month') {
             var now = new Date();
             var thisMonth = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
             var monthStreaks = (appData.consecutive_streaks || {})[thisMonth] || [];
@@ -1568,9 +1569,10 @@
                         '<div class=\"streak-detail\" style=\"display:none;margin-top:0.4rem;padding-left:0.8rem;line-height:1.8;\">' +
                         detailHtml +
                         '</div>' +
-                        '</div>';
+                    '</div>';
                     break;
                 }
+            }
             }
             // Determine B站 link: use UID if available
             const uid = appData.user_uids ? appData.user_uids[name] : null;
