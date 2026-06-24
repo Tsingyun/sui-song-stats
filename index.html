@@ -16345,10 +16345,11 @@
         function celebrateAchievements() {
             var card = document.querySelector('.ach-card');
             if (card) card.classList.add('celebrated');
-            // Spawn confetti particles
+            // Spawn confetti from the achievement card center
+            var rect = card ? card.getBoundingClientRect() : { left: window.innerWidth/2, top: window.innerHeight/2, width: 0, height: 0 };
+            var centerX = rect.left + rect.width / 2;
+            var centerY = rect.top + rect.height / 2;
             var colors = ['#D4AF37','#C5A352','#E8D5A3','#F0E68C','#FFF8DC','#B8860B'];
-            var centerX = window.innerWidth / 2;
-            var centerY = window.innerHeight / 2;
             for (var i = 0; i < 40; i++) {
                 setTimeout(function() {
                     var confetti = document.createElement('div');
