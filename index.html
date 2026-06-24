@@ -15675,7 +15675,7 @@
 
         function renderYear() {
             if (years.length === 0) return;
-            window._currentPeriod = null;
+            window._currentPeriod = { type: 'year', key: years[currentYearIdx] };
             const y = years[currentYearIdx];
             document.getElementById('yearly-label').textContent = y;
             document.getElementById('yearly-select').value = y;
@@ -15912,13 +15912,13 @@
             var periodLabel = '';
             if (window._currentPeriod) {
                 var cp = window._currentPeriod;
-                periodLabel = cp.type === 'month' ? cp.key : cp.key;
-                // Build a set of dates that belong to this period
+                // Build a set of songs that belong to this period
                 var periodDateSet = {};
                 if (cp.type === 'month') {
+                    periodLabel = cp.key;
                     records.forEach(function(r) { if (r.date.startsWith(cp.key)) periodDateSet[r.song] = true; });
-                } else {
-                    // quarter: e.g. "2026-Q2" -> months 2026-04, 2026-05, 2026-06
+                } else if (cp.type === 'quarter') {
+                    periodLabel = cp.key;
                     var parts = cp.key.split('-Q');
                     var qy = parts[0], qn = parseInt(parts[1]);
                     var qMonths = [];
@@ -15926,9 +15926,11 @@
                         qMonths.push(qy + '-' + String(qm).padStart(2,'0'));
                     }
                     records.forEach(function(r) {
-                        var rm = r.date.substring(0, 7);
-                        if (qMonths.indexOf(rm) >= 0) periodDateSet[r.song] = true;
+                        if (qMonths.indexOf(r.date.substring(0, 7)) >= 0) periodDateSet[r.song] = true;
                     });
+                } else if (cp.type === 'year') {
+                    periodLabel = cp.key + '年';
+                    records.forEach(function(r) { if (r.date.startsWith(cp.key)) periodDateSet[r.song] = true; });
                 }
                 // Split the song list
                 songList.forEach(function(entry) {
