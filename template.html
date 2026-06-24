@@ -1905,18 +1905,20 @@
         }
         
         var achievementsCelebrated = false;
+        var pageScrolled = false;
+        document.addEventListener('scroll', function() { pageScrolled = true; }, { once: true });
         function observeAchievements() {
             var section = document.getElementById('achievements');
             if (!section || achievementsCelebrated) return;
             var observer = new IntersectionObserver(function(entries) {
                 entries.forEach(function(entry) {
-                    if (entry.isIntersecting && !achievementsCelebrated) {
+                    if (entry.isIntersecting && pageScrolled && !achievementsCelebrated) {
                         achievementsCelebrated = true;
                         celebrateAchievements();
                         observer.unobserve(section);
                     }
                 });
-            }, { threshold: 0.5 });
+            }, { threshold: 0.6 });
             observer.observe(section);
         }
         
