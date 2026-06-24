@@ -815,27 +815,7 @@
         .search-result-item .sr-meta { font-size: 0.7rem; color: var(--muted-fg); margin-top: 0.1rem; }
         .search-empty { text-align: center; color: var(--muted-fg); padding: 1.5rem; font-style: italic; font-size: 0.8rem; }
 
-        /* Feature 1: Calendar Heatmap */
-        .heatmap-wrap { overflow: hidden; position: relative; }
-        .heatmap-scroll { display: flex; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
-        .heatmap-grid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 14px); gap: 3px; flex-shrink: 0; }
-        .heatmap-cell { width: 14px; height: 14px; border-radius: 2px; background: var(--bg); cursor: pointer; transition: transform 0.15s; position: relative; }
-        .heatmap-cell:hover { transform: scale(1.5); z-index: 2; }
-        .heatmap-cell.l0 { background: rgba(249,248,246,0.08); border: 1px solid rgba(212,175,55,0.15); }
-        .heatmap-cell.l1 { background: #d4c5a0; }
-        .heatmap-cell.l2 { background: #c4a96a; }
-        .heatmap-cell.l3 { background: var(--accent); }
-        .heatmap-cell.l4 { background: #b8860b; }
-        .heatmap-nav { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 0.75rem; }
-        .heatmap-nav-btn { background: none; border: 1px solid var(--accent-dim); color: var(--muted-fg); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 0.85rem; transition: all var(--dur); display: flex; align-items: center; justify-content: center; font-family: var(--font-body); }
-        .heatmap-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
-        .heatmap-nav-btn:disabled { opacity: 0.3; cursor: default; }
-        .heatmap-nav-btn:disabled:hover { border-color: var(--accent-dim); color: var(--muted-fg); }
-        .heatmap-months { margin: 0.5rem 0 0; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bg); opacity: 0.7; }
-
-
-
-        /* Feature 5: Achievement Cards */
+                /* Feature 5: Achievement Cards */
         .achievements-container { display: flex; justify-content: center; margin-top: 1rem; }
         .ach-card { max-width: 400px; width: 100%; background: transparent; border: 1px solid var(--accent-dim); border-radius: var(--radius); padding: 2rem 2rem 1.75rem; text-align: center; transition: all var(--dur); position: relative; }
         .ach-card:hover { border-color: var(--accent); box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
@@ -869,7 +849,7 @@
     <!-- Navigation -->
     <nav class="nav">
         <div class="nav-inner">
-            <a href="https://tsingyun.github.io/sui-song-list-new/" class="nav-brand" target="_blank">岁己歌单</a>
+            <a href="https://suijisui.uk/" class="nav-brand" target="_blank">岁己歌单</a>
             <ul class="nav-links">
                 <li><a href="#monthly" class="nav-link">月度</a></li>
                 <li><a href="#quarterly" class="nav-link">季度</a></li>
@@ -877,8 +857,7 @@
                 <li><a href="#total" class="nav-link">总榜</a></li>
                 <li><a href="#songs" class="nav-link">歌曲</a></li>
                 <li><a href="#audiences" class="nav-link">观众</a></li>
-                <li><a href="#heatmap" class="nav-link">热图</a></li>
-                <li><a href="#achievements" class="nav-link">成就</a></li>
+                                <li><a href="#achievements" class="nav-link">成就</a></li>
             </ul>
             <div class="nav-search">
                 <button class="nav-search-btn" id="nav-search-btn" onclick="toggleNavSearch(event)" title="搜索"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg></button>
@@ -1025,21 +1004,7 @@
     </section>
     
 
-    <!-- Feature 1: Calendar Heatmap -->
-    <section class="section-dark" id="heatmap">
-        <div class="container">
-            <span class="section-label">Heatmap</span>
-            <h2 class="section-title">日历热图</h2>
-            <div class="heatmap-wrap" id="heatmap-container"></div>
-            <div class="heatmap-months" id="heatmap-months"></div>
-            <div class="heatmap-nav">
-                <button class="heatmap-nav-btn" id="heatmap-prev" onclick="heatmapScroll(-1)" disabled>&larr;</button>
-                <button class="heatmap-nav-btn" id="heatmap-next" onclick="heatmapScroll(1)">&rarr;</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Feature 5: Achievements -->
+        <!-- Feature 5: Achievements -->
     <section class="section" id="achievements">
         <div class="container">
             <span class="section-label">Achievements</span>
@@ -15563,9 +15528,6 @@
             renderSongs();
             renderPreferences();
             renderTrend();
-            renderHeatmap();
-            // Re-render heatmap after layout to ensure month labels show
-            setTimeout(function() { heatmapPage = 0; renderHeatmap(); }, 100);
             renderAchievements();
             renderChampionStreaks();
             // Data version
@@ -16297,9 +16259,6 @@
                 var d = idx.dates[i];
                 if (d.indexOf(q) >= 0) {
                     var dc = 0;
-                    for (var j = 0; j < appData.heatmap_data.length; j++) {
-                        if (appData.heatmap_data[j].date === d) { dc = appData.heatmap_data[j].count; break; }
-                    }
                     results.push({type: '日期', name: d, meta: dc + ' 次点歌'});
                 }
             }
@@ -16325,86 +16284,10 @@
                     } else if (type === '歌曲') {
                         showSongDetail(name);
                     } else if (type === '日期') {
-                        var el = document.getElementById('heatmap');
                         if (el) el.scrollIntoView({behavior:'smooth'});
                     }
                 };
             }
-        }
-
-        // ==== Feature 1: Calendar Heatmap ====
-        var heatmapPage = 0, heatmapTotalPages = 1, heatmapColsPerPage = 20;
-        function renderHeatmap() {
-            var data = appData.heatmap_data || [];
-            if (!data.length) return;
-            var container = document.getElementById('heatmap-container');
-            var monthsEl = document.getElementById('heatmap-months');
-            var dates = data.map(function(d) { return d.date; });
-            var minDate = new Date(dates[0]);
-            var maxDate = new Date(dates[dates.length-1]);
-            var startDay = minDate.getDay();
-            var dateMap = {};
-            for (var i = 0; i < data.length; i++) { dateMap[data[i].date] = data[i].count; }
-            var maxCount = 0;
-            for (var i = 0; i < data.length; i++) { if (data[i].count > maxCount) maxCount = data[i].count; }
-            // Build all cells
-            var cells = [], monthLabels = [];
-            var cur = new Date(minDate);
-            cur.setDate(cur.getDate() - startDay);
-            var end = new Date(maxDate);
-            end.setDate(end.getDate() + (6 - end.getDay()));
-            var prevMonth = -1, colIdx = 0;
-            var weekStarts = []; // track which column each week starts
-            while (cur <= end) {
-                var ds = cur.toISOString().slice(0, 10);
-                var count = dateMap[ds] || 0;
-                var lvl = count === 0 ? 0 : count <= maxCount * 0.25 ? 1 : count <= maxCount * 0.5 ? 2 : count <= maxCount * 0.75 ? 3 : 4;
-                cells.push('<div class="heatmap-cell l' + lvl + '" title="' + ds + ': ' + count + ' 首"></div>');
-                // Track month for labels (every 3 months)
-                var m = cur.getMonth();
-                if (m !== prevMonth && m % 3 === 0 && colIdx > 0) {
-                    monthLabels.push({col: colIdx, label: (cur.getFullYear() + '.' + ('0'+(m+1)).slice(-2))});
-                }
-                prevMonth = m;
-                cur.setDate(cur.getDate() + 1);
-                if (cur.getDay() === 0) colIdx++;
-            }
-            // Calculate total pages
-            var totalCols = colIdx;
-            heatmapColsPerPage = Math.max(15, Math.floor(container.parentElement.offsetWidth / 20));
-            heatmapTotalPages = Math.ceil(totalCols / heatmapColsPerPage);
-            heatmapPage = Math.min(heatmapPage, heatmapTotalPages - 1);
-            // Render Month labels at bottom
-            var displayedCol = heatmapPage * heatmapColsPerPage;
-            var totalWidth = container.parentElement.offsetWidth - 32;
-            var cellW = 14 + 3; // cell width + gap
-            var colsShown = Math.min(heatmapColsPerPage, totalCols - displayedCol);
-            var mlHtml = '<div style="width:' + totalWidth + 'px;margin:0 auto;position:relative;height:1rem;">';
-            for (var i = 0; i < monthLabels.length; i++) {
-                var ml = monthLabels[i];
-                if (ml.col >= displayedCol && ml.col < displayedCol + colsShown) {
-                    var leftPx = (ml.col - displayedCol) * cellW;
-                    mlHtml += '<span style="position:absolute;left:' + leftPx + 'px;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;">' + ml.label + '</span>';
-                }
-            }
-            mlHtml += '</div>';
-            monthsEl.innerHTML = mlHtml;
-            // Render grid
-            container.innerHTML = '<div class="heatmap-scroll" id="heatmap-scroll" style="justify-content:center;width:100%;"><div class="heatmap-grid">' + cells.join('') + '</div></div>';
-            // Update arrows
-            updateHeatmapNav();
-        }
-        function heatmapScroll(dir) {
-            heatmapPage = Math.max(0, Math.min(heatmapTotalPages - 1, heatmapPage + dir));
-            var scroll = document.getElementById('heatmap-scroll');
-            if (scroll) scroll.style.transform = 'translateX(-' + (heatmapPage * heatmapColsPerPage * 17) + 'px)';
-            renderHeatmap();
-        }
-        function updateHeatmapNav() {
-            var prev = document.getElementById('heatmap-prev');
-            var next = document.getElementById('heatmap-next');
-            if (prev) prev.disabled = heatmapPage <= 0;
-            if (next) next.disabled = heatmapPage >= heatmapTotalPages - 1;
         }
 
         // ==== Feature 5: Achievements ====
