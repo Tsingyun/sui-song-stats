@@ -1499,9 +1499,19 @@
                         otherSongs.push(entry);
                     }
                 });
-                // Keep period songs sorted by count
-                periodSongs.sort(function(a, b) { return b[1] - a[1]; });
-                otherSongs.sort(function(a, b) { return b[1] - a[1]; });
+                // Sort period songs by date ascending (first seen in this period)
+                var periodSongDate = {};
+                records.forEach(function(r) {
+                    if (periodDateSet[r.song]) {
+                        if (!periodSongDate[r.song] || r.date < periodSongDate[r.song]) {
+                            periodSongDate[r.song] = r.date;
+                        }
+                    }
+                });
+                periodSongs.sort(function(a, b) {
+                    var da = periodSongDate[a[0]] || '9999', db = periodSongDate[b[0]] || '9999';
+                    return da < db ? -1 : da > db ? 1 : 0;
+                });
             }
             
             const panel = document.getElementById('detail-panel');
