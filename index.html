@@ -15541,12 +15541,12 @@
             document.getElementById('hero-stat-audiences').textContent = '0 位观众';
             document.getElementById('footer-date').textContent = new Date().toLocaleDateString('zh-CN');
             
-            // Render
-            renderMonth();
-            renderQuarter();
-            renderYear();
+            // Render (month last so _currentPeriod defaults to latest month)
             renderTotal();
             renderSongs();
+            renderQuarter();
+            renderYear();
+            renderMonth();
             renderPreferences();
             renderTrend();
             renderAchievements();
@@ -15687,13 +15687,11 @@
         
         // --- Total ---
         function renderTotal() {
-            window._currentPeriod = null;
             renderLeaderboard('total-leaderboard', appData.total_leaderboard, '暂无数据', appData.metadata.total_records);
         }
 
         // --- Songs ---
         function renderSongs() {
-            window._currentPeriod = null;
             renderLeaderboard('songs-leaderboard', appData.song_leaderboard, '暂无数据', appData.metadata.total_records, '首');
         }
         
