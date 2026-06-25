@@ -15921,12 +15921,19 @@
                         otherSongs.push(entry);
                     }
                 });
-                // Sort period songs by date ascending (first seen in this period)
+                // Sort period songs by date ascending
                 var periodSongDate = {};
                 records.forEach(function(r) {
                     if (periodDateSet[r.song]) {
-                        if (!periodSongDate[r.song] || r.date < periodSongDate[r.song]) {
-                            periodSongDate[r.song] = r.date;
+                        // Only consider dates within the current period
+                        var inPeriod = false;
+                        if (cp.type === 'month') inPeriod = r.date.startsWith(cp.key);
+                        else if (cp.type === 'quarter') inPeriod = qMonths.indexOf(r.date.substring(0,7)) >= 0;
+                        else if (cp.type === 'year') inPeriod = r.date.startsWith(cp.key);
+                        if (inPeriod) {
+                            if (!periodSongDate[r.song] || r.date < periodSongDate[r.song]) {
+                                periodSongDate[r.song] = r.date;
+                            }
                         }
                     }
                 });
