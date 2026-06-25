@@ -15995,23 +15995,23 @@
             '</div>' +
             // Build song list HTML with optional period split
             (function() {
-                var renderSongRow = function(song, cnt) {
+                var renderSongRow = function(song, cnt, showCount) {
                     return '<div class="detail-song">' +
                         '<span class="detail-song-name">' + song + '</span>' +
                         '<span class="detail-song-date">' + (songDates[song] || '') + '</span>' +
-                        '<span class="detail-song-count">' + cnt + '次</span>' +
+                        (showCount ? '<span class="detail-song-count">' + cnt + '次</span>' : '') +
                     '</div>';
                 };
                 var html = '';
                 if (periodSongs.length > 0) {
                     html += '<div class="detail-period-label">' + periodLabel + '</div>';
-                    html += periodSongs.map(function(e) { return renderSongRow(e[0], e[1]); }).join('');
-                    if (otherSongs.length > 0) {
+                    html += periodSongs.map(function(e) { return renderSongRow(e[0], e[1], false); }).join('');
+                    if (otherSongs.length > 0 || periodSongs.length > 0) {
                         html += '<div class="detail-period-label" style="margin-top:1rem;">过往歌曲</div>';
-                        html += otherSongs.map(function(e) { return renderSongRow(e[0], e[1]); }).join('');
+                        html += songList.map(function(e) { return renderSongRow(e[0], e[1], true); }).join('');
                     }
                 } else {
-                    html = songList.map(function(e) { return renderSongRow(e[0], e[1]); }).join('');
+                    html = songList.map(function(e) { return renderSongRow(e[0], e[1], true); }).join('');
                 }
                 return html;
             })() + '</div>';
