@@ -894,7 +894,7 @@
     <section class="hero" id="hero">
         <div class="hero-inner">
         <div class="hero-meta">
-            <span>2024.06 — 2026.06</span>
+            <span id="hero-date-range">2024.06 — 2026.06</span>
             <span class="stat-num" id="hero-stat-songs">0 首歌曲</span>
             <span class="stat-num" id="hero-stat-audiences">0 位观众</span>
         </div>
@@ -1117,6 +1117,13 @@
             // Hero stats (set to 0, animated later)
             document.getElementById('hero-stat-songs').textContent = '0 首歌曲';
             document.getElementById('hero-stat-audiences').textContent = '0 位观众';
+            // Hero date range from metadata
+            var heroDate = document.getElementById('hero-date-range');
+            if (heroDate && appData.metadata) {
+                var start = (appData.metadata.date_range_start || '').substring(0,7).replace('-','.');
+                var end = (appData.metadata.date_range_end || '').substring(0,7).replace('-','.');
+                if (start && end) heroDate.textContent = start + ' — ' + end;
+            }
             document.getElementById('footer-date').textContent = new Date().toLocaleDateString('zh-CN');
             
             // Render (month last so _currentPeriod defaults to latest month)
