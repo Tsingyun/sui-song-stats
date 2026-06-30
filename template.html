@@ -1117,12 +1117,13 @@
             // Hero stats (set to 0, animated later)
             document.getElementById('hero-stat-songs').textContent = '0 首歌曲';
             document.getElementById('hero-stat-audiences').textContent = '0 位观众';
-            // Hero date range from metadata
+            // Hero date range: start from data, end to current month
             var heroDate = document.getElementById('hero-date-range');
             if (heroDate && appData.metadata) {
                 var start = (appData.metadata.date_range_start || '').substring(0,7).replace('-','.');
-                var end = (appData.metadata.date_range_end || '').substring(0,7).replace('-','.');
-                if (start && end) heroDate.textContent = start + ' — ' + end;
+                var now = new Date();
+                var end = now.getFullYear() + '.' + String(now.getMonth()+1).padStart(2,'0');
+                if (start) heroDate.textContent = start + ' — ' + end;
             }
             document.getElementById('footer-date').textContent = new Date().toLocaleDateString('zh-CN');
             
