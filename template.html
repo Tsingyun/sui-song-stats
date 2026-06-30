@@ -1327,7 +1327,7 @@
                     var name = item.audience || item.song || '';
                     var count = item.count;
                     var pct = displayPcts[i];
-                    var isChampion = i === 0;
+                    var isChampion = i === 0 || (i > 0 && data.length > 0 && item.count === data[0].count);
                     var onClick = item.song ? 
                         'showSongDetail(\'' + name.replace(/'/g, "\\'") + '\')' :
                         'showDetail(\'' + name.replace(/'/g, "\\'") + '\')';

@@ -1,6 +1,12 @@
 import json, sys
 from collections import defaultdict, Counter
 from datetime import datetime
+from pypinyin import lazy_pinyin
+
+def pinyin_sort_key(item):
+    """Sort key: pinyin of audience/song for tiebreaking."""
+    name = item.get('audience', '') or item.get('song', '')
+    return ' '.join(lazy_pinyin(name))
 
 with open('song_data_processed.json', 'r', encoding='utf-8') as f:
     data = json.load(f)
@@ -9,21 +15,28 @@ rw = data['raw_data']
 mt = data['metadata']
 
 # --- Rebuild all leaderboards from raw_data ---
-# Total leaderboard
+# Total leaderboard (with pinyin tiebreak)
 total = Counter()
 for e in rw:
     total[e['audience']] += 1
-data['total_leaderboard'] = [{'audience': aud, 'count': cnt} for aud, cnt in total.most_common()]
-data['song_leaderboard'] = [{'song': aud, 'count': cnt} for aud, cnt in Counter(e['song'] for e in rw).most_common()]
+data['total_leaderboard'] = sorted(
+    [{'audience': aud, 'count': cnt} for aud, cnt in total.items()],
+    key=lambda x: (-x['count'], pinyin_sort_key(x))
+)
+data['song_leaderboard'] = sorted(
+    [{'song': aud, 'count': cnt} for aud, cnt in Counter(e['song'] for e in rw).items()],
+    key=lambda x: (-x['count'], pinyin_sort_key(x))
+)
 
 # Monthly leaderboard
 monthly = defaultdict(Counter)
 for e in rw:
     monthly[e['date'][:7]][e['audience']] += 1
-data['monthly_leaderboard'] = {
-    m: [{'audience': aud, 'count': cnt} for aud, cnt in counter.most_common()]
-    for m, counter in sorted(monthly.items())
-}
+data['monthly_leaderboard'] = {}
+for m, counter in sorted(monthly.items()):
+    entries = [{'audience': aud, 'count': cnt} for aud, cnt in counter.items()]
+    entries.sort(key=lambda x: (-x['count'], pinyin_sort_key(x)))
+    data['monthly_leaderboard'][m] = entries
 
 # Quarterly leaderboard
 quarterly = defaultdict(Counter)
@@ -31,19 +44,21 @@ for e in rw:
     y, m = e['date'][:4], e['date'][5:7]
     q = f'{y}-Q{(int(m)-1)//3+1}'
     quarterly[q][e['audience']] += 1
-data['quarterly_leaderboard'] = {
-    q: [{'audience': aud, 'count': cnt} for aud, cnt in counter.most_common()]
-    for q, counter in sorted(quarterly.items())
-}
+data['quarterly_leaderboard'] = {}
+for q, counter in sorted(quarterly.items()):
+    entries = [{'audience': aud, 'count': cnt} for aud, cnt in counter.items()]
+    entries.sort(key=lambda x: (-x['count'], pinyin_sort_key(x)))
+    data['quarterly_leaderboard'][q] = entries
 
 # Yearly leaderboard
 yearly = defaultdict(Counter)
 for e in rw:
     yearly[e['date'][:4]][e['audience']] += 1
-data['yearly_leaderboard'] = {
-    y: [{'audience': aud, 'count': cnt} for aud, cnt in counter.most_common()]
-    for y, counter in sorted(yearly.items())
-}
+data['yearly_leaderboard'] = {}
+for y, counter in sorted(yearly.items()):
+    entries = [{'audience': aud, 'count': cnt} for aud, cnt in counter.items()]
+    entries.sort(key=lambda x: (-x['count'], pinyin_sort_key(x)))
+    data['yearly_leaderboard'][y] = entries
 
 tl = data['total_leaderboard']
 
