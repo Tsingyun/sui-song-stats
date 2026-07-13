@@ -150,6 +150,47 @@ data['search_index'] = {
     'dates': list(set(e['date'] for e in rw))
 }
 
+# --- Feature 15: Consecutive live-session streaks (per month) ---
+# Rule: within a month, a streak = a maximal run of CONSECUTIVE LIVE DATES
+# (consecutive in that month's sorted unique live-date list, NOT calendar days)
+# on which the same audience requested songs. length >= 2 counts as a streak.
+# This is a per-month board feature only; cross-month runs are intentionally not chained.
+def recompute_streaks(raw):
+    by_month = defaultdict(list)
+    for e in raw:
+        by_month[e['date'][:7]].append(e)  # YYYY-MM
+    result = {}
+    for m, recs in by_month.items():
+        live_dates = sorted(set(e['date'] for e in recs))
+        aud_dates = defaultdict(lambda: defaultdict(list))
+        for e in recs:
+            aud_dates[e['audience']][e['date']].append(e['song'])
+        entries = []
+        n = len(live_dates)
+        for aud, dmap in aud_dates.items():
+            i = 0
+            while i < n:
+                if live_dates[i] in dmap:
+                    j = i
+                    while j + 1 < n and live_dates[j + 1] in dmap:
+                        j += 1
+                    run = live_dates[i:j + 1]
+                    if len(run) >= 2:
+                        entries.append({
+                            'audience': aud,
+                            'chain': run,
+                            'songs': [dmap[dt] for dt in run],
+                            'length': len(run),
+                        })
+                    i = j + 1
+                else:
+                    i += 1
+        entries.sort(key=lambda x: (x['chain'][0], x['audience']))
+        result[m] = entries
+    return result
+
+data['consecutive_streaks'] = recompute_streaks(rw)
+
 with open('song_data_processed.json', 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
 
