@@ -29,11 +29,13 @@
 
     <div class="entry">
         <div class="entry-date">2026-07-14</div>
-        <div class="entry-title">新增点歌记录</div>
+        <div class="entry-title">修正观众名与连续点歌统计口径</div>
         <div class="entry-body">
             <ul>
-                <li>新增 2026-07-13 岁己家的陈酷《简单爱》（新观众）、请让我好好入睡《白鸟过河滩》（新歌曲）</li>
-                <li>数据更新至 810 条记录、81 位观众、496 首歌曲</li>
+                <li>修正观众名：7/13《简单爱》点歌人「岁己家的陈酷」→「岁己家的陈醋」（与既有 29 条历史记录统一）</li>
+                <li>修正连续点歌统计口径：撤回上一轮误从 <code>vaserkia_records.csv</code>（岁己个人歌单，C 列为歌曲名）导入的 6 条记录（audience 误填 Vaserkia），该表非"点歌记录表"，不应计入观众点歌 streak</li>
+                <li>连续点歌统计现仅基于真实的"点歌观众"（即点歌记录表 C 列用户名）；真正的"含用户名列"早期点歌 Excel 项目内暂无，待用户提供后按真实观众补入</li>
+                <li>数据更新至 804 条记录、80 位观众、495 首歌曲</li>
             </ul>
         </div>
     </div>
