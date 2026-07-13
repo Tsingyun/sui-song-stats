@@ -152,29 +152,33 @@ data['search_index'] = {
 
 # --- Feature 15: Consecutive live-session streaks (per month) ---
 # Rule: within a month, a streak = a maximal run of CONSECUTIVE LIVE DATES
-# (consecutive in that month's sorted unique live-date list, NOT calendar days)
-# on which the same audience requested songs. length >= 2 counts as a streak.
+# (consecutive in that month's FULL live-date sequence, NOT just point-song days,
+#  and NOT calendar days) on which the same audience requested songs. length >= 2
+# counts as a streak. The full live-date sequence (incl. host-only days) comes from
+# data['live_dates'] (sourced from the authoritative xlsx A-column), so a host-only
+# day between two of an audience's point-songs correctly BREAKS the streak.
 # This is a per-month board feature only; cross-month runs are intentionally not chained.
-def recompute_streaks(raw):
+def recompute_streaks(raw, live_dates):
+    live_set = set(live_dates)
     by_month = defaultdict(list)
     for e in raw:
         by_month[e['date'][:7]].append(e)  # YYYY-MM
     result = {}
     for m, recs in by_month.items():
-        live_dates = sorted(set(e['date'] for e in recs))
+        live_dates_m = sorted(d for d in live_set if d[:7] == m)
         aud_dates = defaultdict(lambda: defaultdict(list))
         for e in recs:
             aud_dates[e['audience']][e['date']].append(e['song'])
         entries = []
-        n = len(live_dates)
+        n = len(live_dates_m)
         for aud, dmap in aud_dates.items():
             i = 0
             while i < n:
-                if live_dates[i] in dmap:
+                if live_dates_m[i] in dmap:
                     j = i
-                    while j + 1 < n and live_dates[j + 1] in dmap:
+                    while j + 1 < n and live_dates_m[j + 1] in dmap:
                         j += 1
-                    run = live_dates[i:j + 1]
+                    run = live_dates_m[i:j + 1]
                     if len(run) >= 2:
                         entries.append({
                             'audience': aud,
@@ -189,7 +193,7 @@ def recompute_streaks(raw):
         result[m] = entries
     return result
 
-data['consecutive_streaks'] = recompute_streaks(rw)
+data['consecutive_streaks'] = recompute_streaks(rw, data.get('live_dates', []))
 
 with open('song_data_processed.json', 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, separators=(',', ':'))

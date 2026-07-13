@@ -29,6 +29,21 @@
 
     <div class="entry">
         <div class="entry-date">2026-07-14</div>
+        <div class="entry-title">以权威表格重建点歌数据（观众 / 连续统计修正）</div>
+        <div class="entry-body">
+            <ul>
+                <li>使用权威源 <code>岁己数据统计 最新.xlsx</code>（Sheet「岁己今天唱什么」）重建：A=日期、B=歌曲名、C=「哪个饼子点到的？」（点歌观众）</li>
+                <li>点歌记录 = C 列非空的 827 条；观众名 100% 以 C 列为准重新确认（此前 raw_data 由零散对话累积，存在拼写/误填）</li>
+                <li>新增 <code>live_dates</code> 字段：从 xlsx A 列提取<strong>完整直播日序列 457 天</strong>（含 98 个纯主播场），供连续点歌使用</li>
+                <li>修正连续点歌算法（Feature 15）：场序列改用完整直播日（含主播场），而非仅"有观众点歌的日期"。例：2025-03 Vaserkia 在 3/21、3/23、3/26、3/27 点歌，但 3/24、3/25 为纯主播场 → 正确拆分为「3/21–3/23 连2场」「3/26–3/27 连2场」，不再误判为连4场</li>
+                <li>2026-06（用户曾核对）结果不变：仙布🔥🔥3场、Vaserkia🔥2场、维斯🔥2场；2026-07 大笨酱 7/7↔7/11 连2场（中间无直播日，符合确认）</li>
+                <li>数据更新至 828 条记录、102 位观众、498 首歌曲</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="entry">
+        <div class="entry-date">2026-07-14</div>
         <div class="entry-title">修正观众名与连续点歌统计口径</div>
         <div class="entry-body">
             <ul>
