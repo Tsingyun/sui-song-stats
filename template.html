@@ -1328,13 +1328,14 @@
                     var count = item.count;
                     var pct = displayPcts[i];
                     var isChampion = i === 0 || (i > 0 && data.length > 0 && item.count === data[0].count);
+                    var showCrown = isChampion && containerId !== 'songs-leaderboard'; // 👑 only for audience boards
                     var onClick = item.song ? 
                         'showSongDetail(\'' + name.replace(/'/g, "\\'") + '\')' :
                         'showDetail(\'' + name.replace(/'/g, "\\'") + '\')';
                     return '<div class="lb-row" onclick="' + onClick + '">' +
                         '<div class="lb-rank">' + (i + 1) + '</div>' +
                         '<div class="lb-info">' +
-                            '<div class="lb-name">' + name + getLevelBadge(name) + (isChampion ? ' <span class="lb-crown">👑</span>' : '') + '</div>' +
+                            '<div class="lb-name">' + name + getLevelBadge(name) + (showCrown ? ' <span class="lb-crown">👑</span>' : '') + '</div>' +
                             '<div class="lb-count">' + count + ' 次 · 点歌占比 ' + pct + '%</div>' +
                         '</div>' +
                         '<div class="lb-bar-container">' +
@@ -2059,9 +2060,10 @@
                 '</tr></thead><tbody>' +
                 displayData.map(function(item, i) {
                     var isGold = i === 0;
+                    var showCrown = isGold && sectionId !== 'songs'; // 👑 only for audience boards
                     return '<tr style="border-bottom:1px solid rgba(26,26,26,0.08);' + (isGold ? 'background:rgba(212,175,55,0.04);' : '') + '">' +
                         '<td style="padding:0.55rem 0.5rem;font-family:Inter,sans-serif;font-size:0.75rem;color:#6C6863;' + (isGold ? 'font-weight:500;color:#D4AF37;' : '') + '">' + (i+1) + '</td>' +
-                        '<td style="padding:0.55rem 0.5rem;font-family:\'Playfair Display\',serif;font-size:1rem;color:#1A1A1A;' + (isGold ? 'font-weight:500;' : '') + '">' + (item.audience || item.song || '') + (isGold ? ' <span style="font-size:0.7rem;">👑</span>' : '') + '</td>' +
+                        '<td style="padding:0.55rem 0.5rem;font-family:\'Playfair Display\',serif;font-size:1rem;color:#1A1A1A;' + (isGold ? 'font-weight:500;' : '') + '">' + (item.audience || item.song || '') + (showCrown ? ' <span style="font-size:0.7rem;">👑</span>' : '') + '</td>' +
                         '<td style="padding:0.55rem 0.5rem;text-align:right;font-family:Inter,sans-serif;font-size:0.9rem;color:#1A1A1A;' + (isGold ? 'font-weight:500;' : '') + '">' + item.count + ' 次</td>' +
                         '</tr>';
                 }).join('') +

@@ -150,35 +150,47 @@ data['search_index'] = {
     'dates': list(set(e['date'] for e in rw))
 }
 
+# --- Feature 14b: Last request date per audience (always recompute from raw_data) ---
+aud_last_date = {}
+for e in rw:
+    aud = e['audience']
+    d = e['date']
+    if aud not in aud_last_date or d > aud_last_date[aud]:
+        aud_last_date[aud] = d
+data['last_request_dates'] = aud_last_date
+
 # --- Feature 15: Consecutive live-session streaks (per month) ---
-# Rule: within a month, a streak = a maximal run of CONSECUTIVE LIVE DATES
-# (consecutive in that month's FULL live-date sequence, NOT just point-song days,
-#  and NOT calendar days) on which the same audience requested songs. length >= 2
-# counts as a streak. The full live-date sequence (incl. host-only days) comes from
-# data['live_dates'] (sourced from the authoritative xlsx A-column), so a host-only
-# day between two of an audience's point-songs correctly BREAKS the streak.
-# This is a per-month board feature only; cross-month runs are intentionally not chained.
-def recompute_streaks(raw, live_dates):
-    live_set = set(live_dates)
+# Rule (per user 2026-07-14 clarification): within a month, a streak = a maximal
+# run of CONSECUTIVE REQUEST DAYS (days on which >=1 audience point-song was made,
+# i.e. the raw_data dates) on which the SAME audience requested songs. length >= 2
+# counts as a streak.
+#
+# A host-only live day (主播自己选歌、当天无任何点歌) between two of an audience's
+# point-songs is TRANSPARENT — it does NOT break the streak, because that day offered
+# no request opportunity. Only a REQUEST DAY on which this audience did NOT request
+# breaks the run. Example: 1/1 A点歌 → 1/2 主播自唱(无点歌) → 1/3 A点歌 ⇒ A 触发
+# 连续两场🔥. This is a per-month board feature only; cross-month runs are not chained.
+def recompute_streaks(raw):
+    req_days = sorted(set(e['date'] for e in raw))
     by_month = defaultdict(list)
     for e in raw:
         by_month[e['date'][:7]].append(e)  # YYYY-MM
     result = {}
     for m, recs in by_month.items():
-        live_dates_m = sorted(d for d in live_set if d[:7] == m)
+        req_days_m = [d for d in req_days if d[:7] == m]
         aud_dates = defaultdict(lambda: defaultdict(list))
         for e in recs:
             aud_dates[e['audience']][e['date']].append(e['song'])
         entries = []
-        n = len(live_dates_m)
+        n = len(req_days_m)
         for aud, dmap in aud_dates.items():
             i = 0
             while i < n:
-                if live_dates_m[i] in dmap:
+                if req_days_m[i] in dmap:
                     j = i
-                    while j + 1 < n and live_dates_m[j + 1] in dmap:
+                    while j + 1 < n and req_days_m[j + 1] in dmap:
                         j += 1
-                    run = live_dates_m[i:j + 1]
+                    run = req_days_m[i:j + 1]
                     if len(run) >= 2:
                         entries.append({
                             'audience': aud,
@@ -193,7 +205,7 @@ def recompute_streaks(raw, live_dates):
         result[m] = entries
     return result
 
-data['consecutive_streaks'] = recompute_streaks(rw, data.get('live_dates', []))
+data['consecutive_streaks'] = recompute_streaks(rw)
 
 with open('song_data_processed.json', 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
