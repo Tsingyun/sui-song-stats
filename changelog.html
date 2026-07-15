@@ -28,6 +28,18 @@
     <p class="sub">岁己 SUI · 点歌统计 · 变更记录</p>
 
     <div class="entry">
+        <div class="entry-date">2026-07-16</div>
+        <div class="entry-title">清除 xlsx 误导入的 23 条月份标记记录</div>
+        <div class="entry-body">
+            <ul>
+                <li>权威 xlsx 解析时将 22 个"YYYY年X月"月份标题行（如 2025年3月、2026年1月）误识别为观众名，混入 raw_data，导致观众榜出现虚假条目</li>
+                <li>已全部清除（匹配规则：<code>^\d{4}年\d{1,2}月$</code>），同时修复 process_features.py 使 metadata.unique_audiences 从 raw_data 实时计算，不再残留旧值</li>
+            </ul>
+            <p>累计 <strong>810 条 / 80 人 / 499 首</strong></p>
+        </div>
+    </div>
+
+    <div class="entry">
         <div class="entry-date">2026-07-15</div>
         <div class="entry-title">补录遗漏的 7/14 第 5 条记录</div>
         <div class="entry-body">

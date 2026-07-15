@@ -207,6 +207,12 @@ def recompute_streaks(raw):
 
 data['consecutive_streaks'] = recompute_streaks(rw)
 
+# --- Sync metadata counts from raw_data ---
+mt['unique_audiences'] = len(set(e['audience'] for e in rw))
+all_dates = sorted(e['date'] for e in rw)
+mt['date_range_start'] = all_dates[0] if all_dates else ''
+mt['date_range_end'] = all_dates[-1] if all_dates else ''
+
 with open('song_data_processed.json', 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
 
