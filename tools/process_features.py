@@ -207,8 +207,10 @@ def recompute_streaks(raw):
 
 data['consecutive_streaks'] = recompute_streaks(rw)
 
-# --- Sync metadata counts from raw_data ---
+# --- Sync metadata counts from raw_data (always recompute, never hardcode) ---
+mt['total_records'] = len(rw)
 mt['unique_audiences'] = len(set(e['audience'] for e in rw))
+mt['unique_songs'] = len(set(e['song'] for e in rw))
 all_dates = sorted(e['date'] for e in rw)
 mt['date_range_start'] = all_dates[0] if all_dates else ''
 mt['date_range_end'] = all_dates[-1] if all_dates else ''

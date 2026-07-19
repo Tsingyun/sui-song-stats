@@ -29,15 +29,28 @@
 
     <div class="entry">
         <div class="entry-date">2026-07-20</div>
+        <div class="entry-title">新增录入匹配工具 + 修复 metadata 数据自洽</div>
+        <div class="entry-body">
+            <ul>
+                <li>新增 <code>tools/match_name.py</code>：OCR 候选名先与资料库标准名模糊匹配（精确→归一化→包含→difflib），命中即复用，避免错字造出新观众/新歌</li>
+                <li>修复 <code>process_features.py</code>：metadata 仅同步 unique_audiences，漏算 total_records / unique_songs，导致显示陈旧快照（828/498）；现三项均从 raw_data 实时计算</li>
+                <li>重算后 metadata 自洽：819 条 / 81 人 / 499 首，index.html 已重建</li>
+            </ul>
+            <p>录入铁律：任何新记录写入前，必先用 match_name.py 匹配资料库</p>
+        </div>
+    </div>
+
+    <div class="entry">
+        <div class="entry-date">2026-07-20</div>
         <div class="entry-title">新增 7/19 点歌记录（3 条）</div>
         <div class="entry-body">
             <ul>
                 <li>岁己家出卖世界蛇 → 《空想フォレスト》（7/19）</li>
                 <li>L1f3n0w0v3R710w_ → 《Henceforth》（7/19）</li>
-                <li>-所宝yoake- → 《热气球》（7/19，新观众）</li>
+                <li>-昕宝yoake- → 《热气球》（7/19，老观众，原 OCR 误识别为"所宝"，已归并）</li>
             </ul>
             <p>注：「夏恋花火」为主播自选歌曲（无点歌观众），不录入统计；7/18 与 7/19 为相邻两场直播</p>
-            <p>累计 <strong>819 条 / 82 人 / 499 首</strong></p>
+            <p>累计 <strong>819 条 / 81 人 / 499 首</strong></p>
         </div>
     </div>
 

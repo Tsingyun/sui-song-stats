@@ -6,3 +6,5 @@ __check*
 song_data_raw.json
 song_data_processed.json
 .workbuddy/
+__pycache__/
+nul
