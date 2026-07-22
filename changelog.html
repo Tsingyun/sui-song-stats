@@ -28,6 +28,26 @@
     <p class="sub">岁己 SUI · 点歌统计 · 变更记录</p>
 
     <div class="entry">
+        <div class="entry-date">2026-07-22</div>
+        <div class="entry-title">Endfield 风格 UI/UX 完全重构 + 占比 bug 修复</div>
+        <div class="entry-body">
+            <ul>
+                <li><strong>全站深色化</strong>：参考 endfield.hypergryph.com 官网设计，全站从浅深交替改为深色主导（#191919 / #131313），斜条纹底纹 + 渐变遮罩</li>
+                <li><strong>字体替换</strong>：标题字体从 Playfair Display（衬线）→ Oswald（压缩）→ <strong>Jost</strong>（宽体几何，匹配 Endfield 官网 Novecento Sans Wide）</li>
+                <li><strong>Hero 重设计</strong>：深色开场 + 校准圆环（三层同心圆）+ //SUI-STAT 品牌宣言 + 黄色进度时间线 + 垂直黄色标签</li>
+                <li><strong>左侧导航栏</strong>：position:fixed 锁定不再随滚动移走；移动端转底部水平滚动条</li>
+                <li><strong>占比 bug 修复</strong>：前10名模式下旧算法强行让第10名补齐到100%，导致占比虚高；改为直接显示 <code>count / total × 100</code> 真实占比</li>
+                <li><strong>等级徽章统一</strong>：5 级徽章统一尺寸/字体/边框，亮度递进（暗灰→灰→白→绿→黄）</li>
+                <li><strong>黄色高亮降级</strong>：所有 hover 不再用信号黄文字，改为白色/下划线/淡背景；信号黄仅用于激活态/进度条/皇冠/角括号</li>
+                <li><strong>顶栏数据版本</strong>：从陈旧的 data_version 改为 metadata.date_range_end（最新记录日期）</li>
+                <li><strong>面板角括号</strong>：详情面板、筛选面板四角黄色 L 形角括号装饰</li>
+                <li>导出截图同步更新为 Endfield 深色配色</li>
+            </ul>
+            <p>累计 <strong>819 条 / 81 人 / 499 首</strong> · 所有原有功能完整保留</p>
+        </div>
+    </div>
+
+    <div class="entry">
         <div class="entry-date">2026-07-20</div>
         <div class="entry-title">新增录入匹配工具 + 修复 metadata 数据自洽</div>
         <div class="entry-body">
