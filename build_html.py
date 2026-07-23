@@ -24,16 +24,46 @@ print(f'   Data size: {len(appData_str)} bytes')
 print(f'   Output size: {len(html)} bytes')
 
 # 6. Validate JS syntax
-import subprocess
-js_code = html.split('<script>')[1].split('</script>')[0]
-try:
-    subprocess.run(
-        ['C:/Users/Tsing/.workbuddy/binaries/node/versions/22.22.2/node.exe', '-e', js_code],
-        capture_output=True, text=True, check=True
-    )
-    print('✅ JS syntax validated!')
-except subprocess.CalledProcessError as e:
-    print('❌ JS syntax error:')
-    print(e.stderr[:500])
-except Exception as e:
-    print(f'⚠️  Could not validate JS: {e}')
+# Extract inline (no src=) <script> blocks, write each to a temp file, and
+# run `node --check` (syntax-only, does NOT execute -> no DOM/runtime errors,
+# no Windows command-line length limit). CDN <script src=...> tags are skipped.
+import subprocess, tempfile, os, shutil, re
+
+def _inline_scripts(h):
+    out = []
+    for m in re.finditer(r'<script\b([^>]*)>(.*?)</script>', h, re.DOTALL | re.IGNORECASE):
+        attrs, body = m.group(1), m.group(2)
+        if 'src=' in attrs:
+            continue  # external / CDN script, nothing to syntax-check here
+        if body.strip():
+            out.append(body)
+    return out
+
+inline = _inline_scripts(html)
+node = shutil.which('node') or 'C:/Users/Tsing/.workbuddy/binaries/node/versions/22.22.2/node.exe'
+if not inline:
+    print('⚠️  No inline <script> found, skipped JS validation')
+elif not os.path.exists(node):
+    print(f'⚠️  node not found ({node}), skipped JS validation')
+else:
+    all_ok = True
+    for i, code in enumerate(inline):
+        tmp = os.path.join(tempfile.gettempdir(), f'_sui_jscheck_{i}.js')
+        with open(tmp, 'w', encoding='utf-8') as tf:
+            tf.write(code)
+        try:
+            subprocess.run([node, '--check', tmp], capture_output=True, text=True, check=True)
+        except subprocess.CalledProcessError as e:
+            all_ok = False
+            print(f'❌ JS syntax error in inline script #{i}:')
+            print(e.stderr[:800])
+        except Exception as e:
+            all_ok = False
+            print(f'⚠️  Could not validate JS: {e}')
+        finally:
+            try:
+                os.remove(tmp)
+            except OSError:
+                pass
+    if all_ok:
+        print(f'✅ JS syntax validated ({len(inline)} inline script(s))!')
