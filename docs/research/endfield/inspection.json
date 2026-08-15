@@ -1,0 +1,435 @@
+{
+  "url": "https://endfield.hypergryph.com/",
+  "assets": {
+    "title": "《明日方舟：终末地》官方网站-Arknights: Endfield",
+    "metaDesc": "跨越边境 直至前线",
+    "images": [
+      {
+        "src": "https://web.hycdn.cn/endfield/official-v4/_next/static/media/appStore.4c92ebb1.png",
+        "alt": "App Store",
+        "w": 408,
+        "h": 150
+      },
+      {
+        "src": "https://web.hycdn.cn/endfield/official-v4/_next/static/media/ps5.ff9ebc6a.png",
+        "alt": "PS5",
+        "w": 491,
+        "h": 108
+      },
+      {
+        "src": "https://web.hycdn.cn/endfield/official-v4/_next/static/media/android-icon.dd9c0fd6.png",
+        "alt": "Android",
+        "w": 68,
+        "h": 78
+      },
+      {
+        "src": "https://web.hycdn.cn/endfield/official-v4/_next/static/media/pc.9c65ea0f.png",
+        "alt": "PC",
+        "w": 73,
+        "h": 67
+      },
+      {
+        "src": "https://web.hycdn.cn/endfield/official-v4/_next/static/media/taptap.d490d888.png",
+        "alt": "TapTap",
+        "w": 382,
+        "h": 109
+      },
+      {
+        "src": "https://web.hycdn.cn/endfield/official-v4/_next/static/media/zh-cn.106ce05d.png",
+        "alt": "",
+        "w": 308,
+        "h": 286
+      },
+      {
+        "src": "https://web.hycdn.cn/endfield/official-v4/_next/static/media/blurred_logo.eccbe4f3.png",
+        "alt": "",
+        "w": 755,
+        "h": 656
+      },
+      {
+        "src": "https://web.hycdn.cn/upload/image/20260303/418b73ff34245a937c7db67b082a8a18.jpg",
+        "alt": "《明日方舟：终末地》「新潮起，故渊离」版本PV",
+        "w": 1920,
+        "h": 1080
+      },
+      {
+        "src": "https://web.hycdn.cn/upload/image/20260714/e4c3c1219db9fe092bbb6a8df8bc265a.png",
+        "alt": "《明日方舟：终末地》干员叙事 [诀：履旧尘]",
+        "w": 1920,
+        "h": 1080
+      },
+      {
+        "src": "https://web.hycdn.cn/upload/image/20260710/0ffe54e3ecf2e1eae71e4e67afe9514d.jpg",
+        "alt": "《明日方舟：终末地》相伴庆典&核心章节「向渊行」版本PV",
+        "w": 1920,
+        "h": 1080
+      },
+      {
+        "src": "https://web.hycdn.cn/upload/image/20260624/eb1662f1d08bdd804d3e29a904b1b1b2.png",
+        "alt": "《明日方舟：终末地》干员叙事 [卡缪：猎血的看护人]",
+        "w": 1920,
+        "h": 1080
+      },
+      {
+        "src": "https://web.hycdn.cn/upload/image/20260602/38ce571934dafe453b9f0a6033f353bc.jpg",
+        "alt": "《明日方舟：终末地》干员叙事 [弭弗：煞星]",
+        "w": 1920,
+        "h": 1080
+      },
+      {
+        "src": "https://web.hycdn.cn/upload/image/20260522/ce183308cef90060fb45bf3b48cf2b9a.png",
+        "alt": "《明日方舟：终末地》「寻遗散记」版本PV",
+        "w": 1920,
+        "h": 1080
+      },
+      {
+        "src": "https://web.hycdn.cn/upload/image/20260416/357e2dff498d2d67905864c6863ce8e5.png",
+        "alt": "《明日方舟：终末地》干员叙事 [庄方宜：总有春风归故里] ",
+        "w": 1920,
+        "h": 1080
+      },
+      {
+        "src": "https://web.hycdn.cn/upload/image/20260411/dde7c30f64cb985113539ec6c7a03c38.jpg",
+        "alt": "《明日方舟：终末地》核心章节「春晓时」版本PV",
+        "w": 1920,
+        "h": 1080
+      },
+      {
+        "src": "https://web.hycdn.cn/upload/image/20260327/09077cb6f1c03328a89fc3d65ad0dc04.jpg",
+        "alt": "《明日方舟：终末地》干员叙事 [洛茜：追随英雄的背影] ",
+        "w": 1920,
+        "h": 1080
+      },
+      {
+        "src": "https://web.hycdn.cn/upload/image/20260312/ae7b296513b1bf28d6fc66181a46d63e.png",
+        "alt": "《明日方舟：终末地》干员叙事 [汤汤：大当家，大气概]",
+        "w": 1920,
+        "h": 1080
+      },
+      {
+        "src": "https://web.hycdn.cn/endfield/official-v4/_next/static/media/title.bc8e821f.png",
+        "alt": "calendar.title",
+        "w": 1920,
+        "h": 407
+      },
+      {
+        "src": "https://web.hycdn.cn/endfield/official-v4/_next/static/media/timeline.711f80a1.png",
+        "alt": "calendar.timeline",
+        "w": 1920,
+        "h": 55
+      },
+      {
+        "src": "https://web.hycdn.cn/endfield/official-v4/_next/static/media/content.224c2288.jpg",
+        "alt": "calendar.content",
+        "w": 1849,
+        "h": 2297
+      },
+      {
+        "src": "https://web.hycdn.cn/endfield/official-v4/_next/static/media/timeline.711f80a1.png",
+        "alt": "calendar.timeline",
+        "w": 1920,
+        "h": 55
+      },
+      {
+        "src": "https://web.hycdn.cn/endfield/official-v4/_next/static/media/content.224c2288.jpg",
+        "alt": "calendar.content",
+        "w": 1849,
+        "h": 2297
+      },
+      {
+        "src": "https://web.hycdn.cn/endfield/official-v4/_next/static/media/01.aae95e75.png",
+        "alt": "",
+        "w": 0,
+        "h": 0
+      },
+      {
+        "src": "https://web.hycdn.cn/endfield/official-v4/_next/static/media/01.aae95e75.png",
+        "alt": "",
+        "w": 0,
+        "h": 0
+      },
+      {
+        "src": "https://web.hycdn.cn/upload/image/20260715/a816d526872e655f6324a2f026e6be2f.jpg",
+        "alt": "「向渊行」版本更新说明",
+        "w": 1600,
+        "h": 900
+      },
+      {
+        "src": "https://web.hycdn.cn/upload/image/20260707/9ff7c1725355749cff77b5e7718ce2e9.jpg",
+        "alt": "「临渊望北」特许寻访说明",
+        "w": 1600,
+        "h": 900
+      }
+    ],
+    "videos": [
+      {
+        "src": "https://web.hycdn.cn/upload/video/20260714/00240a644851abbdf0153120ebb5e26f.mp4",
+        "poster": "https://web.hycdn.cn/upload/image/20260714/e4c3c1219db9fe092bbb6a8df8bc265a.png"
+      },
+      {
+        "src": "https://web.hycdn.cn/endfield/official-v4/_next/static/media/video/01.1e0eb1.mp4",
+        "poster": ""
+      },
+      {
+        "poster": ""
+      }
+    ],
+    "backgrounds": [
+      {
+        "el": "div.Header_switcherImage__GWv1u",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/switcher-active.c8843bb5.png\")"
+      },
+      {
+        "el": "div.HallowText_hollowText__OJN57",
+        "bg": "linear-gradient(-45deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 20.5805%, rgb(0, 0, 0) 0px, rgb(0, 0, 0) 29.4195%, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) 70.5805%, rgb(0, 0, 0) 0px, rgb(0, 0, 0) 79.4195%, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0))"
+      },
+      {
+        "el": "div.bg_inner__2TAAb",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/kv_v1d4.d0e55f7f.jpg\")"
+      },
+      {
+        "el": "div.bg_titleFrame___FL9G",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/title_bg.862a2438.png\")"
+      },
+      {
+        "el": "div.bg_titleBg__iWSjv",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/core_cn.59b1fff7.png\")"
+      },
+      {
+        "el": "div.pc-cn_iconSkland__4qwNb",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/skland.46bc0df3.png\")"
+      },
+      {
+        "el": "div.pc-cn_age__4jQcK",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/age.6871a633.png\")"
+      },
+      {
+        "el": "div.__02-Operator_shallowBg__E2XaH",
+        "bg": "linear-gradient(-45deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 13.9513%, rgb(0, 0, 0) 0px, rgb(0, 0, 0) 36.0487%, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) 63.9513%, rgb(0, 0, 0) 0px, rgb(0, 0, 0) 86.0487%, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0))"
+      },
+      {
+        "el": "div.HallowText_hollowText__OJN57",
+        "bg": "linear-gradient(-45deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 20.5805%, rgb(0, 0, 0) 0px, rgb(0, 0, 0) 29.4195%, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) 70.5805%, rgb(0, 0, 0) 0px, rgb(0, 0, 0) 79.4195%, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0))"
+      },
+      {
+        "el": "div.__02-Operator_decoLineTri__NSSu_",
+        "bg": "linear-gradient(90deg, rgb(255, 0, 240) 101.25px, rgb(255, 250, 0) 0px, rgb(255, 250, 0) 203.062px, rgb(0, 255, 162) 0px)"
+      },
+      {
+        "el": "div.__02-Operator_decoLine___SBw8",
+        "bg": "linear-gradient(90deg, rgb(191, 191, 191) 56.25px, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) 239.062px, rgb(191, 191, 191) 0px)"
+      },
+      {
+        "el": "div.__02-Operator_shallowBg__E2XaH",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/block-bg.f05eda37.svg\")"
+      },
+      {
+        "el": "div.HallowText_hollowText__OJN57",
+        "bg": "linear-gradient(-45deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 20.5805%, rgb(0, 0, 0) 0px, rgb(0, 0, 0) 29.4195%, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) 70.5805%, rgb(0, 0, 0) 0px, rgb(0, 0, 0) 79.4195%, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0))"
+      },
+      {
+        "el": "div.__02-Operator_illustration__aCtw3",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/lizhiyan.5e6e07c8.png\")"
+      },
+      {
+        "el": "div.__02-Operator_image__brh4e",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/antal.78d45318.png\")"
+      },
+      {
+        "el": "div.__02-Operator_image__brh4e",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/catcher.68b395f9.png\")"
+      },
+      {
+        "el": "div.__02-Operator_image__brh4e",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/estella.b761d517.png\")"
+      },
+      {
+        "el": "div.__02-Operator_image__brh4e",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/fluorite.b83d45cf.png\")"
+      },
+      {
+        "el": "div.__02-Operator_image__brh4e",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/lizhiyan.9b1b7f82.png\")"
+      },
+      {
+        "el": "div.__02-Operator_image__brh4e",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/liino.f1730ac7.png\")"
+      },
+      {
+        "el": "div.__02-Operator_image__brh4e",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/endministrator2.f0bbf4fa.png\")"
+      },
+      {
+        "el": "div.__02-Operator_image__brh4e",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/endministrator1.3efd4769.png\")"
+      },
+      {
+        "el": "div.__02-Operator_image__brh4e",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/perlica.871dcf57.png\")"
+      },
+      {
+        "el": "div.__02-Operator_image__brh4e",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/chen.5c7b5e46.png\")"
+      },
+      {
+        "el": "div.__02-Operator_image__brh4e",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/mifu.02645cad.png\")"
+      },
+      {
+        "el": "div.__02-Operator_image__brh4e",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/camille.5f50680f.png\")"
+      },
+      {
+        "el": "div.__02-Operator_star__2BUbj",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/star.c078a0a7.png\")"
+      },
+      {
+        "el": "div.__02-Operator_star__2BUbj",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/star.c078a0a7.png\")"
+      },
+      {
+        "el": "div.__02-Operator_star__2BUbj",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/star.c078a0a7.png\")"
+      },
+      {
+        "el": "div.__02-Operator_star__2BUbj",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/star.c078a0a7.png\")"
+      },
+      {
+        "el": "div.__02-Operator_star__2BUbj",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/star.c078a0a7.png\")"
+      },
+      {
+        "el": "div.__02-Operator_star__2BUbj",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/star.c078a0a7.png\")"
+      },
+      {
+        "el": "div.__02-Operator_icon__GnwPC",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/prof-caster.d469c805.jpg\")"
+      },
+      {
+        "el": "div.__02-Operator_icon__GnwPC",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/ele-nature.0606ebde.jpg\")"
+      },
+      {
+        "el": "div.__02-Operator_icon__GnwPC",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/prof-caster.d469c805.jpg\")"
+      },
+      {
+        "el": "div.__02-Operator_icon__GnwPC",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/ele-nature.0606ebde.jpg\")"
+      },
+      {
+        "el": "div.__02-Operator_decoLine___SBw8",
+        "bg": "linear-gradient(90deg, rgb(191, 191, 191) 11.25px, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) 93.9375px, rgb(191, 191, 191) 0px)"
+      },
+      {
+        "el": "div.__02-Operator_star__2BUbj",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/star.c078a0a7.png\")"
+      },
+      {
+        "el": "div.__02-Operator_star__2BUbj",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/star.c078a0a7.png\")"
+      },
+      {
+        "el": "div.__02-Operator_star__2BUbj",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/star.c078a0a7.png\")"
+      },
+      {
+        "el": "div.__02-Operator_star__2BUbj",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/star.c078a0a7.png\")"
+      },
+      {
+        "el": "div.__02-Operator_star__2BUbj",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/star.c078a0a7.png\")"
+      },
+      {
+        "el": "div.__02-Operator_star__2BUbj",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/star.c078a0a7.png\")"
+      },
+      {
+        "el": "div.__02-Operator_deco___QyYC",
+        "bg": "linear-gradient(90deg, rgb(255, 0, 240) 105.188px, rgb(255, 250, 0) 0px, rgb(255, 250, 0) 209.25px, rgb(0, 255, 162) 0px)"
+      },
+      {
+        "el": "div.__02-Operator_inner__rzAAE",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/pag-button-texture.e4e732ad.png\")"
+      },
+      {
+        "el": "div.__02-Operator_listButton__jKExN",
+        "bg": "linear-gradient(-45deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 16.161%, rgb(66, 66, 66) 0px, rgb(66, 66, 66) 33.839%, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) 66.161%, rgb(66, 66, 66) 0px, rgb(66, 66, 66) 83.839%, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0))"
+      },
+      {
+        "el": "div.__03-Lore_container__ZiS0O",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/bg.51f75595.jpg\")"
+      },
+      {
+        "el": "div.__03-Lore_ring__E4kwX",
+        "bg": "url(\"https://web.hycdn.cn/endfield/official-v4/_next/static/media/ring.5ce6e2bd.png\")"
+      },
+      {
+        "el": "div.__03-Lore_activeName__BNCet",
+        "bg": "repeating-linear-gradient(-45deg, rgb(31, 31, 34), rgb(31, 31, 34) 3px, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) 6px)"
+      },
+      {
+        "el": "div.__04-Information_decoLine__QUesO",
+        "bg": "linear-gradient(90deg, rgb(253, 253, 31) 40%, rgba(253, 253, 31, 0) 75%)"
+      },
+      {
+        "el": "div.__04-Information_mask__A6_HD",
+        "bg": "linear-gradient(rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0))"
+      },
+      {
+        "el": "div.__04-Information_mask__A6_HD",
+        "bg": "linear-gradient(rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0))"
+      },
+      {
+        "el": "div.__04-Information_mask__A6_HD",
+        "bg": "linear-gradient(rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0))"
+      },
+      {
+        "el": "div.__04-Information_mask__A6_HD",
+        "bg": "linear-gradient(rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0))"
+      },
+      {
+        "el": "div.__04-Information_mask__A6_HD",
+        "bg": "linear-gradient(rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0))"
+      },
+      {
+        "el": "div.__04-Information_mask__A6_HD",
+        "bg": "linear-gradient(rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0))"
+      },
+      {
+        "el": "div.__04-Information_mask__A6_HD",
+        "bg": "linear-gradient(rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0))"
+      },
+      {
+        "el": "div.__04-Information_mask__A6_HD",
+        "bg": "linear-gradient(rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0))"
+      },
+      {
+        "el": "div.__04-Information_mask__A6_HD",
+        "bg": "linear-gradient(rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0))"
+      },
+      {
+        "el": "div.__04-Information_mask__A6_HD",
+        "bg": "linear-gradient(rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0))"
+      }
+    ],
+    "fonts": [
+      "sans-serif",
+      "SansMedium",
+      "Novecentosanswide-Bold",
+      "SansBold"
+    ],
+    "favicons": [
+      {
+        "href": "https://web.hycdn.cn/favicon.ico",
+        "sizes": ""
+      }
+    ],
+    "svgCount": 137,
+    "sectionCount": 0,
+    "hasLenis": false
+  }
+}
