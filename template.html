@@ -97,11 +97,15 @@
             min-height: 100svh;
             display: flex; flex-direction: column; justify-content: center;
         }
+        /* flex column needs explicit width for stretch; .ef-container already caps to 72rem via max-width + margin:auto */
+        html.ef-snap .ef-section > * { width: 100%; }
         /* expanded leaderboard → this section scrolls freely row-by-row */
         html.ef-snap .ef-section.ef-section--free {
             min-height: auto;
             scroll-snap-align: none;
         }
+        html.ef-snap .ef-hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; }
+        html.ef-snap .ef-hero > * { width: 100%; }
 
         body {
             font-family: var(--ark-cjk), var(--ark-ui);
