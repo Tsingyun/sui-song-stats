@@ -80,6 +80,28 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         html { overflow-x: hidden; scroll-behavior: smooth; }
+        /* ===== PAGE-SNAP (wheel = one section per scroll) ===== */
+        html.ef-snap {
+            scroll-snap-type: y mandatory;
+            scroll-padding-top: 0;
+        }
+        html.ef-snap body {
+            scroll-snap-type: y mandatory;
+        }
+        html.ef-snap .ef-section,
+        html.ef-snap .ef-hero {
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+        }
+        html.ef-snap .ef-section {
+            min-height: 100svh;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        /* expanded leaderboard → this section scrolls freely row-by-row */
+        html.ef-snap .ef-section.ef-section--free {
+            min-height: auto;
+            scroll-snap-align: none;
+        }
 
         body {
             font-family: var(--ark-cjk), var(--ark-ui);
@@ -1742,6 +1764,8 @@
             const c = document.getElementById(containerId);
             if (!c) return;
             c._isExpanded = !c._isExpanded;
+            const section = c.closest('section');
+            if (section) section.classList.toggle('ef-section--free', c._isExpanded);
             renderLeaderboard(containerId, c._fullData || [], '', c._totalCount || 0, c._quantifier || '位');
         }
 
@@ -2045,6 +2069,8 @@
 
         // Init
         initApp();
+        // Enable wheel = one-section-per-scroll paging mode
+        document.documentElement.classList.add('ef-snap');
 
         // ==== Number Animation ====
         function animateNumber(el, target, duration) {
