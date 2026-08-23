@@ -79,14 +79,13 @@
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        html { overflow-x: hidden; scroll-behavior: smooth; }
+        html { overflow-x: hidden; scroll-behavior: auto; }
         /* ===== PAGE-SNAP (wheel = one section per scroll) ===== */
+        /* JS drives paging via scrollIntoView; CSS snap is a lightweight fallback.
+           Note: smooth scroll + transform(.ef-reveal) fight native snap, so we use auto + anchor. */
         html.ef-snap {
-            scroll-snap-type: y mandatory;
+            scroll-snap-type: y proximity;
             scroll-padding-top: 0;
-        }
-        html.ef-snap body {
-            scroll-snap-type: y mandatory;
         }
         html.ef-snap .ef-section,
         html.ef-snap .ef-hero {
@@ -2073,8 +2072,63 @@
 
         // Init
         initApp();
-        // Enable wheel = one-section-per-scroll paging mode
+        // ==== Wheel paging: one section per scroll (snap mode) ====
         document.documentElement.classList.add('ef-snap');
+        (function setupWheelPaging() {
+            const doc = document.documentElement;
+            // All paged screens: hero + every section (in DOM order). Rails links are excluded
+            // from the wheel chain but still let us jump; the chain is purely vertical paging.
+            const pages = Array.from(document.querySelectorAll('.ef-hero, .ef-main > section'));
+            const freeSel = '.ef-section.ef-section--free';
+            let lock = false;
+            const currentIdx = () => {
+                const y = window.scrollY || doc.scrollTop;
+                let best = 0, bestDist = Infinity;
+                pages.forEach((p, i) => {
+                    const top = p.getBoundingClientRect().top + (window.scrollY || doc.scrollTop);
+                    const d = Math.abs(top - y);
+                    if (d < bestDist) { bestDist = d; best = i; }
+                });
+                return best;
+            };
+            const goTo = (idx) => {
+                idx = Math.max(0, Math.min(pages.length - 1, idx));
+                pages[idx].scrollIntoView({ behavior: 'auto', block: 'start' });
+            };
+            const onWheel = (e) => {
+                // Only intercept vertical intent / classic wheel
+                const dy = Math.abs(e.deltaY);
+                if (dy < 8 && Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // horizontal swipe, ignore
+                const cur = pages[currentIdx()];
+                // If the current page is "free" (expanded) and can still scroll internally, let it scroll.
+                if (cur && cur.matches(freeSel)) {
+                    const nearTop = cur.scrollTop <= 2;
+                    const nearBottom = cur.scrollTop + cur.clientHeight >= cur.scrollHeight - 2;
+                    const scrollingDown = e.deltaY > 0;
+                    // free page: hand control back only when it reaches its own edge
+                    if (scrollingDown && !nearBottom) return;
+                    if (!scrollingDown && !nearTop) return;
+                } else {
+                    // non-free snap page: never let the wheel scroll the document gradually
+                    e.preventDefault();
+                }
+                if (lock) return;
+                lock = true;
+                const dir = e.deltaY > 0 ? 1 : -1;
+                let next = currentIdx() + dir;
+                // skip over free pages so a single wheel lands on the next snap page
+                while (next >= 0 && next < pages.length && pages[next].matches(freeSel)) next += dir;
+                goTo(next);
+                setTimeout(() => { lock = false; }, 520);
+            };
+            window.addEventListener('wheel', onWheel, { passive: false });
+            // Trackpad swipe (horizontal not triggered); also catch keyboard PageDown/Up & Space
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); goTo(currentIdx() + 1); }
+                else if (e.key === 'PageUp') { e.preventDefault(); goTo(currentIdx() - 1); }
+            });
+            // Clicking a rail link should jump directly (normal anchor behavior); nothing to do.
+        })();
 
         // ==== Number Animation ====
         function animateNumber(el, target, duration) {
@@ -2193,18 +2247,26 @@
             if (!list.length) { container.innerHTML = '<p style="color:var(--ark-muted);font-size:.85rem;">最近 15 天内没有点歌记录</p>'; return; }
             list.sort(function(a, b) { return a.last < b.last ? 1 : (a.last > b.last ? -1 : 0); });
             var maxc = Math.max.apply(null, list.map(function(x) { return x.count; }));
-            // 连续点歌（本月）与跨月冠军集合，用于在最近点歌标注
+            // 连续点歌（本月 streak）+ 当月点歌冠军👑（与月度榜同语义：本月并列第一）。
+            // 注意：不用 champion_streaks —— 那是"跨月连续夺冠"的历史成就，与"当月冠军"不同。
             var streakMonth = endStr.slice(0, 7);
             var streakByAud = {};
             ((appData.consecutive_streaks || {})[streakMonth] || []).forEach(function(s) { streakByAud[s.audience] = s; });
+            // 当月冠军集合：取本月（streakMonth）月度榜第一名的数量，窗口内且达到该数量的观众即冠军
             var champSet = {};
-            (appData.champion_streaks || []).forEach(function(s) { champSet[s.audience] = true; });
+            var monthData = (appData.monthly_leaderboard || {})[streakMonth] || [];
+            if (monthData.length) {
+                var topCount = monthData[0].count; // 已按 count 降序
+                monthData.forEach(function(it) {
+                    if (it.count === topCount) champSet[it.audience] = true;
+                });
+            }
             container.innerHTML = list.map(function(item, i) {
                 var nm = item.name;
                 var pct = maxc > 0 ? (item.count / maxc * 100).toFixed(1) : '0.0';
                 var onClick = 'showDetail(\'' + nm.replace(/'/g, "\\'") + '\')';
                 var extras = getLevelBadge(nm);
-                if (champSet[nm]) extras += ' <span class="ef-crown" title="跨月点歌冠军">👑</span>';
+                if (champSet[nm]) extras += ' <span class="ef-crown" title="' + streakMonth + ' 当月点歌冠军">👑</span>';
                 var s = streakByAud[nm];
                 if (s) {
                     var n = Math.max(1, s.length - 1);
