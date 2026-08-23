@@ -2163,14 +2163,28 @@
             if (!list.length) { container.innerHTML = '<p style="color:var(--ark-muted);font-size:.85rem;">最近 15 天内没有点歌记录</p>'; return; }
             list.sort(function(a, b) { return a.last < b.last ? 1 : (a.last > b.last ? -1 : 0); });
             var maxc = Math.max.apply(null, list.map(function(x) { return x.count; }));
+            // 连续点歌（本月）与跨月冠军集合，用于在最近点歌标注
+            var streakMonth = endStr.slice(0, 7);
+            var streakByAud = {};
+            ((appData.consecutive_streaks || {})[streakMonth] || []).forEach(function(s) { streakByAud[s.audience] = s; });
+            var champSet = {};
+            (appData.champion_streaks || []).forEach(function(s) { champSet[s.audience] = true; });
             container.innerHTML = list.map(function(item, i) {
                 var nm = item.name;
                 var pct = maxc > 0 ? (item.count / maxc * 100).toFixed(1) : '0.0';
                 var onClick = 'showDetail(\'' + nm.replace(/'/g, "\\'") + '\')';
+                var extras = getLevelBadge(nm);
+                if (champSet[nm]) extras += ' <span class="ef-crown" title="跨月点歌冠军">👑</span>';
+                var s = streakByAud[nm];
+                if (s) {
+                    var n = Math.max(1, s.length - 1);
+                    var fire = n > 1 ? '🔥'.repeat(n) : '🔥';
+                    extras += ' <span class="ef-streak" title="连续 ' + s.length + ' 场点歌" onclick="event.stopPropagation();showStreakTooltipInner(event,' + JSON.stringify(s).replace(/"/g, '&quot;') + ')">' + fire + '</span>';
+                }
                 return '<div class="ef-row" onclick="' + onClick + '">' +
                     '<div class="ef-row-index">' + String(i + 1).padStart(2, '0') + '</div>' +
                     '<div class="ef-row-info">' +
-                        '<div class="ef-row-name">' + nm + getLevelBadge(nm) + '</div>' +
+                        '<div class="ef-row-name">' + nm + extras + '</div>' +
                         '<div class="ef-row-count">最近 ' + item.last + ' · 15天内点歌 ' + item.count + ' 次</div>' +
                     '</div>' +
                     '<div class="ef-bar-track"><div class="ef-bar-fill" style="width:' + pct + '%"></div></div>' +
