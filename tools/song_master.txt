@@ -204,6 +204,7 @@
 2	如果有来生
 2	心愿便利贴
 2	After 17
+2	Departures ~あなたにおくるアイの歌~
 1	上海一九四三
 1	失眠飞行
 1	Toxic
@@ -490,7 +491,6 @@
 1	愛言葉IV
 1	8.32
 1	Just Be Friends
-1	Departures ~あなたにおくるアイの歌~
 1	rain stops, good-bye
 1	淋雨一直走
 1	落泪
