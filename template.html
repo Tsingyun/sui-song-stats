@@ -1216,8 +1216,6 @@
             .ef-hero-sui { opacity: 1; }
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
     <a class="ef-skip-link" href="#ef-main">跳到主要内容</a>
@@ -1489,6 +1487,62 @@
     <script>
         {{APPDATA}}
 
+        // ==== Escaping & delegated actions ====
+        // Audience/song names are user-supplied and get rendered into innerHTML.
+        // They may legitimately contain quotes (e.g. "Don't Look Back In Anger"),
+        // so every interpolated name MUST be escaped or the markup breaks and the
+        // row silently stops being clickable.
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+            });
+        }
+        // Export libraries (html2canvas ~200KB + SheetJS ~900KB) are only needed when
+        // the user actually exports. Loading them on page load blocked first paint for
+        // a feature most visits never touch — so they're fetched on first use instead.
+        var LIB_H2C = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+        var LIB_XLSX = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+        var _libPromises = {};
+        function loadLib(src, globalName) {
+            if (window[globalName]) return Promise.resolve(window[globalName]);
+            if (_libPromises[src]) return _libPromises[src];
+            _libPromises[src] = new Promise(function(resolve, reject) {
+                var s = document.createElement('script');
+                s.src = src;
+                s.onload = function() { window[globalName] ? resolve(window[globalName]) : reject(new Error(globalName + ' 加载异常')); };
+                s.onerror = function() { delete _libPromises[src]; reject(new Error(globalName + ' 加载失败，请检查网络后重试')); };
+                document.head.appendChild(s);
+            });
+            return _libPromises[src];
+        }
+
+        // One delegated listener replaces all inline onclick="..." handlers:
+        // no quoting hazards, no per-row listener allocation, and it keeps working
+        // after any re-render (expand/collapse, search, filters).
+        document.addEventListener('click', function(e) {
+            var t = e.target;
+            if (!t || !t.closest) return;
+            var el;
+            // Most specific first: the streak badge lives inside a clickable row.
+            if ((el = t.closest('[data-act="streak"]'))) {
+                e.stopPropagation();
+                try { showStreakTooltipInner(e, JSON.parse(el.getAttribute('data-streak'))); } catch (err) {}
+                return;
+            }
+            if ((el = t.closest('[data-act="copy"]'))) { copyUserInfo(e, el.getAttribute('data-name')); return; }
+            if ((el = t.closest('[data-act="expand"]'))) { toggleExpand(el.getAttribute('data-target')); return; }
+            if (t.closest('a[data-aud]')) e.preventDefault(); // legacy <a href="#"> links
+            if ((el = t.closest('[data-song]'))) {
+                if (el.getAttribute('data-close-tf')) closeTimeFilterDirect();
+                showSongDetail(el.getAttribute('data-song'));
+                return;
+            }
+            if ((el = t.closest('[data-aud]'))) {
+                if (el.getAttribute('data-close-tf')) closeTimeFilterDirect();
+                showDetail(el.getAttribute('data-aud'));
+            }
+        });
+
         // State
         let currentMonthIdx = 0;
         let currentQuarterIdx = 0;
@@ -1526,16 +1580,26 @@
             }
             document.getElementById('footer-date').textContent = new Date().toLocaleDateString('zh-CN');
 
-            renderTotal();
-            renderSongs();
-            renderQuarter();
-            renderYear();
-            renderMonth();
-            renderPreferences();
-            renderTrend();
-            renderAchievements();
-            renderChampionStreaks();
+            buildSearchIndex();
+
+            // Above the fold first: hero + the screen right after it.
             renderRecent();
+            renderTotal();
+            // Everything below the fold is deferred so the hero paints immediately
+            // instead of waiting for ~511 songs + 28 months of boards to render.
+            // requestIdleCallback has a timeout fallback, and paging only snaps to
+            // sections that already exist in the DOM (they do) — worst case a board
+            // is empty for a few ms, never misaligned.
+            var belowFold = [renderSongs, renderQuarter, renderYear, renderMonth,
+                             renderPreferences, renderTrend, renderAchievements, renderChampionStreaks];
+            var runBelowFold = function() {
+                for (var i = 0; i < belowFold.length; i++) {
+                    try { belowFold[i](); } catch (err) { console.error('[render]', belowFold[i].name, err); }
+                }
+            };
+            if (window.requestIdleCallback) window.requestIdleCallback(runBelowFold, { timeout: 800 });
+            else setTimeout(runBelowFold, 0);
+
             var dv = document.getElementById('data-version');
             if (dv) {
                 var verDate = (appData.metadata && appData.metadata.date_range_end) || appData.data_version;
@@ -1692,25 +1756,30 @@
                     var pct = displayPcts[i];
                     var isChampion = i === 0 || (i > 0 && data.length > 0 && item.count === data[0].count);
                     var showCrown = isChampion && containerId !== 'songs-leaderboard';
-                    var onClick = item.song ?
-                        'showSongDetail(\'' + name.replace(/'/g, "\\'") + '\')' :
-                        'showDetail(\'' + name.replace(/'/g, "\\'") + '\')';
-                    return '<div class="ef-row" onclick="' + onClick + '">' +
+                    var actAttr = item.song ? 'data-song="' + esc(name) + '"' : 'data-aud="' + esc(name) + '"';
+                    return '<div class="ef-row" ' + actAttr + '>' +
                         '<div class="ef-row-index">' + String(i+1).padStart(2,'0') + '</div>' +
                         '<div class="ef-row-info">' +
-                            '<div class="ef-row-name">' + name + getLevelBadge(name) + (showCrown ? ' <span class="ef-crown">👑</span>' : '') + '</div>' +
+                            '<div class="ef-row-name">' + esc(name) + getLevelBadge(name) + (showCrown ? ' <span class="ef-crown">👑</span>' : '') + '</div>' +
                             '<div class="ef-row-count">' + count + ' 次 · 点歌占比 ' + pct + '%</div>' +
                         '</div>' +
                         '<div class="ef-bar-track"><div class="ef-bar-fill" style="width:' + pct + '%"></div></div>' +
                     '</div>';
                 }).join('');
             })() +
-            (hasMore ? '<div class="ef-expand" onclick="toggleExpand(\'' + containerId + '\')">' +
+            (hasMore ? '<div class="ef-expand" data-act="expand" data-target="' + esc(containerId) + '">' +
                 (showAll ? '收起 ▲' : '展开全部（共 ' + data.length + ' ' + quantifier + '）▼') + '</div>' : '');
 
+            // Staggered entrance only for short lists: at 60ms/row a fully expanded
+            // 511-song board would take ~30s to finish appearing (and spawn 511 timers).
             setTimeout(() => {
                 const rows = container.querySelectorAll('.ef-row');
-                rows.forEach((r, i) => { r.classList.remove('show'); setTimeout(() => r.classList.add('show'), i * 60); });
+                const step = rows.length > 24 ? 0 : 60;
+                rows.forEach((r, i) => {
+                    r.classList.remove('show');
+                    if (step === 0) { r.classList.add('show'); return; }
+                    setTimeout(() => r.classList.add('show'), i * step);
+                });
             }, 50);
         }
 
@@ -1790,8 +1859,8 @@
                 const songs = prefs[name] || [];
                 if (songs.length === 0) return '';
                 return '<div class="ef-pref-card">' +
-                    '<div class="ef-pref-name" onclick="showDetail(\'' + name.replace(/'/g, "\\'") + '\')">' + name + '</div>' +
-                    '<div class="ef-pref-songs">' + songs.slice(0, 5).map(s => s.song + ' (' + s.count + ')').join('、') + '</div>' +
+                    '<div class="ef-pref-name" data-aud="' + esc(name) + '">' + esc(name) + '</div>' +
+                    '<div class="ef-pref-songs">' + songs.slice(0, 5).map(s => esc(s.song) + ' (' + s.count + ')').join('、') + '</div>' +
                 '</div>';
             }).filter(Boolean).join('');
         }
@@ -1878,7 +1947,7 @@
                 simHtml = '<div class="ef-similarity">品味相近：';
                 simList.forEach(function(p, i) {
                     var other = p.a1 === name ? p.a2 : p.a1;
-                    simHtml += '<a href="#" onclick="event.stopPropagation();showDetail(\'' + other.replace(/'/g, "\\'") + '\')">' + other + '</a>(' + p.overlap + '首)';
+                    simHtml += '<a href="#" data-aud="' + esc(other) + '">' + esc(other) + '</a>(' + p.overlap + '首)';
                     if (i < simList.length - 1) simHtml += ' · ';
                 });
                 simHtml += '</div>';
@@ -1909,18 +1978,18 @@
             const biliLabel = uid ? 'B站主页' : 'B站搜索';
             const biliHref = uid ? 'https://space.bilibili.com/' + uid : 'https://search.bilibili.com/upuser?keyword=' + encodeURIComponent(name);
             panel.innerHTML = '<div class="ef-panel-head">' +
-                '<div><div class="ef-panel-title">' + name + '</div>' +
+                '<div><div class="ef-panel-title">' + esc(name) + '</div>' +
                 '<div class="ef-panel-sub">' + records.length + ' 次点歌 · 点击空白关闭</div>' +
                 lastReqHtml + simHtml + streakHtml + '</div>' +
                 '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;flex-shrink:0;white-space:nowrap;">' +
-                    '<a class="ef-bili-link" href="' + biliHref + '" target="_blank" id="detail-bili-link" title="在B站查看 ' + name + '">' + biliLabel + '</a>' +
-                    '<span class="ef-copy-btn" onclick="copyUserInfo(event, \'' + name.replace(/'/g, "\\'") + '\')" title="复制用户信息">复制</span>' +
+                    '<a class="ef-bili-link" href="' + biliHref + '" target="_blank" id="detail-bili-link" title="在B站查看 ' + esc(name) + '">' + biliLabel + '</a>' +
+                    '<span class="ef-copy-btn" data-act="copy" data-name="' + esc(name) + '" title="复制用户信息">复制</span>' +
                     '<span class="ef-close" onclick="closeDetailDirect()">✕</span>' +
                 '</div></div><div>' +
             (function() {
                 var renderSongRow = function(song, cnt, showCount) {
                     return '<div class="ef-song-row">' +
-                        '<span class="ef-song-name">' + song + '</span>' +
+                        '<span class="ef-song-name">' + esc(song) + '</span>' +
                         '<span class="ef-song-date">' + (songDates[song] || '') + '</span>' +
                         (showCount ? '<span class="ef-song-count">' + cnt + '次</span>' : '') +
                     '</div>';
@@ -1954,15 +2023,15 @@
             const audienceList = Object.entries(audienceInfo).sort((a, b) => b[1].count - a[1].count).slice(0, 20);
             const panel = document.getElementById('detail-panel');
             panel.innerHTML = '<div class="ef-panel-head">' +
-                '<div><div class="ef-panel-title">' + songName + '</div>' +
+                '<div><div class="ef-panel-title">' + esc(songName) + '</div>' +
                 '<div class="ef-panel-sub">' + records.length + ' 次被点歌 · ' + audienceList.length + ' 位观众点过</div></div>' +
                 '<div style="display:flex;align-items:center;gap:0.5rem;cursor:default;flex-shrink:0;white-space:nowrap;">' +
-                    '<a class="ef-bili-link" href="#" target="_blank" id="detail-bili-link" title="在B站搜索 ' + songName + '">B站搜索</a>' +
+                    '<a class="ef-bili-link" href="#" target="_blank" id="detail-bili-link" title="在B站搜索 ' + esc(songName) + '">B站搜索</a>' +
                     '<span class="ef-close" onclick="closeDetailDirect()">✕</span>' +
                 '</div></div><div>' + audienceList.map(function(item, i) {
                 var name = item[0], info = item[1];
-                return '<div class="ef-song-row" onclick="showDetail(\'' + name.replace(/'/g, "\\'") + '\')">' +
-                    '<div style="flex:1"><span class="ef-song-name">' + (i+1) + '. ' + name + '</span>' +
+                return '<div class="ef-song-row" data-aud="' + esc(name) + '">' +
+                    '<div style="flex:1"><span class="ef-song-name">' + (i+1) + '. ' + esc(name) + '</span>' +
                     '<span class="ef-song-date">' + info.lastDate + '</span></div>' +
                     '<span class="ef-song-count">' + info.count + '次</span></div>';
             }).join('') + '</div>';
@@ -2033,7 +2102,7 @@
             streaks.forEach(function(s, i) {
                 html += '<div class="ef-champ-row">';
                 html += '<div class="ef-champ-index">' + String(i+1).padStart(2,'0') + '</div>';
-                html += '<div style="flex:1;"><div class="ef-champ-name">' + s.audience + '</div>';
+                html += '<div style="flex:1;"><div class="ef-champ-name">' + esc(s.audience) + '</div>';
                 html += '<div class="ef-champ-meta">连续<span style="color:var(--ark-signal);">' + s.count + '</span>个月夺冠 · ' + s.months[0] + ' — ' + s.months[s.months.length-1] + '</div></div>';
                 html += '</div>';
             });
@@ -2062,12 +2131,12 @@
             var html = '<div class="ef-tf-section"><div class="ef-tf-title">观众排行</div>';
             html += '<div style="font-family:var(--ark-mono);font-size:.65rem;color:var(--ark-muted);margin-bottom:.5rem;">共 ' + filtered.length + ' 次点歌 · ' + Object.keys(audCount).length + ' 位观众 · ' + Object.keys(songCount).length + ' 首歌曲</div>';
             audList.forEach(function(a,i){
-                html += '<div class="ef-tf-row" onclick="closeTimeFilterDirect();showDetail(\'' + a[0].replace(/'/g, "\\'") + '\')" style="cursor:pointer">';
-                html += '<span class="ef-tf-rank">' + (i+1) + '</span><span class="ef-tf-name">' + a[0] + '</span><span class="ef-tf-count">' + a[1] + '次</span></div>';
+                html += '<div class="ef-tf-row" data-aud="' + esc(a[0]) + '" data-close-tf="1" style="cursor:pointer">';
+                html += '<span class="ef-tf-rank">' + (i+1) + '</span><span class="ef-tf-name">' + esc(a[0]) + '</span><span class="ef-tf-count">' + a[1] + '次</span></div>';
             });
             html += '</div><div class="ef-tf-section"><div class="ef-tf-title">热门歌曲</div>';
             songList.forEach(function(s,i){
-                html += '<div class="ef-tf-row"><span class="ef-tf-rank">' + (i+1) + '</span><span class="ef-tf-name">' + s[0] + '</span><span class="ef-tf-count">' + s[1] + '次</span></div>';
+                html += '<div class="ef-tf-row"><span class="ef-tf-rank">' + (i+1) + '</span><span class="ef-tf-name">' + esc(s[0]) + '</span><span class="ef-tf-count">' + s[1] + '次</span></div>';
             });
             html += '</div>';
             res.innerHTML = html;
@@ -2209,7 +2278,26 @@
             }
         });
 
+        // Prebuilt lowercase index: songs+audiences+dates is ~1000 entries, and the
+        // old doSearch() lowercased every one of them on EVERY keystroke.
+        var _sidx = null;
+        function buildSearchIndex() {
+            var idx = appData.search_index || {};
+            _sidx = {
+                songs: (idx.songs || []).map(function(s) { return [s, s.toLowerCase()]; }),
+                audiences: (idx.audiences || []).map(function(a) { return [a, a.toLowerCase()]; }),
+                dates: (idx.dates || []).slice()
+            };
+        }
+        if (!_sidx) buildSearchIndex();
+
+        // Debounced: typing fires oninput per character; only the last one matters.
+        var _searchTimer = null;
         function doSearch() {
+            clearTimeout(_searchTimer);
+            _searchTimer = setTimeout(runSearch, 110);
+        }
+        function runSearch() {
             var q = (document.getElementById('search-input').value || '').trim();
             var container = document.getElementById('search-results');
             if (!q || q.length < 1) { container.classList.remove('open'); container.innerHTML = ''; return; }
@@ -2217,14 +2305,14 @@
             q = q.toLowerCase();
             container.classList.add('open');
             var results = [];
-            var idx = appData.search_index;
+            if (!_sidx) buildSearchIndex();
+            var idx = _sidx;
             for (var i = 0; i < idx.songs.length; i++) {
-                var s = idx.songs[i];
-                if (s.toLowerCase().indexOf(q) >= 0) results.push({type: '歌曲', name: s});
+                if (idx.songs[i][1].indexOf(q) >= 0) results.push({type: '歌曲', name: idx.songs[i][0]});
             }
             for (var i = 0; i < idx.audiences.length; i++) {
-                var a = idx.audiences[i];
-                if (a.toLowerCase().indexOf(q) >= 0) {
+                var a = idx.audiences[i][0];
+                if (idx.audiences[i][1].indexOf(q) >= 0) {
                     var lv = appData.audience_levels[a];
                     var metaParts = [];
                     if (lv) metaParts.push('Lv.' + lv.level + ' · ' + lv.count + ' 次点歌');
@@ -2249,7 +2337,7 @@
             } else {
                 container.innerHTML = results.map(function(r) {
                     var cls = 'ef-search-item';
-                    return '<div class="' + cls + '" data-type="' + r.type + '" data-name="' + r.name.replace(/"/g, '&quot;') + '"><div class="ef-sr-type">' + r.type + '</div><div class="ef-sr-name">' + r.name + '</div>' + (r.meta ? '<div class="ef-sr-meta">' + r.meta + '</div>' : '') + '</div>';
+                    return '<div class="' + cls + '" data-type="' + r.type + '" data-name="' + esc(r.name) + '"><div class="ef-sr-type">' + r.type + '</div><div class="ef-sr-name">' + esc(r.name) + '</div>' + (r.meta ? '<div class="ef-sr-meta">' + esc(r.meta) + '</div>' : '') + '</div>';
                 }).join('');
                 container.onclick = function(e) {
                     var item = e.target.closest('.ef-search-item');
@@ -2311,19 +2399,18 @@
             container.innerHTML = list.map(function(item, i) {
                 var nm = item.name;
                 var pct = maxc > 0 ? (item.count / maxc * 100).toFixed(1) : '0.0';
-                var onClick = 'showDetail(\'' + nm.replace(/'/g, "\\'") + '\')';
                 var extras = getLevelBadge(nm);
                 if (champSet[nm]) extras += ' <span class="ef-crown" title="' + streakMonth + ' 当月点歌冠军">👑</span>';
                 var s = streakByAud[nm];
                 if (s) {
                     var n = Math.max(1, s.length - 1);
                     var fire = n > 1 ? '🔥'.repeat(n) : '🔥';
-                    extras += ' <span class="ef-streak" title="连续 ' + s.length + ' 场点歌" onclick="event.stopPropagation();showStreakTooltipInner(event,' + JSON.stringify(s).replace(/"/g, '&quot;') + ')">' + fire + '</span>';
+                    extras += ' <span class="ef-streak" data-act="streak" data-streak="' + esc(JSON.stringify(s)) + '" title="连续 ' + s.length + ' 场点歌">' + fire + '</span>';
                 }
-                return '<div class="ef-row" onclick="' + onClick + '">' +
+                return '<div class="ef-row" data-aud="' + esc(nm) + '">' +
                     '<div class="ef-row-index">' + String(i + 1).padStart(2, '0') + '</div>' +
                     '<div class="ef-row-info">' +
-                        '<div class="ef-row-name">' + nm + extras + '</div>' +
+                        '<div class="ef-row-name">' + esc(nm) + extras + '</div>' +
                         '<div class="ef-row-count">最近 ' + item.last + ' · 15天内点歌 ' + item.count + ' 次</div>' +
                     '</div>' +
                     '<div class="ef-bar-track"><div class="ef-bar-fill" style="width:' + pct + '%"></div></div>' +
@@ -2331,7 +2418,12 @@
             }).join('');
             setTimeout(function() {
                 var rows = container.querySelectorAll('.ef-row');
-                rows.forEach(function(r, i) { r.classList.remove('show'); setTimeout(function() { r.classList.add('show'); }, i * 60); });
+                var step = rows.length > 24 ? 0 : 60;
+                rows.forEach(function(r, i) {
+                    r.classList.remove('show');
+                    if (step === 0) { r.classList.add('show'); return; }
+                    setTimeout(function() { r.classList.add('show'); }, i * step);
+                });
             }, 50);
         }
 
@@ -2465,14 +2557,22 @@
                 '<div style="margin-top:2.5rem;font-family:IBM Plex Mono,monospace;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:#8a8a8a;text-align:right;">岁己 SUI · 点歌统计 · ' + new Date().toISOString().slice(0,10) + '</div>';
             document.body.appendChild(tmpContainer);
             setTimeout(function() {
-                html2canvas(tmpContainer, {scale: 2, backgroundColor: '#f2f2f0', useCORS: true, logging: false}).then(function(canvas) {
-                    document.body.removeChild(tmpContainer);
+                var cleanup = function() {
+                    if (tmpContainer.parentNode) document.body.removeChild(tmpContainer);
                     container._isExpanded = wasExpanded;
+                };
+                loadLib(LIB_H2C, 'html2canvas').then(function(h2c) {
+                    return h2c(tmpContainer, {scale: 2, backgroundColor: '#f2f2f0', useCORS: true, logging: false});
+                }).then(function(canvas) {
+                    cleanup();
                     var link = document.createElement('a');
                     link.download = (sd.title + (limit > 0 ? '_Top' + limit : '_Full') + '.png').replace(/\s/g, '_');
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                     if (limit === 0) { renderCurrentSection(sectionId); }
+                }).catch(function(err) {
+                    cleanup();
+                    alert('截图导出失败：' + err.message);
                 });
             }, 300);
             document.querySelectorAll('.ef-export-menu.open').forEach(function(m) { m.classList.remove('open'); });
@@ -2501,11 +2601,18 @@
                 downloadBlob(blob, sd.title.replace(/\s/g, '_') + '.csv');
             } else if (format === 'xlsx') {
                 var wsData = [sd.fields].concat(data.map(function(item) { return sd.fields.map(function(f) { return item[f] || ''; }); }));
-                var ws = XLSX.utils.aoa_to_sheet(wsData);
-                ws['!cols'] = sd.fields.map(function() { return {wch: 20}; });
-                var wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-                XLSX.writeFile(wb, sd.title.replace(/\s/g, '_') + '.xlsx');
+                loadLib(LIB_XLSX, 'XLSX').then(function(XLSX) {
+                    var ws = XLSX.utils.aoa_to_sheet(wsData);
+                    ws['!cols'] = sd.fields.map(function() { return {wch: 20}; });
+                    var wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+                    XLSX.writeFile(wb, sd.title.replace(/\s/g, '_') + '.xlsx');
+                }).catch(function(err) {
+                    alert('导出失败：' + err.message);
+                }).then(function() {
+                    document.querySelectorAll('.ef-export-menu.open').forEach(function(m) { m.classList.remove('open'); });
+                });
+                return; // menu closes inside the promise chain, once the export settles
             }
             document.querySelectorAll('.ef-export-menu.open').forEach(function(m) { m.classList.remove('open'); });
         }
@@ -2524,7 +2631,7 @@
             var overlay = document.getElementById('celebration-overlay');
             var content = document.getElementById('celebration-content');
             var confettiContainer = document.getElementById('celebration-confetti');
-            content.innerHTML = '<div class="ef-celebration-title">点歌大王</div><div class="ef-celebration-name">' + top.audience + '</div><div class="ef-celebration-sub">共计 ' + top.count + ' 次点歌 · 荣登榜首</div><div class="ef-celebration-hint">点击任意处关闭</div>';
+            content.innerHTML = '<div class="ef-celebration-title">点歌大王</div><div class="ef-celebration-name">' + esc(top.audience) + '</div><div class="ef-celebration-sub">共计 ' + top.count + ' 次点歌 · 荣登榜首</div><div class="ef-celebration-hint">点击任意处关闭</div>';
             var colors = ['#fffa00','#fff5b0','#00ffa2','#f2f2f0','#FFE94D','#FFCC00'];
             confettiContainer.innerHTML = '';
             for (var i = 0; i < 80; i++) {

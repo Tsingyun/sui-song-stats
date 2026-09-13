@@ -9,7 +9,9 @@ with open('song_data_processed.json', 'r', encoding='utf-8') as f:
     data = json.load(f)
 
 # 3. Build JS data string
-appData_str = 'const appData = ' + json.dumps(data, ensure_ascii=False, indent=2) + ';'
+# separators=(',', ':') -> compact output. indent=2 bloated the payload by ~44%
+# (265KB -> 148KB at 861 records) for zero benefit: nobody reads the inline JSON.
+appData_str = 'const appData = ' + json.dumps(data, ensure_ascii=False, separators=(',', ':')) + ';'
 
 # 4. Simple replacement - 100% reliable!
 html = template.replace('{{APPDATA}}', appData_str)
@@ -40,7 +42,7 @@ def _inline_scripts(h):
     return out
 
 inline = _inline_scripts(html)
-node = shutil.which('node') or 'C:/Users/Tsing/.workbuddy/binaries/node/versions/22.22.2/node.exe'
+node = shutil.which('node') or 'C:/Users/Tsing/.workbuddy/binaries/node/versions/22.22.2-3/node.exe'
 if not inline:
     print('⚠️  No inline <script> found, skipped JS validation')
 elif not os.path.exists(node):

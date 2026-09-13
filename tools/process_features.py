@@ -108,6 +108,90 @@ data['song_network'] = {
     'edges': [{'source': e[0][0], 'target': e[0][1], 'weight': e[1]} for e in edges]
 }
 
+# --- Feature 2b: Audience preferences (top songs per audience) ---
+# WARNING: audience_preferences used to be hand-maintained and froze at 12 stale
+# entries (wrong people, wrong counts). The UI renders total_leaderboard.slice(0,12),
+# so derive it for the Top-20 (headroom) — never patch by hand again.
+PREF_AUDIENCES = 20
+PREF_SONGS = 8
+aud_song_counter = defaultdict(Counter)
+for e in rw:
+    aud_song_counter[e['audience']][e['song']] += 1
+prefs = {}
+for item in tl[:PREF_AUDIENCES]:
+    aud = item['audience']
+    items = [{'song': s, 'count': c} for s, c in aud_song_counter[aud].items()]
+    items.sort(key=lambda x: (-x['count'], x['song']))
+    prefs[aud] = items[:PREF_SONGS]
+data['audience_preferences'] = prefs
+
+# --- Feature 2c: Similarity matrix (song-taste overlap between audiences) ---
+# jaccard = |A∩B| / |A∪B| over each audience's set of DISTINCT songs.
+# Previously hand-maintained (stale 30 pairs). Now recomputed from raw_data.
+aud_names = [t['audience'] for t in tl]
+sim = []
+for i in range(len(aud_names)):
+    s1 = aud_songs[aud_names[i]]
+    if not s1:
+        continue
+    for j in range(i + 1, len(aud_names)):
+        s2 = aud_songs[aud_names[j]]
+        if not s2:
+            continue
+        overlap = len(s1 & s2)
+        if overlap < 2:
+            continue  # shared a single song once = noise, not a taste signal
+        union = len(s1 | s2)
+        sim.append({
+            'a1': aud_names[i],
+            'a2': aud_names[j],
+            'overlap': overlap,
+            'total1': len(s1),
+            'total2': len(s2),
+            'jaccard': round(overlap / union, 4),
+        })
+sim.sort(key=lambda x: (-x['jaccard'], -x['overlap']))
+data['similarity_matrix'] = sim[:30]
+
+# --- Feature 2d: Champion streaks (cross-month consecutive monthly championships) ---
+# A "champion" of month M = who topped monthly_leaderboard[M] (ties all count).
+# A streak = a run of CALENDAR-CONTIGUOUS months (2024-12 -> 2025-01 counts) where
+# the same audience kept the crown; only runs >= 2 are reported. Each audience keeps
+# its single LONGEST run (earliest one wins a tie) so the board stays one row/person.
+# Previously hand-maintained and stale. Now recomputed from raw_data.
+def _midx(m):
+    y, mm = m.split('-')
+    return int(y) * 12 + int(mm)
+
+month_champs = defaultdict(set)
+for m, entries in data['monthly_leaderboard'].items():
+    if not entries:
+        continue
+    top = entries[0]['count']
+    for e in entries:
+        if e['count'] == top:
+            month_champs[e['audience']].add(m)
+
+champ_months_sorted = sorted(set(data['monthly_leaderboard'].keys()))
+champ_streaks = []
+for aud, months in month_champs.items():
+    ms = sorted(months, key=_midx)
+    best = None
+    run = [ms[0]]
+    for prev, cur in zip(ms, ms[1:]):
+        if _midx(cur) == _midx(prev) + 1:
+            run.append(cur)
+        else:
+            if best is None or len(run) > len(best):
+                best = run
+            run = [cur]
+    if best is None or len(run) > len(best):
+        best = run
+    if len(best) >= 2:
+        champ_streaks.append({'audience': aud, 'months': best, 'count': len(best)})
+champ_streaks.sort(key=lambda x: (-x['count'], _midx(x['months'][0])))
+data['champion_streaks'] = champ_streaks
+
 # --- Feature 5: Achievements ---
 ach = []
 
