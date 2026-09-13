@@ -68,6 +68,18 @@ for e in rw:
     daily[e['date']] += 1
 data['heatmap_data'] = [{'date': d, 'count': c} for d, c in sorted(daily.items())]
 
+# --- Feature 1b: Monthly trend series (always recompute from raw_data) ---
+# WARNING: trends / trend_data used to be hand-maintained and drifted badly —
+# 2025-04 off by one, 2026-06 frozen at 15/17 vs actual 37, and 2026-07~09 missing
+# entirely (which also under-counted the quarterly/yearly cards). They MUST be
+# derived from raw_data like every other field, never patched by hand.
+monthly_counts = Counter()
+for e in rw:
+    monthly_counts[e['date'][:7]] += 1
+trend_series = {m: monthly_counts[m] for m in sorted(monthly_counts)}
+data['trends'] = dict(trend_series)
+data['trend_data'] = dict(trend_series)
+
 # --- Feature 2: Song network (co-occurrence) ---
 aud_songs = defaultdict(set)
 for e in rw:
