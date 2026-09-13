@@ -18510,19 +18510,26 @@
             if (!appData.raw_data || !appData.metadata) { container.innerHTML = '<p style="color:var(--ark-muted)">暂无数据</p>'; return; }
             var endStr = appData.metadata.date_range_end || '';
             if (!endStr) { container.innerHTML = '<p style="color:var(--ark-muted)">暂无数据</p>'; return; }
-            var end = new Date(endStr + 'T00:00:00+08:00');
-            var start = new Date(end.getTime() - 14 * 86400000); // 含 end 共 15 天
-            var startStr = start.toISOString().slice(0, 10);
+            // 窗口以“今天”为终点，与详情“X天前”同一基准；数据滞后只让窗口内暂无数据，
+            // 但 17 天前点歌的人本就不在“15天内”，应被排除。未来数据由 r.date<=winEnd 自然过滤。
+            function ymd(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+            var today = new Date();
+            today.setHours(0,0,0,0);
+            var winEnd = today;
+            var start = new Date(winEnd.getTime());
+            start.setDate(start.getDate() - 14); // 含 winEnd 共 15 天（本地日期运算，规避 toISOString 的 UTC 偏移）
+            var startStr = ymd(start);
+            var endWindowStr = ymd(winEnd);
             var wind = {};
             appData.raw_data.forEach(function(r) {
-                if (r.date >= startStr && r.date <= endStr) {
+                if (r.date >= startStr && r.date <= endWindowStr) {
                     if (!wind[r.audience]) wind[r.audience] = { count: 0, last: r.date };
                     wind[r.audience].count++;
                     if (r.date > wind[r.audience].last) wind[r.audience].last = r.date;
                 }
             });
             var list = Object.keys(wind).map(function(n) { return { name: n, count: wind[n].count, last: wind[n].last }; });
-            if (note) note.textContent = endStr + ' 起向前 15 天 · 共 ' + list.length + ' 位观众点过歌';
+            if (note) note.textContent = '最近 15 天（截至今日 ' + endWindowStr + '）· 共 ' + list.length + ' 位观众点过歌';
             if (!list.length) { container.innerHTML = '<p style="color:var(--ark-muted);font-size:.85rem;">最近 15 天内没有点歌记录</p>'; return; }
             list.sort(function(a, b) { return a.last < b.last ? 1 : (a.last > b.last ? -1 : 0); });
             var maxc = Math.max.apply(null, list.map(function(x) { return x.count; }));
