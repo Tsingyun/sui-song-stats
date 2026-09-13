@@ -227,6 +227,22 @@ all_dates = sorted(e['date'] for e in rw)
 mt['date_range_start'] = all_dates[0] if all_dates else ''
 mt['date_range_end'] = all_dates[-1] if all_dates else ''
 
+# --- live_dates: union only, NEVER overwrite ---
+# live_dates 含 103 天「有直播但无人点歌」的日期，这部分无法从 raw_data 派生。
+# 若直接用 raw_data 覆盖会永久丢失它们 —— 只能做并集补齐（当前缺 2026-07-14 起 27 天）。
+ld = set(data.get('live_dates') or [])
+ld.update(e['date'] for e in rw)
+data['live_dates'] = sorted(ld)
+
+# --- data_stats: 纯派生快照，跟随 metadata（此前冻结在 793/78/491，已漂移） ---
+data['data_stats'] = {
+    'total_records': mt['total_records'],
+    'unique_audiences': mt['unique_audiences'],
+    'unique_songs': mt['unique_songs'],
+    'date_range_start': mt['date_range_start'],
+    'date_range_end': mt['date_range_end'],
+}
+
 with open('song_data_processed.json', 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
 
