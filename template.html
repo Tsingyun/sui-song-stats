@@ -105,6 +105,12 @@
         }
         html.ef-snap .ef-hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; }
         html.ef-snap .ef-hero > * { width: 100%; }
+        /* 展开态：仅 scroll-snap-align:none 不够——浏览器仍会把长列表吸附到相邻屏，
+           必须整体关掉吸附，长列表才能连续滚动 */
+        html.ef-snap.ef-snap-off { scroll-snap-type: none; }
+        /* 翻页过渡：滚动位移 + 内容淡出淡入，让“翻了一页”清晰可感知 */
+        .ef-section > *, .ef-hero > * { transition: opacity .24s ease; }
+        html.ef-paging .ef-section > *, html.ef-paging .ef-hero > * { opacity: .25; }
 
         body {
             font-family: var(--ark-cjk), var(--ark-ui);
@@ -1770,6 +1776,8 @@
             const section = c.closest('section');
             if (section) section.classList.toggle('ef-section--free', c._isExpanded);
             renderLeaderboard(containerId, c._fullData || [], '', c._totalCount || 0, c._quantifier || '位');
+            // 渲染后再同步：展开→连续滚动，收起→恢复整页翻页并对齐该屏顶部
+            if (typeof window.__efSyncPaging === 'function') window.__efSyncPaging(section);
         }
 
         // --- Preferences ---
@@ -2076,58 +2084,90 @@
         document.documentElement.classList.add('ef-snap');
         (function setupWheelPaging() {
             const doc = document.documentElement;
-            // All paged screens: hero + every section (in DOM order). Rails links are excluded
-            // from the wheel chain but still let us jump; the chain is purely vertical paging.
+            // All paged screens: hero + every section (in DOM order).
             const pages = Array.from(document.querySelectorAll('.ef-hero, .ef-main > section'));
-            const freeSel = '.ef-section.ef-section--free';
-            let lock = false;
+            const FREE = 'ef-section--free';
+            const REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const DURATION = REDUCE ? 1 : 680;  // 翻页动画时长：足够看清，但不拖沓
+            const COOLDOWN = 160;               // 动画结束后的缓冲，避免惯性尾巴再翻一页
+            let lock = false;                   // 动画执行期间锁定输入，防止一次滚动翻多页/动画堆叠
+            let rafId = 0;
+
+            // 展开态：任一 section 被“展开全部” → 全站退出整页翻页，恢复连续滚动
+            const isFreeMode = () => !!document.querySelector('.' + FREE);
+            const pageTop = (p) => p.getBoundingClientRect().top + (window.scrollY || doc.scrollTop);
+            const maxScroll = () => Math.max(0, (doc.scrollHeight || 0) - window.innerHeight);
             const currentIdx = () => {
                 const y = window.scrollY || doc.scrollTop;
                 let best = 0, bestDist = Infinity;
                 pages.forEach((p, i) => {
-                    const top = p.getBoundingClientRect().top + (window.scrollY || doc.scrollTop);
-                    const d = Math.abs(top - y);
+                    const d = Math.abs(pageTop(p) - y);
                     if (d < bestDist) { bestDist = d; best = i; }
                 });
                 return best;
             };
-            const goTo = (idx) => {
-                idx = Math.max(0, Math.min(pages.length - 1, idx));
-                pages[idx].scrollIntoView({ behavior: 'auto', block: 'start' });
-            };
-            const onWheel = (e) => {
-                // Only intercept vertical intent / classic wheel
-                const dy = Math.abs(e.deltaY);
-                if (dy < 8 && Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // horizontal swipe, ignore
-                const cur = pages[currentIdx()];
-                // If the current page is "free" (expanded) and can still scroll internally, let it scroll.
-                if (cur && cur.matches(freeSel)) {
-                    const nearTop = cur.scrollTop <= 2;
-                    const nearBottom = cur.scrollTop + cur.clientHeight >= cur.scrollHeight - 2;
-                    const scrollingDown = e.deltaY > 0;
-                    // free page: hand control back only when it reaches its own edge
-                    if (scrollingDown && !nearBottom) return;
-                    if (!scrollingDown && !nearTop) return;
-                } else {
-                    // non-free snap page: never let the wheel scroll the document gradually
-                    e.preventDefault();
-                }
+
+            // easeInOutCubic：起步与收尾都平滑
+            const ease = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+            function animateScrollTo(targetY, done) {
+                const startY = window.scrollY || doc.scrollTop;
+                const endY = Math.max(0, Math.min(maxScroll(), Math.round(targetY)));
+                const dist = endY - startY;
+                cancelAnimationFrame(rafId);
+                if (Math.abs(dist) < 2) { doc.classList.remove('ef-paging'); if (done) done(); return; }
+                doc.classList.add('ef-paging');  // 内容淡出，配合滚动位移
+                const t0 = performance.now();
+                const step = (now) => {
+                    const p = Math.min(1, (now - t0) / DURATION);
+                    window.scrollTo(0, startY + dist * ease(p));
+                    if (p < 1) {
+                        if (p >= 0.72) doc.classList.remove('ef-paging'); // 收尾前淡入，落位更自然
+                        rafId = requestAnimationFrame(step);
+                    } else {
+                        doc.classList.remove('ef-paging');
+                        if (done) done();
+                    }
+                };
+                rafId = requestAnimationFrame(step);
+            }
+
+            function goToY(y) {
                 if (lock) return;
                 lock = true;
-                const dir = e.deltaY > 0 ? 1 : -1;
-                let next = currentIdx() + dir;
-                // skip over free pages so a single wheel lands on the next snap page
-                while (next >= 0 && next < pages.length && pages[next].matches(freeSel)) next += dir;
-                goTo(next);
-                setTimeout(() => { lock = false; }, 520);
+                animateScrollTo(y, function () { setTimeout(function () { lock = false; }, COOLDOWN); });
+            }
+            function goTo(idx) {
+                idx = Math.max(0, Math.min(pages.length - 1, idx));
+                goToY(pageTop(pages[idx]));
+            }
+
+            const onWheel = (e) => {
+                if (isFreeMode()) return;                        // 展开态：交还浏览器，正常连续滚动
+                const ady = Math.abs(e.deltaY);
+                if (ady < 8 && Math.abs(e.deltaX) > ady) return; // 横向滑动忽略
+                e.preventDefault();                              // 分页模式下禁止渐进滚动
+                if (lock || ady < 6) return;                     // 动画期间锁定输入
+                goTo(currentIdx() + (e.deltaY > 0 ? 1 : -1));
             };
             window.addEventListener('wheel', onWheel, { passive: false });
-            // Trackpad swipe (horizontal not triggered); also catch keyboard PageDown/Up & Space
+            // Keyboard PageDown/Up & Space（展开态交还浏览器）
             window.addEventListener('keydown', (e) => {
+                if (isFreeMode()) return;
                 if (e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); goTo(currentIdx() + 1); }
                 else if (e.key === 'PageUp') { e.preventDefault(); goTo(currentIdx() - 1); }
             });
-            // Clicking a rail link should jump directly (normal anchor behavior); nothing to do.
+
+            // 展开/收起联动：切换滚动模式（由 toggleExpand 调用）
+            window.__efSyncPaging = function (section) {
+                const free = isFreeMode();
+                doc.classList.toggle('ef-snap-off', free);       // 开=连续滚动，关=整页翻页
+                if (!free && section) {                          // 收起：回到分页态并对齐该屏顶部
+                    cancelAnimationFrame(rafId);
+                    lock = false;
+                    goToY(pageTop(section));
+                }
+            };
         })();
 
         // ==== Number Animation ====
