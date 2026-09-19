@@ -58,6 +58,7 @@
 
             /* Geometry */
             --ark-radius: 2px;
+            --banner-h: 2.75rem;
 
             /* Depth */
             --ark-depth-grid-opacity: .55;
@@ -144,12 +145,13 @@
             position: relative;
             min-height: 100svh;
             padding-left: 4.5rem;
+            padding-top: var(--banner-h);
         }
 
         /* ===== RAIL NAVIGATION ===== */
         .ef-rail {
             position: fixed;
-            top: 0; left: 0; bottom: 0;
+            top: var(--banner-h); left: 0; bottom: 0;
             width: 4.5rem;
             z-index: 40;
             display: flex; flex-direction: column;
@@ -227,6 +229,30 @@
             background: var(--ark-ink-deep); color: #fff;
             border-bottom: 1px solid var(--ark-rule);
         }
+
+        /* ===== DEPRECATION BANNER (fixed top) ===== */
+        .ef-depbar {
+            position: fixed; top: 0; left: 0; right: 0;
+            z-index: 1000;
+            height: var(--banner-h);
+            display: flex; align-items: center; justify-content: center; gap: .6rem;
+            padding: 0 .8rem;
+            background: #1c1a00;
+            border-bottom: 2px solid var(--ark-signal);
+            color: #fff; font-size: .82rem; line-height: 1.2;
+            text-align: center;
+            overflow: hidden; white-space: nowrap;
+        }
+        .ef-depbar-ico { color: var(--ark-signal); font-size: 1rem; flex-shrink: 0; }
+        .ef-depbar-txt { color: rgba(255,255,255,.92); }
+        .ef-depbar-txt strong { color: var(--ark-signal); font-weight: 700; }
+        .ef-depbar-link {
+            color: #191919; background: var(--ark-signal);
+            padding: .2rem .6rem; border-radius: var(--ark-radius);
+            font-weight: 700; font-family: var(--ark-mono); font-size: .76rem;
+            flex-shrink: 0; transition: filter var(--ark-direct);
+        }
+        .ef-depbar-link:hover { filter: brightness(1.12); }
 
         .ef-topbar-status {
             display: flex; align-items: center; gap: .55rem;
@@ -1155,6 +1181,9 @@
         }
 
         @media (max-width: 760px), (orientation: portrait) {
+            :root { --banner-h: 3.4rem; }
+            .ef-depbar { white-space: normal; height: auto; min-height: var(--banner-h); padding: .4rem .6rem; font-size: .72rem; gap: .4rem; }
+            .ef-depbar-link { font-size: .7rem; padding: .18rem .5rem; }
             .ef-shell { padding-left: 0; padding-bottom: 3.8rem; }
             .ef-topbar { padding: 0 1rem; }
             .ef-topbar-meta { display: none; }
@@ -1219,6 +1248,12 @@
 </head>
 <body>
     <a class="ef-skip-link" href="#ef-main">跳到主要内容</a>
+
+    <div class="ef-depbar" role="alert">
+        <span class="ef-depbar-ico" aria-hidden="true">⚠</span>
+        <span class="ef-depbar-txt"><strong>本项目已废弃，即将归档</strong> · 点歌功能已合并至主站</span>
+        <a class="ef-depbar-link" href="https://suijisui.uk/" target="_blank" rel="noopener">前往主站 suijisui.uk ↗</a>
+    </div>
 
     <div class="ef-shell">
         <!-- ===== RAIL NAVIGATION ===== -->
